@@ -1,0 +1,16 @@
+Structure: app->windows->widgets{label, box, buttons, table, line, bar...}
+Layout: QGridLayout, can nest layouts
+addWidget(Widget, row, col)/(Widget, row, col, rowspan, colspan) & alignment
+
+Appearance: Qt Style sheet
+
+This stage:
+Todo: Function call when each button is hit
+Todo: more layout, button aligns
+Color, style, appearance -- Suzie
+Pictures, icons --Suzie
+
+
+Todo: box page
+Style: different style for different OS/ app.setStyle
+
