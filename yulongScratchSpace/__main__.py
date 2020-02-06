@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGridLayout, QLabel, QSizePolicy
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette
+from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap
 
 application = QApplication([])
 
@@ -14,23 +14,10 @@ class Window(QWidget):
         self.resize(1080, 800)
         self.setWindowTitle("Dingy Skippers")
         self.setAutoFillBackground(True)
-        ''' trying to make a gradient background and failing
-        
-         linGrad = QLinearGradient(QPointF(100, 100), QPointF(200, 200));
-        linearGrad.setColorAt(0, Qt.black);
-        linearGrad.setColorAt(1, Qt.white);
-         QRadialGradient gradient(50, 50, 50, 50, 50);
-        gradient.setColorAt(0, QColor.fromRgbF(0, 1, 0, 1));
-        gradient.setColorAt(1, QColor.fromRgbF(0, 0, 0, 0));
 
-        QBrush brush(gradient);
+        background = QColor.fromRgb(248,246,238)
 
-        QBrush
-        
-        '''
-
-        background = QColor.fromRgb(100, 149, 237)
-        default_button = QColor.fromRgb(252,230,201)
+        title_font = QFont("Georgia", 25)
 
         p = self.palette()
         p.setColor(self.backgroundRole(), background)
@@ -45,14 +32,21 @@ class Window(QWidget):
         bottomRight = QWidget(self)
 
         # The top left corner
-        l = QLabel(topLeft)
-        l.setText("Put some butterfly here")
-        l.move(50, 50)
-        topLeft.resize(w * 0.25, h * 0.1)
+        '''
+        trying to add an image but it's not showing up - not sure why 
+        '''
+        bFlyImage = QLabel(topLeft)
+        bFlyImage.setGeometry(10,10,60,60)
+        bFlyImage.setPixmap(QPixmap("../suzieScratchSpace/caterpillar.png"))
+
+        #bFlyImage.move(50, 50)
+        #topLeft.resize(w * 0.25, h * 0.1)
 
         # The top right corner
         l = QLabel(topRight)
         l.setText("Butterfly Logbook Scanner")
+        l.setFont(title_font)
+        l.setStyleSheet('color:#6D214F')
         l.move(w * 0.25, 50)
 
         topRight.resize(w * 0.75, h * 0.1)
@@ -60,6 +54,7 @@ class Window(QWidget):
 
         # The bottom right corner
         br_label = QLabel("Initial Page", bottomRight)
+        br_label.setStyleSheet('color:#6D214F')
         br_label.move(100, 100)
         br_label.resize(500, 500)
         bottomRight.resize(w * 0.75, h * 0.9)
@@ -72,9 +67,10 @@ class Window(QWidget):
         bottomLeftLayout = QVBoxLayout()
         buttons = [QPushButton() for _ in range(6)]
 
+        # function for changing all buttons back to default when a new one is clicked
         def reset_buttons_color():
             for b in buttons:
-                b.setStyleSheet('background-color:rgb(252,230,201); color:black')
+                b.setStyleSheet('background-color:rgb(248,154,121); color:black')
 
         for b in buttons:
             b.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -85,7 +81,7 @@ class Window(QWidget):
         def button0_signal():
             print("button 0 pressed")
             reset_buttons_color()
-            buttons[0].setStyleSheet("background-color: rgb(100, 149, 237)")
+            buttons[0].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
             update("Upload PDF page")
 
         buttons[0].setText("Upload PDF")
@@ -94,7 +90,7 @@ class Window(QWidget):
         def button1_signal():
             print("button 1 pressed")
             reset_buttons_color()
-            buttons[1].setStyleSheet("background-color: rgb(100, 149, 237)")
+            buttons[1].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
             update("Access data page")
 
         buttons[1].setText("Access Data")
@@ -103,7 +99,7 @@ class Window(QWidget):
         def button2_signal():
             print("button 2 pressed")
             reset_buttons_color()
-            buttons[2].setStyleSheet("background-color: rgb(100, 149, 237)")
+            buttons[2].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
             update("Tutorial page")
 
         buttons[2].setText("How to Use?")
