@@ -1,17 +1,21 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGridLayout, QLabel, QSizePolicy
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor, QLinearGradient, QBrush
+from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette
 
 application = QApplication([])
 
 
 class Window(QWidget):
+
+
+
     def __init__(self):
         QWidget.__init__(self)
         self.resize(1080, 800)
         self.setWindowTitle("Dingy Skippers")
         self.setAutoFillBackground(True)
-        '''
+        ''' trying to make a gradient background and failing
+        
          linGrad = QLinearGradient(QPointF(100, 100), QPointF(200, 200));
         linearGrad.setColorAt(0, Qt.black);
         linearGrad.setColorAt(1, Qt.white);
@@ -24,13 +28,10 @@ class Window(QWidget):
         QBrush
         
         '''
-       ## QLinearGradient
 
+        background = QColor.fromRgb(100, 149, 237)
+        default_button = QColor.fromRgb(252,230,201)
 
-
-
-
-        background = QColor.fromRgb(100,149,237)
         p = self.palette()
         p.setColor(self.backgroundRole(), background)
         self.setPalette(p)
@@ -70,12 +71,21 @@ class Window(QWidget):
         # The bottom left corner
         bottomLeftLayout = QVBoxLayout()
         buttons = [QPushButton() for _ in range(6)]
+
+        def reset_buttons_color():
+            for b in buttons:
+                b.setStyleSheet('background-color:rgb(252,230,201); color:black')
+
         for b in buttons:
             b.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
             bottomLeftLayout.addWidget(b)
 
+        reset_buttons_color()
+
         def button0_signal():
             print("button 0 pressed")
+            reset_buttons_color()
+            buttons[0].setStyleSheet("background-color: rgb(100, 149, 237)")
             update("Upload PDF page")
 
         buttons[0].setText("Upload PDF")
@@ -83,6 +93,8 @@ class Window(QWidget):
 
         def button1_signal():
             print("button 1 pressed")
+            reset_buttons_color()
+            buttons[1].setStyleSheet("background-color: rgb(100, 149, 237)")
             update("Access data page")
 
         buttons[1].setText("Access Data")
@@ -90,6 +102,8 @@ class Window(QWidget):
 
         def button2_signal():
             print("button 2 pressed")
+            reset_buttons_color()
+            buttons[2].setStyleSheet("background-color: rgb(100, 149, 237)")
             update("Tutorial page")
 
         buttons[2].setText("How to Use?")
