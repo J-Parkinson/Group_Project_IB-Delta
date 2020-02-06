@@ -1,0 +1,28 @@
+Structure: app->windows->widgets{label, box, buttons, table, line, bar...}
+Layout: QGridLayout, can nest layouts
+addWidget(Widget, row, col)/(Widget, row, col, rowspan, colspan) & alignment
+
+Appearance: Qt Style sheet
+
+About button:
+Absolute position: move(x,y);
+Size: resize(w,h);
+Add to frame: QPushButton(text, frame)
+Button style: button.setStyleSheet('QPushButton {background-color: #A3C1DA; color: red;}')
+
+This stage:
+Todo: Function call when each button is hit
+more layout, button aligns (done!!)
+Color, style, appearance -- Suzie
+Pictures, icons --Suzie
+
+
+Todo: box page
+Style: different style for different OS/ app.setStyle
+
+
+Several questions:
+Resizable window?
+Add a menu bar?
+Button concurrency issues?
+Qt has a database?
