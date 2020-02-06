@@ -1,4 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGridLayout, QLabel, QSizePolicy
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QColor, QLinearGradient, QBrush
 
 application = QApplication([])
 
@@ -8,6 +10,30 @@ class Window(QWidget):
         QWidget.__init__(self)
         self.resize(1080, 800)
         self.setWindowTitle("Dingy Skippers")
+        self.setAutoFillBackground(True)
+        '''
+         linGrad = QLinearGradient(QPointF(100, 100), QPointF(200, 200));
+        linearGrad.setColorAt(0, Qt.black);
+        linearGrad.setColorAt(1, Qt.white);
+         QRadialGradient gradient(50, 50, 50, 50, 50);
+        gradient.setColorAt(0, QColor.fromRgbF(0, 1, 0, 1));
+        gradient.setColorAt(1, QColor.fromRgbF(0, 0, 0, 0));
+
+        QBrush brush(gradient);
+
+        QBrush
+        
+        '''
+       ## QLinearGradient
+
+
+
+
+
+        background = QColor.fromRgb(100,149,237)
+        p = self.palette()
+        p.setColor(self.backgroundRole(), background)
+        self.setPalette(p)
 
         h = self.height()
         w = self.width()
