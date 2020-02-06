@@ -3,26 +3,40 @@ Layout: QGridLayout, can nest layouts
 addWidget(Widget, row, col)/(Widget, row, col, rowspan, colspan) & alignment
 
 Appearance: Qt Style sheet
+Style: different style for different OS/ app.setStyle
 
 About button:
 Absolute position: move(x,y);
 Size: resize(w,h);
 Add to frame: QPushButton(text, frame)
 Button style: button.setStyleSheet('QPushButton {background-color: #A3C1DA; color: red;}')
+QStackedWidget
+
+Library:OS
+
+https://docs.google.com/document/d/1q7I-9du1ZoeMD09l301Q9pI_6jJUPRgYLEeV0w6grRI/edit
 
 This stage:
-Todo: Function call when each button is hit
+Function call when each button is hit (done!!)
 more layout, button aligns (done!!)
 Color, style, appearance -- Suzie
 Pictures, icons --Suzie
 
-
+Next stage:
+Todo: Upload page
 Todo: box page
-Style: different style for different OS/ app.setStyle
+Todo: Resizable??
 
+3rd stage:
+Todo: User preference
+Todo: 1st time opening the app, shows tutorial automatically
+Todo: Read and show csv file
+
+Optional things:
+Dynamic tutorial
+Searching
 
 Several questions:
-Resizable window?
 Add a menu bar?
-Button concurrency issues?
+Button concurrency issues...
 Qt has a database?
