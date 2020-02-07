@@ -25,12 +25,15 @@ Pictures, icons --Suzie
 Next stage:
 Todo: Upload page
 Todo: box page
-Todo: Resizable??
+Resizable Done, easy
 
 3rd stage:
 Todo: User preference
 Todo: 1st time opening the app, shows tutorial automatically
 Todo: Read and show csv file
+
+4th stage:
+Todo: connecting things together (tbc)
 
 Optional things:
 Dynamic tutorial
