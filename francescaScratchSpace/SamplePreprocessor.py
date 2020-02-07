@@ -28,18 +28,18 @@ def preprocess(img, imgSize, dataAugmentation=False):
     fx = w / wt
     fy = h / ht
     f = max(fx, fy)
-    #DON'T QUITE GET THE NEXT 2 LINES SINCE FX WOULD BE REAL SOOOOOOU UM
+    #don't get the fx and fy lines
     newSize = (max(min(wt, int(w / f)), 1),
                max(min(ht, int(h / f)), 1))  # scale according to f (result at least 1 and at most wt or ht)
     img = cv2.resize(img, newSize) # INTER_LINEAR – a bilinear interpolation (used by default)
     target = np.ones([ht, wt]) * 255
-    target[0:newSize[1], 0:newSize[0]] = img #why do the rest of the elements in the matrix untouched by img have to remain 255?????
+    target[0:newSize[1], 0:newSize[0]] = img
 
     # transpose for TF
-    img = cv2.transpose(target) # what's the purpose of the transposition????????
+    img = cv2.transpose(target) # what's the purpose of the transposition?
 
     # normalize
-    #EXCUSE ME WTF!!!!!!!!!
+    #EXCUSE ME WTF
     (m, s) = cv2.meanStdDev(img)
     m = m[0][0]
     s = s[0][0]
