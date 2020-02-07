@@ -1,55 +1,49 @@
+from PyQt5.QtWidgets import (QPushButton, QWidget,
+                             QLineEdit, QApplication)
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
-from PyQt5.QtGui import QIcon
 
 
-class App(QWidget):
+class Button(QPushButton):
+
+    def __init__(self, title, parent):
+        super().__init__(title, parent)
+
+        self.setAcceptDrops(True)
+
+    def dragEnterEvent(self, e):
+
+        if e.mimeData().hasUrls:
+            e.accept()
+        else:
+            e.ignore()
+
+    def dropEvent(self, e):
+
+        self.setText(e.mimeData().text())
+        print(e.mimeData())
+
+
+class Example(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.title = 'PyQt5 file dialogs - pythonspot.com'
-        self.left = 10
-        self.top = 10
-        self.width = 640
-        self.height = 480
+
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
+        edit = QLineEdit('', self)
+        edit.setDragEnabled(True)
+        edit.move(30, 65)
 
-        self.openFileNameDialog()
-        self.openFileNamesDialog()
-        self.saveFileDialog()
+        button = Button("Button", self)
+        button.move(190, 65)
 
-        self.show()
-
-    def openFileNameDialog(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "",
-                                                  "All Files (*);;Python Files (*.py)", options=options)
-        if fileName:
-            print(fileName)
-
-    def openFileNamesDialog(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        files, _ = QFileDialog.getOpenFileNames(self, "QFileDialog.getOpenFileNames()", "",
-                                                "All Files (*);;Python Files (*.py)", options=options)
-        if files:
-            print(files)
-
-    def saveFileDialog(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "",
-                                                  "All Files (*);;Text Files (*.txt)", options=options)
-        if fileName:
-            print(fileName)
+        self.setWindowTitle('Simple drag and drop')
+        self.setGeometry(300, 300, 300, 150)
 
 
 
 app = QApplication(sys.argv)
-ex = App()
-sys.exit(app.exec_())
+ex = Example()
+ex.show()
+app.exec_()

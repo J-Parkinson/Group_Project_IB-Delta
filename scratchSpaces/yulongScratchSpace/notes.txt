@@ -21,6 +21,7 @@ Function call when each button is hit (done!!)
 more layout, button aligns (done!!)
 Color, style, appearance -- Suzie
 Pictures, icons --Suzie
+setStyleSheet('background-color:rgb(248,154,121); color:black')
 
 Next stage:
 Todo: Upload page

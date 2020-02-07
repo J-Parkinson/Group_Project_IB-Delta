@@ -7,6 +7,8 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGr
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap
 
+from scratchSpaces.yulongScratchSpace import drag_n_drop_label
+
 application = QApplication([])
 
 
@@ -96,7 +98,11 @@ class Window(QWidget):
 
         # Drag-n-drop / preview window (upload page)
         d_n_p = QStackedWidget()
-        drag_n_drop = QWidget()
+        drag_n_drop = drag_n_drop_label.dnd_widget()
+        drag_n_drop.setFixedSize(650,250)
+        drag_n_drop.setStyleSheet('background-color:grey')
+        d_n_p.addWidget(drag_n_drop)
+        d_n_p.setCurrentIndex(0)
 
 
         upload_page_layout.addWidget(d_n_p)
