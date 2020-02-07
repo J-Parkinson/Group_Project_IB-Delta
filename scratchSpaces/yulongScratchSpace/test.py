@@ -1,18 +1,55 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout,QGridLayout
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
+from PyQt5.QtGui import QIcon
 
-application = QApplication([])
-window = QWidget()
-layout = QGridLayout()
-buttons = [QPushButton() for _ in range(4)]
-layout.addWidget(buttons[0],0,0)
-layout.addWidget(buttons[1],0,1)
-layout.addWidget(buttons[2],1,0)
-layout.addWidget(buttons[3],1,1)
-layout.setColumnStretch(0,2)
-layout.setColumnStretch(1,3)
-layout.setRowStretch(0,2)
-layout.setRowStretch(1,3)
-window.setLayout(layout)
 
-window.show()
-application.exec_()
+class App(QWidget):
+
+    def __init__(self):
+        super().__init__()
+        self.title = 'PyQt5 file dialogs - pythonspot.com'
+        self.left = 10
+        self.top = 10
+        self.width = 640
+        self.height = 480
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle(self.title)
+        self.setGeometry(self.left, self.top, self.width, self.height)
+
+        self.openFileNameDialog()
+        self.openFileNamesDialog()
+        self.saveFileDialog()
+
+        self.show()
+
+    def openFileNameDialog(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "",
+                                                  "All Files (*);;Python Files (*.py)", options=options)
+        if fileName:
+            print(fileName)
+
+    def openFileNamesDialog(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        files, _ = QFileDialog.getOpenFileNames(self, "QFileDialog.getOpenFileNames()", "",
+                                                "All Files (*);;Python Files (*.py)", options=options)
+        if files:
+            print(files)
+
+    def saveFileDialog(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "",
+                                                  "All Files (*);;Text Files (*.txt)", options=options)
+        if fileName:
+            print(fileName)
+
+
+
+app = QApplication(sys.argv)
+ex = App()
+sys.exit(app.exec_())

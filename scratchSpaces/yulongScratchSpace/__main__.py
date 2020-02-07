@@ -3,7 +3,7 @@
 #################################################
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGridLayout, QLabel, QSizePolicy, \
-    QStackedWidget
+    QStackedWidget, QBoxLayout, QHBoxLayout, QFileDialog
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap
 
@@ -46,8 +46,8 @@ class Window(QWidget):
         #################################################
 
         # That's just a mess right now lol
-        l = QLabel(top_left)
-        l.setText("Put some butterfly here")
+        title = QLabel(top_left)
+        title.setText("Put some butterfly here")
         main_layout.addWidget(top_left, 0, 0)
         '''
         trying to add an image but it's not showing up - not sure why 
@@ -60,11 +60,16 @@ class Window(QWidget):
         # The top right corner:
         # Just a label
         #################################################
-        l = QLabel(top_right)
-        l.setText("Butterfly Logbook Scanner")
-        l.setFont(title_font)
-        l.setStyleSheet('color:#6D214F')
+        title = QLabel()
+        title.setText("Butterfly Logbook Scanner")
+        title.setFont(title_font)
+        title.setStyleSheet('color:#6D214F')
 
+        top_right_layout = QVBoxLayout()
+        top_right_layout.addWidget(title)
+        top_right_layout.setAlignment(title,Qt.AlignCenter)
+
+        top_right.setLayout(top_right_layout)
         main_layout.addWidget(top_right, 0, 1)
 
         #################################################
@@ -83,19 +88,35 @@ class Window(QWidget):
         upload_page_layout = QVBoxLayout()
 
         # Welcome text (upload page)
-        upload_top_text = QLabel("Welcome to the scanner\n bla bla bla...")
+        upload_top_text = QLabel("Welcome to the Butterfly Logbook Scanner\n"
+                                 "Upload a file below then press the Read Page\n"
+                                 "button to begin transcription")
         upload_page_layout.addWidget(upload_top_text)
         upload_page_layout.setAlignment(upload_top_text, Qt.AlignCenter)
 
-        # Drag-n-drop window (upload page)
+        # Drag-n-drop / preview window (upload page)
+        d_n_p = QStackedWidget()
         drag_n_drop = QWidget()
 
-        upload_page_layout.addWidget(drag_n_drop)
-        upload_page_layout.setAlignment(drag_n_drop, Qt.AlignCenter)
 
-        # Text at the bottom of d-n-d window (upload page)
-        upload_bottom_text = QLabel("Or click ...")
-        upload_page_layout.addWidget(upload_bottom_text)
+        upload_page_layout.addWidget(d_n_p)
+        upload_page_layout.setAlignment(d_n_p, Qt.AlignCenter)
+
+        # The clicking input (upload page)
+        click_input = QWidget()
+        click_input_layout = QHBoxLayout()
+
+        click_input_text = QLabel("Or click the folder icon to browse a file to upload")
+        click_input_layout.addWidget(click_input_text)
+
+        click_input_button = QPushButton("Icon!")
+        click_input_button.clicked.connect(self.open_file_window)
+        click_input_button.setFixedSize(50,50)
+        click_input_layout.addWidget(click_input_button)
+
+        click_input_layout.setAlignment(Qt.AlignCenter)
+        click_input.setLayout(click_input_layout)
+        upload_page_layout.addWidget(click_input)
 
         # The button confirming input (upload page)
         upload_button = QPushButton("Read Page")
@@ -131,7 +152,7 @@ class Window(QWidget):
 
         # Initialize buttons
         bottom_leftLayout = QVBoxLayout()
-        buttons = [QPushButton() for _ in range(6)]
+        buttons = [QPushButton() for _ in range(3)]
         for b in buttons:
             b.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
             bottom_leftLayout.addWidget(b)
@@ -144,10 +165,6 @@ class Window(QWidget):
         reset_buttons_color()
 
         # Upload page -- button 0
-        def button0_signal():
-            print("button 0 pressed")
-            bottom_right.setCurrentIndex(0)
-
         def button0_signal():
             print("button 0 pressed")
             reset_buttons_color()
@@ -182,6 +199,13 @@ class Window(QWidget):
         buttons[2].setText("How to Use?")
         buttons[2].clicked.connect(button2_signal)
 
+        # Dummies to make it looks good
+        for _ in range(3):
+            dummy = QLabel()
+            dummy.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            bottom_leftLayout.addWidget(dummy)
+
+        bottom_right.setCurrentIndex(3)
         bottom_left.setLayout(bottom_leftLayout)
         main_layout.addWidget(bottom_left, 1, 0)
 
@@ -192,9 +216,15 @@ class Window(QWidget):
         main_layout.setColumnStretch(1, 3)
         main_layout.setRowStretch(0, 1)
         main_layout.setRowStretch(1, 9)
-        bottom_right.setCurrentIndex(3)
         self.setLayout(main_layout)
         application.setStyle('Windows')
+
+    def open_file_window(self):
+        fileName, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "",
+                                                  "PDF (*.pdf)","")
+        if fileName:
+            # Do something here! Load the file!
+            print(fileName)
 
     def run(self):
         self.show()
