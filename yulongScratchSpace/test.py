@@ -1,41 +1,18 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout,QGridLayout
-app = QApplication([])
-app.setStyle('Windows')
+
+application = QApplication([])
 window = QWidget()
-window.resize(800,600)
-main_layout = QGridLayout()
+layout = QGridLayout()
+buttons = [QPushButton() for _ in range(4)]
+layout.addWidget(buttons[0],0,0)
+layout.addWidget(buttons[1],0,1)
+layout.addWidget(buttons[2],1,0)
+layout.addWidget(buttons[3],1,1)
+layout.setColumnStretch(0,2)
+layout.setColumnStretch(1,3)
+layout.setRowStretch(0,2)
+layout.setRowStretch(1,3)
+window.setLayout(layout)
 
-topLeft = QWidget()
-topRight = QWidget()
-bottomLeft = QWidget()
-bottomRight = QWidget()
-
-topRightLayout = QVBoxLayout()
-topRightLayout.addWidget(QPushButton("asdfss"))
-topRight.setLayout(topRightLayout)
-
-bottomRightLayout = QVBoxLayout()
-bottomRightLayout.addWidget(QPushButton("asdf"))
-bottomRight.setLayout(bottomRightLayout)
-
-bottomLeftLayout = QVBoxLayout()
-bottomLeftLayout.addWidget(QPushButton("button1"))
-bottomLeftLayout.addWidget(QPushButton("button2"))
-bottomLeftLayout.addWidget(QPushButton("button3"))
-bottomLeftLayout.addWidget(QPushButton("button4"))
-bottomLeft.setLayout(bottomLeftLayout)
-
-
-main_layout.addWidget(topLeft,0,0)
-main_layout.addWidget(topRight,0,1,1,2)
-main_layout.addWidget(bottomLeft,1,0,3,1)
-main_layout.addWidget(bottomRight,1,1,3,2)
-
-
-window.setLayout(main_layout)
-
-
-if __name__ == '__main__':
-
-    window.show()
-    app.exec_()
+window.show()
+application.exec_()
