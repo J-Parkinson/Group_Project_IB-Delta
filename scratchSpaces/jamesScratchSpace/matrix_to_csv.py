@@ -1,4 +1,5 @@
 import csv
+from enum import Enum, auto
 
 STANDARD_HEADER = [['', '', '', 'Summary Data', '', '', '', 'Taxonomy', '', '', '', '', '', '', '', '', 'Description',
                     '', '', '', '', '', '', '', '', 'Collection Location Data', '', '', '', '', '', 'Collector',
@@ -29,11 +30,19 @@ STANDARD_HEADER = [['', '', '', 'Summary Data', '', '', '', 'Taxonomy', '', '', 
                     'LocCurrentLocationRef.LocLevel4', 'LocMovementNotes', 'NotNotes']]
 
 
-def split_words(table, field_name, new_cols, optional=None):
+class ResolutionType(Enum):
+    no_clash = auto()
+    just_first = auto()
+    just_last = auto()
+    all = auto()
+
+
+def split_col(table, field_name, new_cols, optional=None, separator=' ', resolution_type=ResolutionType.no_clash):
+    # can extend by allowing slices and lists of indices as column to word mappings, and possibly additional wildcards
     field_index = table[0].index(field_name)
     for row_index, row in enumerate(table):
         if row_index != 0:
-            words = row[field_index].split()
+            words = row[field_index].split(separator)
             if len(words) == len(new_cols):
                 row += words
             elif optional is not None and len(optional) == len(new_cols):
@@ -51,24 +60,36 @@ def split_words(table, field_name, new_cols, optional=None):
                         if int(word_index) >= len(words):
                             raise Exception('index in optional parameter out of range')
                         elif int(word_index) in indices:
-                            raise Exception('repeated index in optional parameter')
+                            if resolution_type == ResolutionType.no_clash:
+                                raise Exception('repeated index in optional parameter,'
+                                                ' consider changing resolution type')
+                            elif resolution_type == ResolutionType.just_last:
+                                # overwrite the last one
+                                indices[word_index] = [new_col_index]
+                            elif resolution_type == ResolutionType.all:
+                                indices[word_index].append(new_col_index)
                         else:
-                            indices[word_index] = new_col_index
+                            indices[word_index] = [new_col_index]
                     else:
                         index = len(words) + int(word_index)
                         if index < 0:
                             raise Exception('index in optional parameter out of range')
                         elif index in indices:
-                            raise Exception('repeated index in optional parameter')
+                            if resolution_type == ResolutionType.no_clash:
+                                raise Exception('repeated index in optional parameter,'
+                                                ' consider changing resolution type')
+                            elif resolution_type == ResolutionType.just_last:
+                                indices[word_index] = [new_col_index]
+                            elif resolution_type == ResolutionType.all:
+                                indices[word_index].append(new_col_index)
                         else:
-                            indices[index] = new_col_index
+                            indices[index] = [new_col_index]
 
-                print(indices)
-                print(f'wildcard_found is {wildcard_found} with index {wildcard_index}')
                 row_addition = [[] for _ in range(len(new_cols))]
                 for word_index, word in enumerate(words):
                     if word_index in indices:
-                        row_addition[indices[word_index]].append(word)
+                        for col_index in indices[word_index]:
+                            row_addition[col_index].append(word)
                     elif wildcard_found:
                         row_addition[wildcard_index].append(word)
                     # else we discard that word
@@ -129,10 +150,13 @@ std_test = [['Invertebrates; Insects', 'Object', 'Present', 'I.2019.2147', '', '
 matrix_to_csv(test, './jamesScratchSpace/test.csv')
 matrix_to_csv(test2, './jamesScratchSpace/test2.csv')
 
-split_words(test2, 'Present Determination', ['Genus', 'Species'])
-split_words(test2, 'Determined By', ['First name', 'Middle Names', 'Surname'], optional=[0, '*', -1])
+split_col(test2, 'Present Determination', ['Genus', 'Species'])
+split_col(test2, 'Determined By', ['First name', 'Middle Names', 'Surname'], optional=[0, '*', -1])
+split_col(test2, 'Location', ['Town', 'Place'], optional=[-1, '*'])
 matrix_to_standard_csv(test2, './jamesScratchSpace/std_test.csv', {'Current Genus': 'Genus',
                                                                    'Current species': 'Species',
                                                                    'First name': 'First name',
                                                                    'Middle Names': 'Middle Names',
-                                                                   'Surname': 'Surname'})
+                                                                   'Surname': 'Surname',
+                                                                   'Level 3 - eg.Town/City/Village': 'Town',
+                                                                   'Level 4 (eg.Nearest named place)': 'Place'})
