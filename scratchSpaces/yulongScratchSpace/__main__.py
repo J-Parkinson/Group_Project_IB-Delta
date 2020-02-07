@@ -1,5 +1,5 @@
-
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGridLayout, QLabel, QSizePolicy
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGridLayout, QLabel, QSizePolicy, \
+    QStackedWidget
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap
 
@@ -7,8 +7,6 @@ application = QApplication([])
 
 
 class Window(QWidget):
-
-
 
     def __init__(self):
         QWidget.__init__(self)
@@ -18,7 +16,7 @@ class Window(QWidget):
         main_layout = QGridLayout()
         self.setAutoFillBackground(True)
 
-        background = QColor.fromRgb(248,246,238)
+        background = QColor.fromRgb(248, 246, 238)
 
         title_font = QFont("Georgia", 25)
 
@@ -38,36 +36,37 @@ class Window(QWidget):
         # The top left corner
         l = QLabel(top_left)
         l.setText("Put some butterfly here")
-        #l.move(50, 50)
-        #top_left.resize(w * 0.25, h * 0.1)
-        main_layout.addWidget(top_left,0,0)
+        # l.move(50, 50)
+        # top_left.resize(w * 0.25, h * 0.1)
+        main_layout.addWidget(top_left, 0, 0)
         #################################################
         '''
         trying to add an image but it's not showing up - not sure why 
         '''
-        bFlyImage = QLabel(topLeft)
-        bFlyImage.setGeometry(10,10,60,60)
+        bFlyImage = QLabel(top_left)
+        bFlyImage.setGeometry(10, 10, 60, 60)
         bFlyImage.setPixmap(QPixmap("../suzieScratchSpace/caterpillar.png"))
 
-        #bFlyImage.move(50, 50)
-        #topLeft.resize(w * 0.25, h * 0.1)
+        # bFlyImage.move(50, 50)
+        # top_left).resize(w * 0.25, h * 0.1)
 
         #################################################
         # The top right corner
         l = QLabel(top_right)
         l.setText("Butterfly Logbook Scanner")
-        #l.move(w * 0.25, 50)
+        # l.move(w * 0.25, 50)
         l.setFont(title_font)
         l.setStyleSheet('color:#6D214F')
 
-        #top_right.resize(w * 0.75, h * 0.1)
-        #top_right.move(w * 0.25, 0)
-        main_layout.addWidget(top_right,0,1)
-        #################################################
+        # top_right.resize(w * 0.75, h * 0.1)
+        # top_right.move(w * 0.25, 0)
+        main_layout.addWidget(top_right, 0, 1)
+
 
         #################################################
         # The bottom right corner
-        br_label = QLabel("Initial Page", bottomRight)
+        #################################################
+        br_label = QLabel("Initial Page")
         br_label.setStyleSheet('color:#6D214F')
         br_label.move(100, 100)
         br_label.resize(500, 500)
@@ -108,9 +107,8 @@ class Window(QWidget):
         bottom_right.addWidget(upload_page)
         bottom_right.addWidget(data_page)
         bottom_right.addWidget(tutorial_page)
-        #bottom_right.resize(w * 0.75, h * 0.9)
-        #bottom_right.move(w * 0.25, h * 0.1)
-        main_layout.addWidget(bottom_right,1,1)
+        bottom_right.addWidget(br_label)
+        main_layout.addWidget(bottom_right, 1, 1)
         #################################################
 
         #################################################
@@ -131,13 +129,15 @@ class Window(QWidget):
         def button0_signal():
             print("button 0 pressed")
             bottom_right.setCurrentIndex(0)
+
         reset_buttons_color()
 
         def button0_signal():
             print("button 0 pressed")
             reset_buttons_color()
             buttons[0].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
-            update("Upload PDF page")
+            bottom_right.setCurrentIndex(0)
+            # update("Upload PDF page")
 
         buttons[0].setText("Upload PDF")
         buttons[0].clicked.connect(button0_signal)
@@ -148,7 +148,8 @@ class Window(QWidget):
             bottom_right.setCurrentIndex(1)
             reset_buttons_color()
             buttons[1].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
-            update("Access data page")
+            bottom_right.setCurrentIndex(1)
+            # update("Access data page")
 
         buttons[1].setText("Access Data")
         buttons[1].clicked.connect(button1_signal)
@@ -159,23 +160,24 @@ class Window(QWidget):
             bottom_right.setCurrentIndex(2)
             reset_buttons_color()
             buttons[2].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
-            update("Tutorial page")
+            bottom_right.setCurrentIndex(2)
+            # update("Tutorial page")
 
         buttons[2].setText("How to Use?")
         buttons[2].clicked.connect(button2_signal)
 
-        # Set dummies invisible
-
         bottom_left.setLayout(bottom_leftLayout)
         bottom_left.move(0, h * 0.1)
-        #bottom_left.resize(w * 0.25, h * 0.9)
-        #bottom_left.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        main_layout.addWidget(bottom_left,1,0)
+        main_layout.addWidget(bottom_left, 1, 0)
+
         #################################################
-        main_layout.setColumnStretch(0,1)
-        main_layout.setColumnStretch(1,3)
+        # Things about the main layout
+        #################################################
+        main_layout.setColumnStretch(0, 1)
+        main_layout.setColumnStretch(1, 3)
         main_layout.setRowStretch(0, 1)
         main_layout.setRowStretch(1, 9)
+        bottom_right.setCurrentIndex(3)
         self.setLayout(main_layout)
         application.setStyle('Windows')
 
@@ -183,7 +185,7 @@ class Window(QWidget):
         self.show()
         application.exec_()
 
-    #def dragEnterEvent(self, QDragEnterEvent):
+    # def dragEnterEvent(self, QDragEnterEvent):
 
 
 if __name__ == "__main__":
