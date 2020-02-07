@@ -1,16 +1,30 @@
+
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGridLayout, QLabel, QSizePolicy
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGridLayout, QLabel, QSizePolicy, \
-    QStackedWidget
+from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap
 
 application = QApplication([])
 
 
 class Window(QWidget):
+
+
+
     def __init__(self):
         QWidget.__init__(self)
         self.resize(1080, 800)
         self.setWindowTitle("Dingy Skippers")
+
         main_layout = QGridLayout()
+        self.setAutoFillBackground(True)
+
+        background = QColor.fromRgb(248,246,238)
+
+        title_font = QFont("Georgia", 25)
+
+        p = self.palette()
+        p.setColor(self.backgroundRole(), background)
+        self.setPalette(p)
 
         h = self.height()
         w = self.width()
@@ -28,12 +42,23 @@ class Window(QWidget):
         #top_left.resize(w * 0.25, h * 0.1)
         main_layout.addWidget(top_left,0,0)
         #################################################
+        '''
+        trying to add an image but it's not showing up - not sure why 
+        '''
+        bFlyImage = QLabel(topLeft)
+        bFlyImage.setGeometry(10,10,60,60)
+        bFlyImage.setPixmap(QPixmap("../suzieScratchSpace/caterpillar.png"))
+
+        #bFlyImage.move(50, 50)
+        #topLeft.resize(w * 0.25, h * 0.1)
 
         #################################################
         # The top right corner
         l = QLabel(top_right)
         l.setText("Butterfly Logbook Scanner")
         #l.move(w * 0.25, 50)
+        l.setFont(title_font)
+        l.setStyleSheet('color:#6D214F')
 
         #top_right.resize(w * 0.75, h * 0.1)
         #top_right.move(w * 0.25, 0)
@@ -42,6 +67,10 @@ class Window(QWidget):
 
         #################################################
         # The bottom right corner
+        br_label = QLabel("Initial Page", bottomRight)
+        br_label.setStyleSheet('color:#6D214F')
+        br_label.move(100, 100)
+        br_label.resize(500, 500)
 
         # Upload page
         upload_page = QWidget()
@@ -88,6 +117,12 @@ class Window(QWidget):
         # The bottom left corner
         bottom_leftLayout = QVBoxLayout()
         buttons = [QPushButton() for _ in range(6)]
+
+        # function for changing all buttons back to default when a new one is clicked
+        def reset_buttons_color():
+            for b in buttons:
+                b.setStyleSheet('background-color:rgb(248,154,121); color:black')
+
         for b in buttons:
             b.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
             bottom_leftLayout.addWidget(b)
@@ -96,6 +131,13 @@ class Window(QWidget):
         def button0_signal():
             print("button 0 pressed")
             bottom_right.setCurrentIndex(0)
+        reset_buttons_color()
+
+        def button0_signal():
+            print("button 0 pressed")
+            reset_buttons_color()
+            buttons[0].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
+            update("Upload PDF page")
 
         buttons[0].setText("Upload PDF")
         buttons[0].clicked.connect(button0_signal)
@@ -104,6 +146,9 @@ class Window(QWidget):
         def button1_signal():
             print("button 1 pressed")
             bottom_right.setCurrentIndex(1)
+            reset_buttons_color()
+            buttons[1].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
+            update("Access data page")
 
         buttons[1].setText("Access Data")
         buttons[1].clicked.connect(button1_signal)
@@ -112,6 +157,9 @@ class Window(QWidget):
         def button2_signal():
             print("button 2 pressed")
             bottom_right.setCurrentIndex(2)
+            reset_buttons_color()
+            buttons[2].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
+            update("Tutorial page")
 
         buttons[2].setText("How to Use?")
         buttons[2].clicked.connect(button2_signal)
