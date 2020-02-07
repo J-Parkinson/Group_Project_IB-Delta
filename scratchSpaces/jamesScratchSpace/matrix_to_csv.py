@@ -29,12 +29,55 @@ STANDARD_HEADER = [['', '', '', 'Summary Data', '', '', '', 'Taxonomy', '', '', 
                     'LocCurrentLocationRef.LocLevel4', 'LocMovementNotes', 'NotNotes']]
 
 
-def split_words(table, field_name, new_cols):
+def split_words(table, field_name, new_cols, optional=None):
     field_index = table[0].index(field_name)
     for row_index, row in enumerate(table):
         if row_index != 0:
             words = row[field_index].split()
-            row += words
+            if len(words) == len(new_cols):
+                row += words
+            elif optional is not None and len(optional) == len(new_cols):
+                wildcard_found = False
+                wildcard_index = -1
+                indices = dict()
+                for new_col_index, word_index in enumerate(optional):
+                    if word_index == '*':
+                        if wildcard_found:
+                            raise Exception('multiple wildcards passed in optional parameter')
+                        else:
+                            wildcard_found = True
+                            wildcard_index = new_col_index
+                    elif int(word_index) >= 0:
+                        if int(word_index) >= len(words):
+                            raise Exception('index in optional parameter out of range')
+                        elif int(word_index) in indices:
+                            raise Exception('repeated index in optional parameter')
+                        else:
+                            indices[word_index] = new_col_index
+                    else:
+                        index = len(words) + int(word_index)
+                        if index < 0:
+                            raise Exception('index in optional parameter out of range')
+                        elif index in indices:
+                            raise Exception('repeated index in optional parameter')
+                        else:
+                            indices[index] = new_col_index
+
+                print(indices)
+                print(f'wildcard_found is {wildcard_found} with index {wildcard_index}')
+                row_addition = [[] for _ in range(len(new_cols))]
+                for word_index, word in enumerate(words):
+                    if word_index in indices:
+                        row_addition[indices[word_index]].append(word)
+                    elif wildcard_found:
+                        row_addition[wildcard_index].append(word)
+                    # else we discard that word
+
+                row_string = [' '.join(col) for col in row_addition]
+                row += row_string
+
+            else:
+                raise Exception(f'number of words and columns provided not equal at index {row_index}')
         else:
             row += new_cols
 
@@ -86,7 +129,10 @@ std_test = [['Invertebrates; Insects', 'Object', 'Present', 'I.2019.2147', '', '
 matrix_to_csv(test, './jamesScratchSpace/test.csv')
 matrix_to_csv(test2, './jamesScratchSpace/test2.csv')
 
-
 split_words(test2, 'Present Determination', ['Genus', 'Species'])
+split_words(test2, 'Determined By', ['First name', 'Middle Names', 'Surname'], optional=[0, '*', -1])
 matrix_to_standard_csv(test2, './jamesScratchSpace/std_test.csv', {'Current Genus': 'Genus',
-                                                                   'Current species': 'Species'})
+                                                                   'Current species': 'Species',
+                                                                   'First name': 'First name',
+                                                                   'Middle Names': 'Middle Names',
+                                                                   'Surname': 'Surname'})
