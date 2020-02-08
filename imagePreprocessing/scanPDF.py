@@ -31,7 +31,6 @@ def directoryMixedToDirectoryImages(directory, destFolder, filename, suffix):
             continue
     return
 
-
 pdfToImages("images/scantest.pdf", "images/pdftest/", "image", ".png")
 
 directoryMixedToDirectoryImages("images/New Scans/", "images/pdftest2/", "image", ".png")
