@@ -6,8 +6,9 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGr
     QStackedWidget, QBoxLayout, QHBoxLayout, QFileDialog
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap
+from pathlib import Path
 
-from scratchSpaces.yulongScratchSpace import drag_n_drop_label
+from scratchSpaces.yulongScratchSpace import drag_n_drop_widget, upload_widget
 
 application = QApplication([])
 
@@ -29,12 +30,16 @@ class Window(QWidget):
 
         # Style
         self.setAutoFillBackground(True)
+        # noinspection PyTypeChecker,PyCallByClass
         background = QColor.fromRgb(248, 246, 238)
         title_font = QFont("Georgia", 25)
 
         p = self.palette()
         p.setColor(self.backgroundRole(), background)
         self.setPalette(p)
+
+        # Preference
+        first_time = self.preference()
 
         # Components
         top_left = QWidget()
@@ -47,6 +52,7 @@ class Window(QWidget):
         # Should be some butterfly icons
         #################################################
 
+        # Todo: Add the icon here
         # That's just a mess right now lol
         title = QLabel(top_left)
         title.setText("Put some butterfly here")
@@ -69,7 +75,7 @@ class Window(QWidget):
 
         top_right_layout = QVBoxLayout()
         top_right_layout.addWidget(title)
-        top_right_layout.setAlignment(title,Qt.AlignCenter)
+        top_right_layout.setAlignment(title, Qt.AlignCenter)
 
         top_right.setLayout(top_right_layout)
         main_layout.addWidget(top_right, 0, 1)
@@ -78,6 +84,7 @@ class Window(QWidget):
         # The bottom right corner:
         # A stack of useful pages
         #################################################
+        # Todo: design init,data,tutorial page
 
         # Initial page
         ini_label = QLabel("Initial Page")
@@ -85,55 +92,9 @@ class Window(QWidget):
         ini_label.move(100, 100)
         ini_label.resize(500, 500)
 
-        # Upload page: a bunch of things
-        upload_page = QWidget()
-        upload_page_layout = QVBoxLayout()
-
-        # Welcome text (upload page)
-        upload_top_text = QLabel("Welcome to the Butterfly Logbook Scanner\n"
-                                 "Upload a file below then press the Read Page\n"
-                                 "button to begin transcription")
-        upload_page_layout.addWidget(upload_top_text)
-        upload_page_layout.setAlignment(upload_top_text, Qt.AlignCenter)
-
-        # Drag-n-drop / preview window (upload page)
-        d_n_p = QStackedWidget()
-        drag_n_drop = drag_n_drop_label.dnd_widget()
-        drag_n_drop.setFixedSize(650,250)
-        drag_n_drop.setStyleSheet('background-color:grey')
-        d_n_p.addWidget(drag_n_drop)
-        d_n_p.setCurrentIndex(0)
-
-
-        upload_page_layout.addWidget(d_n_p)
-        upload_page_layout.setAlignment(d_n_p, Qt.AlignCenter)
-
-        # The clicking input (upload page)
-        click_input = QWidget()
-        click_input_layout = QHBoxLayout()
-
-        click_input_text = QLabel("Or click the folder icon to browse a file to upload")
-        click_input_layout.addWidget(click_input_text)
-
-        click_input_button = QPushButton("Icon!")
-        click_input_button.clicked.connect(self.open_file_window)
-        click_input_button.setFixedSize(50,50)
-        click_input_layout.addWidget(click_input_button)
-
-        click_input_layout.setAlignment(Qt.AlignCenter)
-        click_input.setLayout(click_input_layout)
-        upload_page_layout.addWidget(click_input)
-
-        # The button confirming input (upload page)
-        upload_button = QPushButton("Read Page")
-        upload_button.setFixedSize(200, 50)
-        upload_page_layout.addWidget(upload_button)
-        upload_page_layout.setAlignment(upload_button, Qt.AlignCenter)
-
-        # Some dummy label (upload page)
-        upload_page_layout.addWidget(QLabel())
-
-        upload_page.setLayout(upload_page_layout)
+        # Todo: make upload page beautiful
+        # Upload page
+        upload_page = upload_widget.upload_page()
 
         # Data page, working atm
         data_page = QWidget()
@@ -149,6 +110,11 @@ class Window(QWidget):
         bottom_right.addWidget(tutorial_page)
         bottom_right.addWidget(ini_label)
 
+        # Todo: show tutorial page if first time opening
+        if first_time:
+            bottom_right.setCurrentIndex(2)
+        else:
+            bottom_right.setCurrentIndex(3)
         main_layout.addWidget(bottom_right, 1, 1)
 
         #################################################
@@ -164,6 +130,7 @@ class Window(QWidget):
             bottom_leftLayout.addWidget(b)
 
         # function for changing all buttons back to default when a new one is clicked
+        # noinspection PyShadowingNames
         def reset_buttons_color():
             for b in buttons:
                 b.setStyleSheet('background-color:rgb(248,154,121); color:black')
@@ -211,7 +178,6 @@ class Window(QWidget):
             dummy.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
             bottom_leftLayout.addWidget(dummy)
 
-        bottom_right.setCurrentIndex(3)
         bottom_left.setLayout(bottom_leftLayout)
         main_layout.addWidget(bottom_left, 1, 0)
 
@@ -225,12 +191,8 @@ class Window(QWidget):
         self.setLayout(main_layout)
         application.setStyle('Windows')
 
-    def open_file_window(self):
-        fileName, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "",
-                                                  "PDF (*.pdf)","")
-        if fileName:
-            # Do something here! Load the file!
-            print(fileName)
+    def preference(self):
+        return 0
 
     def run(self):
         self.show()
