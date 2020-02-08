@@ -8,8 +8,8 @@ def sauvola(image, chunkSize=11):
     return image > thresholdFunc
 
 
-image = skimg.imread("jackScratchSpace/test.png", True)
+#image = skimg.imread("jackScratchSpace/test.png", True)
 
-normalisedImage = sauvola(image)
+#normalisedImage = sauvola(image)
 
-skimg.imsave("jackScratchSpace/photoout3.png", img_as_uint(normalisedImage))
+#skimg.imsave("jackScratchSpace/photoout3.png", img_as_uint(normalisedImage))
