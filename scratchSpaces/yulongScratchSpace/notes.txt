@@ -21,18 +21,20 @@ Function call when each button is hit (done!!)
 more layout, button aligns (done!!)
 Color, style, appearance -- Suzie
 Pictures, icons --Suzie
+setStyleSheet('background-color:rgb(248,154,121); color:black')
 
 Next stage:
-Todo: Upload page
-Todo: box page
+Upload page Done, not that hard
 Resizable Done, easy
 
 3rd stage:
 Todo: User preference
 Todo: 1st time opening the app, shows tutorial automatically
+Todo: a menu
 Todo: Read and show csv file
 
 4th stage:
+Todo: the query page
 Todo: connecting things together (tbc)
 
 Optional things:
