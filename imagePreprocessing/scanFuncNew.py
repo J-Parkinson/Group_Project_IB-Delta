@@ -12,7 +12,6 @@ from numpy import array, zeros, greater, concatenate, arange, uint16, hsplit, vs
 from matplotlib import pyplot as plt
 from scipy.ndimage import convolve1d
 from scipy.signal import argrelextrema
-from scipy.stats import mode
 
 def showImage(img, lines=array([]), wait=True):
     plt.plot(img)
@@ -196,26 +195,18 @@ def findLinesandNormalise(source):
         except:
             continue
     #imwrite("images/rows.png", transformedColour)
-    imwrite("images/rowsandcols.png", transformedColour)
+    #imwrite("images/rowsandcols.png", transformedColour)
 
-    splitIntoCells(transformed, rowLocations, colLocations)
+    for x, image in enumerate(splitIntoCells(transformed, rowLocations, colLocations)):
+        imwrite("images/pagetest/page" + str(x) + ".png", image)
 
     return
 
+
 def splitIntoCells(image, rows, cols):
+    splitCols = hsplit(image, cols)
 
-    # Split into rows
-
-    rows = hsplit(image, rows)
-
-    # Split into cells
-
-    for row in rows:
-        vsplit(row, cols)
-
-    squeeze(rows, axis=0)
-
-
+    return [a for b in [vsplit(col, rows) for col in splitCols] for a in b]
 
 
 def calculateColumns(transformed):
@@ -234,7 +225,7 @@ def calculateColumns(transformed):
 def calculateRows(transformed):
     transformedsumy = transformed.sum(axis=1)[1:-1].astype("int64")
 
-    tsy2 = convolve1d(convolve1d(convolve1d(convolve1d(transformedsumy, array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest")
+    tsy2 = convolve1d(convolve1d(convolve1d(convolve1d(convolve1d(convolve1d(convolve1d(transformedsumy, array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest")
     rowsfiltered = argrelextrema(tsy2, greater)[0]
 
     #Rows are evenly spread along a page by a set interval - let us guess that interval
@@ -245,3 +236,4 @@ def calculateRows(transformed):
     return rowsfiltered
 
 findLinesandNormalise("images/logbook.png")
+#findLinesandNormalise("images/logbook2test.png")
