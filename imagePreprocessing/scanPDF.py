@@ -47,6 +47,6 @@ def directoryMixedToDirectoryImages(directory, destFolder, filename, suffix):
             continue
     return
 
-#pdfToImages("images/scantest.pdf", "images/pdftest/", "image", ".png")
+pdfToImages("images/scantest.pdf", "images/pdftest/", "image", ".png")
 
-directoryMixedToDirectoryImages("images/New Scans Small/", "images/segmentedImagesOut/", "image", ".png")
+#directoryMixedToDirectoryImages("images/New Scans Small/", "images/segmentedImagesOut/", "image", ".png")
