@@ -3,12 +3,14 @@
 #################################################
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGridLayout, QLabel, QSizePolicy, \
-    QStackedWidget, QBoxLayout, QHBoxLayout, QFileDialog
+    QStackedWidget, QBoxLayout, QHBoxLayout, QFileDialog, QMainWindow
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap
+from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap, QPainter, QImage
 from pathlib import Path
+import os
 
 from scratchSpaces.yulongScratchSpace import drag_n_drop_widget, upload_widget
+from scratchSpaces.suzieScratchSpace import saveCSV
 
 application = QApplication([])
 
@@ -42,7 +44,7 @@ class Window(QWidget):
         first_time = self.preference()
 
         # Components
-        top_left = QWidget()
+        top_left = QMainWindow()
         top_right = QWidget()
         bottom_left = QWidget()
         bottom_right = QStackedWidget()
@@ -52,18 +54,16 @@ class Window(QWidget):
         # Should be some butterfly icons
         #################################################
 
-        # Todo: Add the icon here
-        # That's just a mess right now lol
-        title = QLabel(top_left)
-        title.setText("Put some butterfly here")
-        main_layout.addWidget(top_left, 0, 0)
-        '''
-        trying to add an image but it's not showing up - not sure why 
-        '''
-        bFlyImage = QLabel(top_left)
-        bFlyImage.setGeometry(10, 10, 60, 60)
-        bFlyImage.setPixmap(QPixmap("../suzieScratchSpace/caterpillar.png"))
+        # Todo: Add the icon here - it can be changed by changing the file path
 
+        pic = QLabel(top_left)
+
+        # use full ABSOLUTE path to the image, not relative
+        bPM = QPixmap("/Users/suziewelby/GitHub/Group_Project_IB-Delta/scratchSpaces/suzieScratchSpace/butterfly.png")
+        bPM = bPM.scaledToWidth(150)
+        pic.setPixmap(bPM)
+        pic.setGeometry(0, 0, 10, 10)
+        main_layout.addWidget(pic, 0, 0)
         #################################################
         # The top right corner:
         # Just a label
@@ -97,8 +97,8 @@ class Window(QWidget):
         upload_page = upload_widget.upload_page()
 
         # Data page, working atm
-        data_page = QWidget()
-        QPushButton("data", data_page)
+        data_page = saveCSV.saveCSVWindow()
+
 
         # Tutorial page, working atm
         tutorial_page = QWidget()
@@ -138,7 +138,7 @@ class Window(QWidget):
         reset_buttons_color()
 
         # Upload page -- button 0
-        def button0_signal():
+        def upload_signal():
             print("button 0 pressed")
             reset_buttons_color()
             buttons[0].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
@@ -146,31 +146,31 @@ class Window(QWidget):
             # update("Upload PDF page")
 
         buttons[0].setText("Upload PDF")
-        buttons[0].clicked.connect(button0_signal)
+        buttons[0].clicked.connect(upload_signal)
 
         # Data page -- button 1
-        def button1_signal():
+        def data_signal():
             print("button 1 pressed")
             bottom_right.setCurrentIndex(1)
             reset_buttons_color()
             buttons[1].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
-            bottom_right.setCurrentIndex(1)
+
             # update("Access data page")
 
         buttons[1].setText("Access Data")
-        buttons[1].clicked.connect(button1_signal)
+        buttons[1].clicked.connect(data_signal)
 
         # Tutorial page -- button 2
-        def button2_signal():
+        def tutorial_signal():
             print("button 2 pressed")
             bottom_right.setCurrentIndex(2)
             reset_buttons_color()
             buttons[2].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
-            bottom_right.setCurrentIndex(2)
+
             # update("Tutorial page")
 
         buttons[2].setText("How to Use?")
-        buttons[2].clicked.connect(button2_signal)
+        buttons[2].clicked.connect(tutorial_signal)
 
         # Dummies to make it looks good
         for _ in range(3):
