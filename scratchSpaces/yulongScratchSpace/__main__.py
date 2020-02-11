@@ -55,15 +55,17 @@ class Window(QWidget):
 
         # Todo: Add the icon here
         # That's just a mess right now lol
+        '''
         title = QLabel(top_left)
         title.setText("Put some butterfly here")
         main_layout.addWidget(top_left, 0, 0)
-        '''
+        
         trying to add an image but it's not showing up - not sure why 
         '''
         bFlyImage = QLabel(top_left)
+
+        bFlyImage.setPixmap(QPixmap("../suzieScratchSpace/butterfly.jpeg"))
         bFlyImage.setGeometry(10, 10, 60, 60)
-        bFlyImage.setPixmap(QPixmap("../suzieScratchSpace/caterpillar.png"))
 
         #################################################
         # The top right corner:
@@ -143,7 +145,7 @@ class Window(QWidget):
             print("button 0 pressed")
             reset_buttons_color()
             buttons[0].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
-
+            bottom_right.setCurrentIndex(0)
             # update("Upload PDF page")
 
         buttons[0].setText("Upload PDF")
