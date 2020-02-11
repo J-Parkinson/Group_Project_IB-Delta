@@ -97,7 +97,7 @@ class Window(QWidget):
         upload_page = upload_widget.upload_page()
 
         # Data page, working atm
-        data_page = QWidget()
+        data_page = AccessData()
         QPushButton("data", data_page)
 
         # Tutorial page, working atm
@@ -138,39 +138,39 @@ class Window(QWidget):
         reset_buttons_color()
 
         # Upload page -- button 0
-        def button0_signal():
+        def upload_signal():
             print("button 0 pressed")
             reset_buttons_color()
             buttons[0].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
-            bottom_right.setCurrentIndex(0)
+
             # update("Upload PDF page")
 
         buttons[0].setText("Upload PDF")
-        buttons[0].clicked.connect(button0_signal)
+        buttons[0].clicked.connect(upload_signal)
 
         # Data page -- button 1
-        def button1_signal():
+        def data_signal():
             print("button 1 pressed")
             bottom_right.setCurrentIndex(1)
             reset_buttons_color()
             buttons[1].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
-            bottom_right.setCurrentIndex(1)
+
             # update("Access data page")
 
         buttons[1].setText("Access Data")
-        buttons[1].clicked.connect(button1_signal)
+        buttons[1].clicked.connect(data_signal)
 
         # Tutorial page -- button 2
-        def button2_signal():
+        def tutorial_signal():
             print("button 2 pressed")
             bottom_right.setCurrentIndex(2)
             reset_buttons_color()
             buttons[2].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
-            bottom_right.setCurrentIndex(2)
+
             # update("Tutorial page")
 
         buttons[2].setText("How to Use?")
-        buttons[2].clicked.connect(button2_signal)
+        buttons[2].clicked.connect(tutorial_signal)
 
         # Dummies to make it looks good
         for _ in range(3):
