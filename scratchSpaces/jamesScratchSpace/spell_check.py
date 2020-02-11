@@ -36,14 +36,51 @@ def get_dictionary(path):
     return dictionary
 
 
+def correct_latin_name(s, dictionary):
+    corrected = ''
+    words = s.split()
+    for word in words:
+        guess = best_guess(word, dictionary)
+        if guess is not None:
+            corrected += guess + ' '
+        else:
+            corrected += word + ' '
+    return corrected[0:len(corrected) - 1]
+
+
 def best_guess(word, dictionary):
+    if word in dictionary:
+        return word
     guesses = one_different(word)
+    possible = []
     for guess in guesses:
         if guess in dictionary:
-            return guess
+            possible.append(guess);
+
+    if len(possible) > 0:
+        return pick_guess(possible)
+    for guess in guesses:
+        new_guesses = one_different(guess)
+        for new_guess in new_guesses:
+            if new_guess in dictionary:
+                possible.append(new_guess)
+
+    if len(possible) > 0:
+        return pick_guess(possible)
+
+    print('failed')
+    return None
+
+
+def pick_guess(guesses):
+    return guesses[0]
 
 
 test = "fest"
 test_dict = get_dictionary('./scratchSpaces/jamesScratchSpace/dict.txt')
-print(f'Dictionary: {test_dict}')
-print(f'Correcting \'rest\' to \'{best_guess("rest", test_dict)}\'')
+print(f'Correcting \'{test}\' to \'{best_guess(test, test_dict)}\'')
+
+test = "Lycaene phlaeees"
+test_dict = get_dictionary('./scratchSpaces/jamesScratchSpace/species_dict.txt')
+print(f'Correcting \'{test}\' to \'{correct_latin_name(test, test_dict)}\'')
+

@@ -14,7 +14,8 @@ def make_dict(path):
                     return dictionary
                 skip, name = get_name(line)
                 if not skip and name != '':
-                    dictionary.add(name)
+                    for word in name.split():
+                        dictionary.add(word)
                 else:
                     skipping = True
 
@@ -45,4 +46,9 @@ def check_skipping(line):
     return False
 
 
-
+with open('./scratchSpaces/jamesScratchSpace/species_dict.txt', 'w') as outfile:
+    names = make_dict('./scratchSpaces/jamesScratchSpace/speclist.txt')
+    for name in names:
+        outfile.write(name + '\n')
+    outfile.write('\n')
+    outfile.flush()
