@@ -20,10 +20,8 @@ class AccessData(QWidget):
 
         searchBar = QLineEdit()
         searchBar.setPlaceholderText("Search...")
-        input = "sample"
+
         searchBar.editingFinished.connect(self.enterPress)
-
-
 
         go_button = QPushButton()
         go_button.setText("Go")

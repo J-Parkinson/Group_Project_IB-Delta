@@ -4,9 +4,14 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap
 
 
-class ReviewWindow(QWidget):
-
+class saveCSVWindow(QWidget):
 
     def __init__(self):
         super.__init__()
+
+        initUI()
+
+    def initUI(self):
+        grid = QGridLayout()
+
 
