@@ -16,7 +16,8 @@ def preprocess(img, imgSize, dataAugmentation=False):
         img = np.zeros([imgSize[1], imgSize[0]])
 
     # increase dataset size by applying random stretches to the images
-    #"What is the fucking purpose of this????? Also, dataAugmentation=False on line 9 sooo
+    # What is the fucking purpose of this????? Also, dataAugmentation=False on line 9 sooo
+    # Possibly to add some noise to the data to prevent overtraining idk though
     if dataAugmentation:
         stretch = (random.random() - 0.5)  # a random number in  [-0.5, +0.5]
         wStretched = max(int(img.shape[1] * (1 + stretch)), 1)  # random width, but at least 1
@@ -28,7 +29,11 @@ def preprocess(img, imgSize, dataAugmentation=False):
     fx = w / wt
     fy = h / ht
     f = max(fx, fy)
+
     #don't get the fx and fy lines
+    # I think it's just scaling, seeing the maximum by which it needs to scale so that the image doesn't get
+    # distorted, admittedly it isn't needed as you could just do f = max(w / wt, h / ht)
+
     newSize = (max(min(wt, int(w / f)), 1),
                max(min(ht, int(h / f)), 1))  # scale according to f (result at least 1 and at most wt or ht)
     img = cv2.resize(img, newSize) # INTER_LINEAR – a bilinear interpolation (used by default)
@@ -37,9 +42,11 @@ def preprocess(img, imgSize, dataAugmentation=False):
 
     # transpose for TF
     img = cv2.transpose(target) # what's the purpose of the transposition?
+    # I'm gonna guess that there is some mathematical formula involving transposing matrices that is
+    # in the maths behind this - no clue though
 
     # normalize
-    #EXCUSE ME WTF
+    #EXCUSE ME WTF - i actually have no idea what is going on here lmao
     (m, s) = cv2.meanStdDev(img)
     m = m[0][0]
     s = s[0][0]
