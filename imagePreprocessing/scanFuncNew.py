@@ -8,7 +8,7 @@ from imutils import resize, grab_contours
 # import the necessary packages
 from pyimagesearch.transform import four_point_transform
 from skimage.filters import threshold_sauvola
-from numpy import array, zeros, greater, concatenate, arange, uint16, hsplit, vsplit, squeeze
+from numpy import array, zeros, greater, concatenate, arange, uint16, hsplit, vsplit, squeeze, greater_equal
 from matplotlib import pyplot as plt
 from scipy.ndimage import convolve1d
 from scipy.signal import argrelextrema
@@ -97,7 +97,7 @@ def findLinesandNormalise(source, dest=""):
     if image is None:
         return
     orig = image.copy()
-    image = resize(image, height=image.shape[0])
+    #image = resize(image, height=image.shape[0])
 
     # convert the image to grayscale, blur it, and find edges
     # in the image
@@ -170,12 +170,12 @@ def findLinesandNormalise(source, dest=""):
         transformedColour[:, i] = (255, 0, 0)
         try:
             transformedColour[:, i+1] = (255, 0, 0)
-            transformedColour[:, i+2] = (255, 0, 0)
+            #transformedColour[:, i+2] = (255, 0, 0)
         except:
             continue
         try:
             transformedColour[:, i - 1] = (255, 0, 0)
-            transformedColour[:, i - 2] = (255, 0, 0)
+            #transformedColour[:, i - 2] = (255, 0, 0)
         except:
             continue
     #imwrite("images/columns.png", transformedColour)
@@ -186,17 +186,18 @@ def findLinesandNormalise(source, dest=""):
         transformedColour[i] = (255, 0, 0)
         try:
             transformedColour[i+1] = (255, 0, 0)
-            transformedColour[i+2] = (255, 0, 0)
+            #transformedColour[i+2] = (255, 0, 0)
         except:
             continue
         try:
             transformedColour[i - 1] = (255, 0, 0)
-            transformedColour[i - 2] = (255, 0, 0)
+            #transformedColour[i - 2] = (255, 0, 0)
         except:
             continue
     #imwrite("images/rows.png", transformedColour)
     #imwrite("images/rowsandcols.png", transformedColour)
     imwrite(dest + "rowsandcols.png", transformedColour)
+    print(dest + "rowsandcols.png")
 
     cells = splitIntoCells(transformed, rowLocations, colLocations)
 
@@ -240,8 +241,8 @@ def calculateColumns(transformed):
 def calculateRows(transformed):
     transformedsumy = transformed.sum(axis=1)[1:-1].astype("int64")
 
-    tsy2 = convolve1d(convolve1d(convolve1d(convolve1d(convolve1d(convolve1d(convolve1d(transformedsumy, array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest")
-    rowsfiltered = argrelextrema(tsy2, greater)[0]
+    tsy2 = convolve1d(convolve1d(transformedsumy, array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest")
+    rowsfiltered = argrelextrema(tsy2, greater_equal)[0]
 
     #Rows are evenly spread along a page by a set interval - let us guess that interval
     #intervals = diff(rowsfiltered)
