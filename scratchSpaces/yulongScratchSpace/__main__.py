@@ -10,7 +10,7 @@ from pathlib import Path
 import os
 
 from scratchSpaces.yulongScratchSpace import drag_n_drop_widget, upload_widget
-from scratchSpaces.suzieScratchSpace import AccessData
+from scratchSpaces.suzieScratchSpace import saveCSV
 
 application = QApplication([])
 
@@ -97,8 +97,8 @@ class Window(QWidget):
         upload_page = upload_widget.upload_page()
 
         # Data page, working atm
-        data_page = AccessData.AccessData()
-        QPushButton("data", data_page)
+        data_page = saveCSV.saveCSVWindow()
+
 
         # Tutorial page, working atm
         tutorial_page = QWidget()
