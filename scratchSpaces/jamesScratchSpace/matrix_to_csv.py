@@ -43,7 +43,7 @@ def split_col(table, field_name, new_cols, optional=None, separator=' ', resolut
     for row_index, row in enumerate(table):
         if row_index != 0:
             words = row[field_index].split(separator)
-            if len(words) == len(new_cols):
+            if len(words) == len(new_cols) and optional is None:
                 row += words
             elif optional is not None and len(optional) == len(new_cols):
                 wildcard_found = False
@@ -138,7 +138,9 @@ test = [[f'({x} {y})' for x in range(10)] for y in range(10)]
 test2 = [['Accessor No.', 'Specimen No.', 'Present Determination', 'Determined By', 'Date Determined', 'Collection',
           'Original Determination', 'Date', 'Location', 'Collector', 'Other data'],
          ['', '00133', 'Euclidia glyphica', 'M. Hellier', '24/4/87', '', 'glyphica', '23/6/18',
-          'Forest Hill Marlborough', 'Paten', '']]
+          'Forest Hill Marlborough', 'Paten', ''],
+         ['', '11504', 'Eurodryas aurinia', 'J. B. Beeson', '30.1.95', '', 'Melitaea aurinia', '1905',
+          'Dartmoor Devon', 'J. Peed', '']]
 std_test = [['Invertebrates; Insects', 'Object', 'Present', 'I.2019.2147', '', '', '', 'Hesperiidae', 'Thymelicus',
              'lineola', 'Hesperiidae', 'Thymelicus', 'lineola', '', 'Essex Skipper', 'Yes', '', 'Dry', '1',
              'Pinned whole\nDorsal', 'Male', 'Adult', '', 'Fair',
@@ -149,6 +151,7 @@ std_test = [['Invertebrates; Insects', 'Object', 'Present', 'I.2019.2147', '', '
 
 matrix_to_csv(test, './jamesScratchSpace/test.csv')
 matrix_to_csv(test2, './jamesScratchSpace/test2.csv')
+matrix_to_csv(STANDARD_HEADER + std_test, './jamesScratchSpace/test3.csv')
 
 split_col(test2, 'Present Determination', ['Genus', 'Species'])
 split_col(test2, 'Determined By', ['First name', 'Middle Names', 'Surname'], optional=[0, '*', -1])
