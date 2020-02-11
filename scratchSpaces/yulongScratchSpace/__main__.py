@@ -9,6 +9,7 @@ from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixma
 from pathlib import Path
 
 from scratchSpaces.yulongScratchSpace import drag_n_drop_widget, upload_widget
+from scratchSpaces.suzieScratchSpace import AccessData
 
 application = QApplication([])
 
@@ -97,7 +98,7 @@ class Window(QWidget):
         upload_page = upload_widget.upload_page()
 
         # Data page, working atm
-        data_page = AccessData()
+        data_page = AccessData.AccessData()
         QPushButton("data", data_page)
 
         # Tutorial page, working atm
