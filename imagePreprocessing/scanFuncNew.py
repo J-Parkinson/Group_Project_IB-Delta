@@ -27,7 +27,7 @@ def showImage(img, lines=array([]), wait=True):
 
 
 
-def scanImage(source, dest):
+'''def scanImage(source, dest):
     # load the image and compute the ratio of the old height
     # to the new height, clone it, and resize it
     image = imread(source)
@@ -85,12 +85,12 @@ def scanImage(source, dest):
     transformed = (transformed > threshold).astype("uint8") * 255
     imwrite(dest, transformed)
 
-    return
+    return'''
 
 #TODO: Write code to read in column data
 #def readColumnData(Column)
 
-def findLinesandNormalise(source):
+def findLinesandNormalise(source, dest=""):
     # load the image and compute the ratio of the old height
     # to the new height, clone it, and resize it
     image = imread(source)
@@ -196,18 +196,33 @@ def findLinesandNormalise(source):
             continue
     #imwrite("images/rows.png", transformedColour)
     #imwrite("images/rowsandcols.png", transformedColour)
+    imwrite(dest + "rowsandcols.png", transformedColour)
 
-    for x, image in enumerate(splitIntoCells(transformed, rowLocations, colLocations)):
-        imwrite("images/pagetest/page" + str(x) + ".png", image)
+    cells = splitIntoCells(transformed, rowLocations, colLocations)
+
+    if dest == "":
+        dest = "images/out/"
+
+    #for x, image in enumerate(cells):
+
+    #    imwrite(dest + "cell-" + str(x//len(colLocations)) + "-" + str(x % len(colLocations)) + ".png", image)
 
     return
 
 
+
+
 def splitIntoCells(image, rows, cols):
-    splitCols = hsplit(image, cols)
+    splitRows = vsplit(image, rows)
 
-    return [a for b in [vsplit(col, rows) for col in splitCols] for a in b]
+    return [a for b in [hsplit(row, cols) for row in splitRows] for a in b]
 
+#splitRows = vsplit(image, rows)
+
+#return [a for b in [hsplit(row, cols) for row in splitRows] for a in b]
+
+
+#print(splitIntoCells(array([[1,2,3,4], [5,6,7,8], [9,10,11,12], [13,14,15,16]]), [1, 3], [1,2]))
 
 def calculateColumns(transformed):
     transformedsumx = transformed.sum(axis=0)
@@ -219,7 +234,7 @@ def calculateColumns(transformed):
     columns = array(columns).astype(int)
     columns = convolve1d(convolve1d(convolve1d(columns, array([1,1,1,3,5,8,4,3,1,1,1]), mode="nearest"), array([1,1,1,3,5,8,4,3,1,1,1]), mode="nearest"), array([1,1,1,3,5,8,4,3,1,1,1]), mode="nearest")
     columnsfiltered = argrelextrema(columns, greater)[0] + 2
-    columnsfiltered = concatenate(([0], columnsfiltered, [transformedsumx.shape[0] - 1]))
+    #columnsfiltered = concatenate(([0], columnsfiltered, [transformedsumx.shape[0] - 1]))
     return columnsfiltered
 
 def calculateRows(transformed):
@@ -235,5 +250,5 @@ def calculateRows(transformed):
     #print(transformedsumy)
     return rowsfiltered
 
-findLinesandNormalise("images/logbook.png")
+#findLinesandNormalise("images/logbook.png")
 #findLinesandNormalise("images/logbook2test.png")
