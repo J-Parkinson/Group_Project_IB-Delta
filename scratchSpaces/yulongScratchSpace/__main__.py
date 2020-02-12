@@ -97,7 +97,8 @@ class Window(QWidget):
         upload_page = upload_widget.upload_page()
 
         # Data page, working atm
-        data_page = AccessData()
+        #data_page = AccessData()
+        data_page = QWidget()
         QPushButton("data", data_page)
 
         # Tutorial page, working atm
@@ -142,6 +143,7 @@ class Window(QWidget):
             print("button 0 pressed")
             reset_buttons_color()
             buttons[0].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
+            bottom_right.setCurrentIndex(0)
 
             # update("Upload PDF page")
 

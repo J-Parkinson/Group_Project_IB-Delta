@@ -1,10 +1,13 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxLayout, QPushButton, QFileDialog
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxLayout, QPushButton, QFileDialog, \
+    QMessageBox
 from PyQt5.QtCore import Qt
 
 from scratchSpaces.yulongScratchSpace import drag_n_drop_widget
 
 
 class upload_page(QWidget):
+    file_loaded = 0
+
     def __init__(self):
         super().__init__()
         layout = QVBoxLayout()
@@ -47,6 +50,7 @@ class upload_page(QWidget):
         # The button confirming input (upload page)
         upload_button = QPushButton("Read Page")
         upload_button.setFixedSize(200, 50)
+        upload_button.clicked.connect(self.upload)
         layout.addWidget(upload_button)
         layout.setAlignment(upload_button, Qt.AlignCenter)
 
@@ -62,4 +66,9 @@ class upload_page(QWidget):
                                                   "PDF (*.pdf)", "")
         if fileName:
             # Do something here! Load the file!
+            self.file_loaded = 1
             print(fileName)
+
+    def upload(self):
+        print(self.file_loaded)
+

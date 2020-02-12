@@ -1,49 +1,46 @@
+from PyQt5.QtCore import QPoint
+from PyQt5.QtGui import QMouseEvent, QPainter
 from PyQt5.QtWidgets import (QPushButton, QWidget,
-                             QLineEdit, QApplication)
+                             QLineEdit, QApplication, QLabel)
 import sys
 
 
-class Button(QPushButton):
-
-    def __init__(self, title, parent):
-        super().__init__(title, parent)
-
-        self.setAcceptDrops(True)
-
-    def dragEnterEvent(self, e):
-
-        if e.mimeData().hasUrls:
-            e.accept()
-        else:
-            e.ignore()
-
-    def dropEvent(self, e):
-
-        self.setText(e.mimeData().text())
-        print(e.mimeData())
-
-
-class Example(QWidget):
+class window(QWidget):
+    click_x,click_y = 0,0
+    now_x,now_y = 0,0
 
     def __init__(self):
-        super().__init__()
+        QWidget.__init__(self)
+        self.resize(800, 640)
 
-        self.initUI()
+        self.setStyleSheet('background-color:grey;')
 
-    def initUI(self):
-        edit = QLineEdit('', self)
-        edit.setDragEnabled(True)
-        edit.move(30, 65)
+    def mousePressEvent(self, e):
+        print("pressed:", e.x(), e.y())
+        self.click_x, self.click_y = e.x(), e.y()
+        self.now_x, self.now_y = e.x(), e.y()
+        self.setStyleSheet('background-color:white;')
 
-        button = Button("Button", self)
-        button.move(190, 65)
+    def mouseMoveEvent(self, e):
+        self.now_x,self.now_y = e.x(), e.y()
+        self.update()
 
-        self.setWindowTitle('Simple drag and drop')
-        self.setGeometry(300, 300, 300, 150)
+    def mouseReleaseEvent(self, e):
+        print("released:", e.x(), e.y())
+        self.setStyleSheet('background-color:grey;')
 
+    def paintEvent(self, e):
+        qp = QPainter()
+        qp.begin(self)
+        start_x = self.click_x if self.click_x < self.now_x else self.now_x
+        start_y = self.click_y if self.click_y < self.now_y else self.now_y
+        ex = self.click_x if self.click_x >= self.now_x else self.now_x
+        ey = self.click_y if self.click_y >= self.now_y else self.now_y
+        qp.drawRect(self.now_x, self.now_y, -20, 30)
+        qp.end()
 
 
 app = QApplication(sys.argv)
-ex = Example()
-ex.show()
+window = window()
+window.show()
 app.exec_()

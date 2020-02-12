@@ -12,6 +12,10 @@ Add to frame: QPushButton(text, frame)
 Button style: button.setStyleSheet('QPushButton {background-color: #A3C1DA; color: red;}')
 QStackedWidget
 
+I/O and drawing:
+QMouseEvents
+QPainter: write things in paintEvent(), activate it by calling self.update()
+
 Library:OS
 
 https://docs.google.com/document/d/1q7I-9du1ZoeMD09l301Q9pI_6jJUPRgYLEeV0w6grRI/edit
@@ -32,6 +36,7 @@ Todo: User preference
 Todo: 1st time opening the app, shows tutorial automatically
 Todo: a menu
 Todo: Read and show csv file
+Todo: add preview page
 
 4th stage:
 Todo: the query page
@@ -43,5 +48,3 @@ Searching
 
 Several questions:
 Add a menu bar?
-Button concurrency issues...
-Qt has a database?
