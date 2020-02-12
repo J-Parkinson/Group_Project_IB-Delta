@@ -34,6 +34,6 @@ def scanDirectoryOfPDFsAndImagesInAlphaOrder(directory, destFolder, filename, su
     return
 
 
-scanPDF("images/scantest.pdf", "images/pdftest/", "image", ".png")
+scanPDF("images/logbook.png", "images/pdftest4/", "image", ".png")
 #scanPDF("images/Scan 5 Feb 2020 at 14.57 (1).pdf", "images/pdftest3/", "image", ".png")
 #scanDirectoryOfPDFsAndImagesInAlphaOrder("images/New Scans/", "images/pdftest2/", "image", ".png")
