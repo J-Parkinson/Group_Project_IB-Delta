@@ -1,4 +1,5 @@
 import csv
+import re
 from enum import Enum, auto
 
 STANDARD_HEADER = [['', '', '', 'Summary Data', '', '', '', 'Taxonomy', '', '', '', '', '', '', '', '', 'Description',
@@ -37,6 +38,22 @@ class ResolutionType(Enum):
     all = auto()
 
 
+def add_to_indices(word_index, col_index, indices, resolution_type, num_words):
+    if word_index >= num_words or word_index < 0:
+        raise Exception('index in optional parameter out of range')
+    elif word_index in indices:
+        if resolution_type == ResolutionType.no_clash:
+            raise Exception('repeated index in optional parameter,'
+                            ' consider changing resolution type')
+        elif resolution_type == ResolutionType.just_last:
+            # overwrite the last one
+            indices[word_index] = [col_index]
+        elif resolution_type == ResolutionType.all:
+            indices[word_index].append(col_index)
+    else:
+        indices[word_index] = [col_index]
+
+
 def split_col(table, field_name, new_cols, optional=None, separator=' ', resolution_type=ResolutionType.no_clash):
     # can extend by allowing slices and lists of indices as column to word mappings, and possibly additional wildcards
     field_index = table[0].index(field_name)
@@ -56,34 +73,28 @@ def split_col(table, field_name, new_cols, optional=None, separator=' ', resolut
                         else:
                             wildcard_found = True
                             wildcard_index = new_col_index
-                    elif int(word_index) >= 0:
-                        if int(word_index) >= len(words):
+                    elif re.match('-?\\d+ *: *-?\\d+', word_index):
+                        # match a slice
+                        start = int(re.search('(-?\\d+) *:', word_index).group(1))
+                        end = int(re.search(': *(-?\\d*)', word_index).group(1))
+                        if start < 0:
+                            start = len(words) + start
+                        if end < 0:
+                            end = len(words) + end
+                        if start >= len(words) or end >= len(words) or start < 0 or end < 0:
                             raise Exception('index in optional parameter out of range')
-                        elif int(word_index) in indices:
-                            if resolution_type == ResolutionType.no_clash:
-                                raise Exception('repeated index in optional parameter,'
-                                                ' consider changing resolution type')
-                            elif resolution_type == ResolutionType.just_last:
-                                # overwrite the last one
-                                indices[word_index] = [new_col_index]
-                            elif resolution_type == ResolutionType.all:
-                                indices[word_index].append(new_col_index)
-                        else:
-                            indices[word_index] = [new_col_index]
-                    else:
+                        for i in range(start, end + 1):
+                            add_to_indices(i, new_col_index, indices, resolution_type, len(words))
+                    elif re.match('\\[\\d+(, ?\\d)*\\]', word_index):
+                        # match a list of indices
+                        ()
+                    elif re.match('\\d+', word_index):
+                        add_to_indices(int(word_index), new_col_index, indices, resolution_type, len(words))
+                    elif re.match('-\\d+', word_index):
                         index = len(words) + int(word_index)
-                        if index < 0:
-                            raise Exception('index in optional parameter out of range')
-                        elif index in indices:
-                            if resolution_type == ResolutionType.no_clash:
-                                raise Exception('repeated index in optional parameter,'
-                                                ' consider changing resolution type')
-                            elif resolution_type == ResolutionType.just_last:
-                                indices[word_index] = [new_col_index]
-                            elif resolution_type == ResolutionType.all:
-                                indices[word_index].append(new_col_index)
-                        else:
-                            indices[index] = [new_col_index]
+                        add_to_indices(index, new_col_index, indices, resolution_type, len(words))
+                    else:
+                        raise Exception('Failed to match optional parameter')
 
                 row_addition = [[] for _ in range(len(new_cols))]
                 for word_index, word in enumerate(words):
@@ -154,8 +165,9 @@ matrix_to_csv(test2, './jamesScratchSpace/test2.csv')
 matrix_to_csv(STANDARD_HEADER + std_test, './jamesScratchSpace/test3.csv')
 
 split_col(test2, 'Present Determination', ['Genus', 'Species'])
-split_col(test2, 'Determined By', ['First name', 'Middle Names', 'Surname'], optional=[0, '*', -1])
-split_col(test2, 'Location', ['Town', 'Place'], optional=[-1, '*'])
+split_col(test2, 'Determined By', ['First name', 'Middle Names', 'Surname'], optional=['0', '*', '-1'])
+# split_col(test2, 'Location', ['Town', 'Place'], optional=['-1', '*'])
+split_col(test2, 'Location', ['Town', 'Place'], optional=['-1', '0 : -1'], resolution_type=ResolutionType.just_first)
 matrix_to_standard_csv(test2, './jamesScratchSpace/std_test.csv', {'Current Genus': 'Genus',
                                                                    'Current species': 'Species',
                                                                    'First name': 'First name',
