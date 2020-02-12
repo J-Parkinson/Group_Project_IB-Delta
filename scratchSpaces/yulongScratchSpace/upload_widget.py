@@ -4,8 +4,6 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxL
     QMessageBox
 from PyQt5.QtCore import Qt
 
-from scratchSpaces.yulongScratchSpace import drag_n_drop_widget
-
 
 class State(Enum):
     Unloaded = 0

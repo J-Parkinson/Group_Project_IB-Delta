@@ -9,10 +9,14 @@ from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixma
 from pathlib import Path
 import os
 
-from scratchSpaces.yulongScratchSpace import drag_n_drop_widget, upload_widget
+from scratchSpaces.yulongScratchSpace import upload_widget
 from scratchSpaces.suzieScratchSpace import saveCSV
 
 application = QApplication([])
+
+class State:
+    Normal = 0
+    First_time = 1
 
 
 class Window(QWidget):
@@ -41,7 +45,7 @@ class Window(QWidget):
         self.setPalette(p)
 
         # Preference
-        first_time = self.preference()
+        self.state = State.Normal
 
         # Components
         top_left = QMainWindow()
@@ -112,7 +116,7 @@ class Window(QWidget):
         bottom_right.addWidget(ini_label)
 
         # Todo: show tutorial page if first time opening
-        if first_time:
+        if self.state == State.First_time:
             bottom_right.setCurrentIndex(2)
         else:
             bottom_right.setCurrentIndex(3)

@@ -34,12 +34,11 @@ Resizable Done, easy
 3rd stage:
 Todo: User preference
 Todo: 1st time opening the app, shows tutorial automatically
-Todo: a menu
 Todo: Read and show csv file
-Todo: add preview page
+
 
 4th stage:
-Todo: the query page
+Todo: add preview page
 Todo: connecting things together (tbc)
 
 Optional things:
