@@ -19,7 +19,7 @@ def cellToWords(cell): # takes one numpy array
     difference = np.subtract(np.full(numBlackPix.shape, maxVal), numBlackPix)
     x =np.gradient(numBlackPix)
     x[x > 4] = 10
-    y = ndimage.convolve1d(numBlackPix, np.array(1,1,1,1), mode="nearest")
+    y = ndimage.convolve1d(numBlackPix, np.array([1,1,1,1]), mode="nearest")
     plt.plot(y)
     plt.show()
 
