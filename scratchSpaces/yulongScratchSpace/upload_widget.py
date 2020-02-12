@@ -1,8 +1,10 @@
 from enum import Enum
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxLayout, QPushButton, QFileDialog, \
-    QMessageBox
+    QMessageBox, QProgressBar, QDialog
 from PyQt5.QtCore import Qt
+
+import time
 
 
 class State(Enum):
@@ -31,11 +33,12 @@ class dnd_widget(QLabel):
         print(filename)
 
 
-class upload_page(QWidget):
+class file_select(QWidget):
 
-    def __init__(self):
+    def __init__(self, parent):
         super().__init__()
         layout = QVBoxLayout()
+        self.parent = parent
         self.state = State.Unloaded
         self.filename = ""
         #################################################
@@ -106,14 +109,18 @@ class upload_page(QWidget):
         fileName, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "",
                                                   "PDF (*.pdf)", "")
         if fileName:
-            # Do something here! Load the file!
+            # Todo: Do something here! Load the file! Show a pretty preview!
             self.state = State.Loaded
             self.filename = fileName
             print(fileName)
 
     def upload(self):
+
         if self.state == State.Loaded:
-            print("I'm loading!")
+            self.show_progress_bar()
+            self.state = State.Unloaded
+            self.parent.parent.state = 1  # Loading
+
         else:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
@@ -121,6 +128,22 @@ class upload_page(QWidget):
             msg.setWindowTitle("Warning")
             msg.setText("No file loaded!")
             msg.setInformativeText("Please select a file to load")
-            msg.setStandardButtons(QMessageBox.Ok)
+            # msg.setStandardButtons(QMessageBox.Ok)
 
             msg.exec_()
+
+    def show_progress_bar(self):
+        # Todo: add a fake progress bar
+        return
+
+
+class upload_page(QStackedWidget):
+
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+
+        file_select_page = file_select(self)
+
+        self.addWidget(file_select_page)
+        self.setCurrentIndex(0)

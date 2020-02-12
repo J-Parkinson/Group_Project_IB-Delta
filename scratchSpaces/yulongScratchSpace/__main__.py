@@ -90,7 +90,7 @@ class Window(QWidget):
         # The bottom right corner:
         # A stack of useful pages
         #################################################
-        # Todo: design init,tutorial page
+        # Todo: design an initial page
 
         # Initial page
         ini_label = QLabel("Initial Page")
@@ -99,13 +99,15 @@ class Window(QWidget):
         ini_label.resize(500, 500)
 
         # Upload page
-        upload_page = upload_widget.upload_page()
+        # Todo: make it prettier!
+        upload_page = upload_widget.upload_page(self)
 
-        # Data page, working atm
-
+        # Data page
+        # Todo: make it prettier!
         data_page = saveCSV.saveCSVWindow()
 
         # Tutorial page, working atm
+        # Todo: design a tutorial page, but not now, no hurry
         tutorial_page = QWidget()
         QPushButton("tutorial", tutorial_page)
 
@@ -155,22 +157,24 @@ class Window(QWidget):
 
         # Data page -- button 1
         def data_signal():
-            if not self.load_warning():
+            if self.load_warning():
                 print("button 1 pressed")
                 bottom_right.setCurrentIndex(1)
                 reset_buttons_color()
                 buttons[1].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
+                self.state = State.Normal
 
         buttons[1].setText("Access Data")
         buttons[1].clicked.connect(data_signal)
 
         # Tutorial page -- button 2
         def tutorial_signal():
-            if not self.load_warning():
+            if self.load_warning():
                 print("button 2 pressed")
                 bottom_right.setCurrentIndex(2)
                 reset_buttons_color()
                 buttons[2].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
+                self.state = State.Normal
 
         buttons[2].setText("How to Use?")
         buttons[2].clicked.connect(tutorial_signal)
@@ -195,7 +199,7 @@ class Window(QWidget):
         application.setStyle('Windows')
 
     def preference(self):
-        # Todo: Working on atm
+        # Todo: JUST DO IT!!!!!!
         return 0
 
     def load_warning(self):

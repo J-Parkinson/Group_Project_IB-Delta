@@ -35,20 +35,20 @@ Resizable Done, easy
 Todo: the dragging page
 Process of reaching the dragging page:
 User choose the input file-> (done!)
-Clicks "Read page" button -> (working...)
-Sees a useless-but-makes-you-feel-the-app-is-quite-reliable progress bar
+Clicks "Read page" button -> (done!)
+Sees a useless-but-makes-you-feel-the-app-is-quite-reliable progress bar (doing...)
 Sees the dragging page
+Todo: warns users when dropped some non-pdf things
 Todo: 1st time opening the app, shows tutorial automatically
-Todo: Read and show csv file
+Read and show csv file -- Suzie
 
 
 4th stage:
-Todo: add preview page (harder than you think)
+Todo: add preview page (harder than it looks like, procrastinating...)
 Todo: connecting things together (tbc)
 
 Optional things:
 Dynamic tutorial
-Searching
 
-Several questions:
-Add a menu bar?
+Some questions:
+Exit button? Home button & page?
