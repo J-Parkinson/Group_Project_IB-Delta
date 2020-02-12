@@ -85,9 +85,14 @@ def split_col(table, field_name, new_cols, optional=None, separator=' ', resolut
                             raise Exception('index in optional parameter out of range')
                         for i in range(start, end + 1):
                             add_to_indices(i, new_col_index, indices, resolution_type, len(words))
-                    elif re.match('\\[\\d+(, ?\\d)*\\]', word_index):
+                    elif re.match('\\[-?\\d+(, ?-?\\d)*\\]', word_index):
                         # match a list of indices
-                        ()
+                        word_indices = re.findall('-?\\d+', word_index)
+                        for w in word_indices:
+                            index = int(w)
+                            if index < 0:
+                                index = len(words) + index
+                            add_to_indices(index, new_col_index, indices, resolution_type, len(words))
                     elif re.match('\\d+', word_index):
                         add_to_indices(int(word_index), new_col_index, indices, resolution_type, len(words))
                     elif re.match('-\\d+', word_index):
@@ -166,7 +171,6 @@ matrix_to_csv(STANDARD_HEADER + std_test, './jamesScratchSpace/test3.csv')
 
 split_col(test2, 'Present Determination', ['Genus', 'Species'])
 split_col(test2, 'Determined By', ['First name', 'Middle Names', 'Surname'], optional=['0', '*', '-1'])
-# split_col(test2, 'Location', ['Town', 'Place'], optional=['-1', '*'])
 split_col(test2, 'Location', ['Town', 'Place'], optional=['-1', '0 : -1'], resolution_type=ResolutionType.just_first)
 matrix_to_standard_csv(test2, './jamesScratchSpace/std_test.csv', {'Current Genus': 'Genus',
                                                                    'Current species': 'Species',
