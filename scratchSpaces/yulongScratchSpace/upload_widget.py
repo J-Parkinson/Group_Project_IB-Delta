@@ -1,3 +1,5 @@
+from enum import Enum
+
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxLayout, QPushButton, QFileDialog, \
     QMessageBox
 from PyQt5.QtCore import Qt
@@ -5,12 +7,39 @@ from PyQt5.QtCore import Qt
 from scratchSpaces.yulongScratchSpace import drag_n_drop_widget
 
 
+class State(Enum):
+    Unloaded = 0
+    Loaded = 1
+    Running = 2  # Don't know if this is gonna be helpful in the future or not lol
+
+
+class dnd_widget(QLabel):
+
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+        self.setAcceptDrops(True)
+
+    def dragEnterEvent(self, e):
+        if e.mimeData().hasUrls:
+            e.accept()
+        else:
+            e.ignore()
+
+    def dropEvent(self, e):
+        filename = e.mimeData().text()
+        self.parent.state = State.Loaded
+        self.parent.set_filename(filename)
+        print(filename)
+
+
 class upload_page(QWidget):
-    file_loaded = 0
 
     def __init__(self):
         super().__init__()
         layout = QVBoxLayout()
+        self.state = State.Unloaded
+        self.filename = ""
 
         # Welcome text (upload page)
         top_text = QLabel("Welcome to the Butterfly Logbook Scanner\n"
@@ -21,7 +50,7 @@ class upload_page(QWidget):
         layout.setAlignment(top_text, Qt.AlignCenter)
 
         # Drag-n-drop / preview window (upload page)
-        drag_n_drop = drag_n_drop_widget.dnd_widget()
+        drag_n_drop = dnd_widget(self)
         drag_n_drop.setFixedSize(650, 250)
         drag_n_drop.setStyleSheet('background-color:grey')
 
@@ -68,9 +97,23 @@ class upload_page(QWidget):
                                                   "PDF (*.pdf)", "")
         if fileName:
             # Do something here! Load the file!
-            self.file_loaded = 1
+            self.state = State.Loaded
+            self.filename = fileName
             print(fileName)
 
-    def upload(self):
-        print(self.file_loaded)
+    def set_filename(self, name):
+        self.filename = name
 
+    def upload(self):
+        if self.state == State.Loaded:
+            print("I'm loading!")
+        else:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+
+            msg.setText("No file loaded!")
+            msg.setInformativeText("Please select a file to load")
+            msg.setWindowTitle("Warning")
+            msg.setStandardButtons(QMessageBox.Ok)
+
+            msg.exec_()
