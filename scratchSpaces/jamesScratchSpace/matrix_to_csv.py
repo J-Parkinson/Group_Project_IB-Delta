@@ -54,7 +54,8 @@ def add_to_indices(word_index, col_index, indices, resolution_type, num_words):
         indices[word_index] = [col_index]
 
 
-def split_col(table, field_name, new_cols, optional=None, separator=' ', resolution_type=ResolutionType.no_clash):
+def split_col(table, field_name, new_cols, optional=None, separator=' ', resolution_type=ResolutionType.no_clash,
+              joiner=' '):
     # can extend by allowing slices and lists of indices as column to word mappings, and possibly additional wildcards
     field_index = table[0].index(field_name)
     for row_index, row in enumerate(table):
@@ -110,7 +111,7 @@ def split_col(table, field_name, new_cols, optional=None, separator=' ', resolut
                         row_addition[wildcard_index].append(word)
                     # else we discard that word
 
-                row_string = [' '.join(col) for col in row_addition]
+                row_string = [joiner.join(col) for col in row_addition]
                 row += row_string
 
             else:
@@ -125,29 +126,28 @@ def matrix_to_csv(table, path):
         out.writerows(table)
 
 
-def matrix_to_standard(table, field_map):
+def matrix_to_standard(table, field_map, joiner=' '):
     # the field map will map the standard field headers to table's field headers
     result = [["" for _ in range(len(STANDARD_HEADER[0]))] for _ in range(len(table) - 1)]
-    for field in STANDARD_HEADER[1]:
-        if field in field_map:
-            std_field_index = STANDARD_HEADER[1].index(field)
-            table_field_index = table[0].index(field_map[field])
-            for row_num, row in enumerate(result):
-                row[std_field_index] = table[row_num + 1][table_field_index]
-    for field in STANDARD_HEADER[2]:
-        if field in field_map:
-            std_field_index = STANDARD_HEADER[2].index(field)
-            table_field_index = table[0].index(field_map[field])
-            for row_num, row in enumerate(result):
-                row[std_field_index] = table[row_num + 1][table_field_index]
+    for i in [1, 2]:
+        for field in STANDARD_HEADER[i]:
+            if field in field_map:
+                std_field_index = STANDARD_HEADER[1].index(field)
+                for table_field_name in field_map[field]:
+                    table_field_index = table[0].index(table_field_name)
+                    for row_num, row in enumerate(result):
+                        if row[std_field_index] == '':
+                            row[std_field_index] = table[row_num + 1][table_field_index]
+                        else:
+                            row[std_field_index] += joiner + table[row_num + 1][table_field_index]
     return result
 
 
-def matrix_to_standard_csv(table, path, field_map):
+def matrix_to_standard_csv(table, path, field_map, joiner=' '):
     with open(path, mode='w') as outfile:
         out = csv.writer(outfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
         out.writerows(STANDARD_HEADER)
-        out.writerows(matrix_to_standard(table, field_map))
+        out.writerows(matrix_to_standard(table, field_map, joiner))
 
 
 test = [[f'({x} {y})' for x in range(10)] for y in range(10)]
@@ -172,10 +172,10 @@ matrix_to_csv(STANDARD_HEADER + std_test, './jamesScratchSpace/test3.csv')
 split_col(test2, 'Present Determination', ['Genus', 'Species'])
 split_col(test2, 'Determined By', ['First name', 'Middle Names', 'Surname'], optional=['0', '*', '-1'])
 split_col(test2, 'Location', ['Town', 'Place'], optional=['-1', '0 : -1'], resolution_type=ResolutionType.just_first)
-matrix_to_standard_csv(test2, './jamesScratchSpace/std_test.csv', {'Current Genus': 'Genus',
-                                                                   'Current species': 'Species',
-                                                                   'First name': 'First name',
-                                                                   'Middle Names': 'Middle Names',
-                                                                   'Surname': 'Surname',
-                                                                   'Level 3 - eg.Town/City/Village': 'Town',
-                                                                   'Level 4 (eg.Nearest named place)': 'Place'})
+matrix_to_standard_csv(test2, './jamesScratchSpace/std_test.csv', {'Current Genus': ['Genus'],
+                                                                   'Current species': ['Species'],
+                                                                   'First name': ['First name'],
+                                                                   'Middle Names': ['Middle Names'],
+                                                                   'Surname': ['Surname'],
+                                                                   'Level 3 - eg.Town/City/Village': ['Town'],
+                                                                   'Level 4 (eg.Nearest named place)': ['Place']})
