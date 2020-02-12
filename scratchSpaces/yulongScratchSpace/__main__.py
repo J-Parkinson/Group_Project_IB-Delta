@@ -3,7 +3,7 @@
 #################################################
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGridLayout, QLabel, QSizePolicy, \
-    QStackedWidget, QBoxLayout, QHBoxLayout, QFileDialog, QMainWindow
+    QStackedWidget, QBoxLayout, QHBoxLayout, QFileDialog, QMainWindow, QMessageBox
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap, QPainter, QImage
 from pathlib import Path
@@ -14,9 +14,11 @@ from scratchSpaces.suzieScratchSpace import saveCSV
 
 application = QApplication([])
 
+
 class State:
     Normal = 0
-    First_time = 1
+    Loading = 1
+    First_time = 2
 
 
 class Window(QWidget):
@@ -88,7 +90,7 @@ class Window(QWidget):
         # The bottom right corner:
         # A stack of useful pages
         #################################################
-        # Todo: design init,data,tutorial page
+        # Todo: design init,tutorial page
 
         # Initial page
         ini_label = QLabel("Initial Page")
@@ -96,14 +98,12 @@ class Window(QWidget):
         ini_label.move(100, 100)
         ini_label.resize(500, 500)
 
-        # Todo: make upload page beautiful
         # Upload page
         upload_page = upload_widget.upload_page()
 
         # Data page, working atm
 
         data_page = saveCSV.saveCSVWindow()
-
 
         # Tutorial page, working atm
         tutorial_page = QWidget()
@@ -148,32 +148,29 @@ class Window(QWidget):
             reset_buttons_color()
             buttons[0].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
             bottom_right.setCurrentIndex(0)
-            
-            # update("Upload PDF page")
+            upload_page.state = 0  # Unloaded
 
         buttons[0].setText("Upload PDF")
         buttons[0].clicked.connect(upload_signal)
 
         # Data page -- button 1
         def data_signal():
-            print("button 1 pressed")
-            bottom_right.setCurrentIndex(1)
-            reset_buttons_color()
-            buttons[1].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
-
-            # update("Access data page")
+            if not self.load_warning():
+                print("button 1 pressed")
+                bottom_right.setCurrentIndex(1)
+                reset_buttons_color()
+                buttons[1].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
 
         buttons[1].setText("Access Data")
         buttons[1].clicked.connect(data_signal)
 
         # Tutorial page -- button 2
         def tutorial_signal():
-            print("button 2 pressed")
-            bottom_right.setCurrentIndex(2)
-            reset_buttons_color()
-            buttons[2].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
-
-            # update("Tutorial page")
+            if not self.load_warning():
+                print("button 2 pressed")
+                bottom_right.setCurrentIndex(2)
+                reset_buttons_color()
+                buttons[2].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
 
         buttons[2].setText("How to Use?")
         buttons[2].clicked.connect(tutorial_signal)
@@ -198,7 +195,25 @@ class Window(QWidget):
         application.setStyle('Windows')
 
     def preference(self):
+        # Todo: Working on atm
         return 0
+
+    def load_warning(self):
+        if not self.state == State.Loading:
+            return 1
+
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Warning)
+
+        msg.setWindowTitle("Warning!")
+        msg.setText("File not saved yet!")
+        msg.setInformativeText("You will lose your loaded file if you go to another window now\n"
+                               "Are you sure to abort?")
+        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
+        return_value = msg.exec_()
+        print(return_value)
+        return return_value == QMessageBox.Yes
 
     def run(self):
         self.show()

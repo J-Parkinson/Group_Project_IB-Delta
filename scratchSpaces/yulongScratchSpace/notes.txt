@@ -32,13 +32,18 @@ Upload page Done, not that hard
 Resizable Done, easy
 
 3rd stage:
-Todo: User preference
+Todo: the dragging page
+Process of reaching the dragging page:
+User choose the input file-> (done!)
+Clicks "Read page" button -> (working...)
+Sees a useless-but-makes-you-feel-the-app-is-quite-reliable progress bar
+Sees the dragging page
 Todo: 1st time opening the app, shows tutorial automatically
 Todo: Read and show csv file
 
 
 4th stage:
-Todo: add preview page
+Todo: add preview page (harder than you think)
 Todo: connecting things together (tbc)
 
 Optional things:

@@ -27,7 +27,7 @@ class dnd_widget(QLabel):
     def dropEvent(self, e):
         filename = e.mimeData().text()
         self.parent.state = State.Loaded
-        self.parent.set_filename(filename)
+        self.parent.filename = filename
         print(filename)
 
 
@@ -38,8 +38,9 @@ class upload_page(QWidget):
         layout = QVBoxLayout()
         self.state = State.Unloaded
         self.filename = ""
-
+        #################################################
         # Welcome text (upload page)
+        #################################################
         top_text = QLabel("Welcome to the Butterfly Logbook Scanner\n"
                           "Upload a file below then press the Read Page\n"
                           "button to begin transcription")
@@ -47,7 +48,9 @@ class upload_page(QWidget):
         layout.addWidget(top_text)
         layout.setAlignment(top_text, Qt.AlignCenter)
 
+        #################################################
         # Drag-n-drop / preview window (upload page)
+        #################################################
         drag_n_drop = dnd_widget(self)
         drag_n_drop.setFixedSize(650, 250)
         drag_n_drop.setStyleSheet('background-color:grey')
@@ -59,7 +62,9 @@ class upload_page(QWidget):
         layout.addWidget(d_n_p)
         layout.setAlignment(d_n_p, Qt.AlignCenter)
 
+        #################################################
         # The clicking input (upload page)
+        #################################################
         click_input = QWidget()
         click_input_layout = QHBoxLayout()
 
@@ -76,17 +81,24 @@ class upload_page(QWidget):
         click_input.setLayout(click_input_layout)
         layout.addWidget(click_input)
 
+        #################################################
         # The button confirming input (upload page)
+        #################################################
         upload_button = QPushButton("Read Page")
         upload_button.setFixedSize(200, 50)
         upload_button.clicked.connect(self.upload)
         layout.addWidget(upload_button)
         layout.setAlignment(upload_button, Qt.AlignCenter)
 
+        #################################################
         # Some dummy label (upload page)
+        #################################################
         layout.addWidget(QLabel())
 
+        #################################################
         # Todo: connect input to backend
+        #################################################
+
         self.setLayout(layout)
 
     def open_file_window(self):
@@ -99,9 +111,6 @@ class upload_page(QWidget):
             self.filename = fileName
             print(fileName)
 
-    def set_filename(self, name):
-        self.filename = name
-
     def upload(self):
         if self.state == State.Loaded:
             print("I'm loading!")
@@ -109,9 +118,9 @@ class upload_page(QWidget):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
 
+            msg.setWindowTitle("Warning")
             msg.setText("No file loaded!")
             msg.setInformativeText("Please select a file to load")
-            msg.setWindowTitle("Warning")
             msg.setStandardButtons(QMessageBox.Ok)
 
             msg.exec_()
