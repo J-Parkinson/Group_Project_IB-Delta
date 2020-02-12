@@ -16,6 +16,7 @@ class upload_page(QWidget):
         top_text = QLabel("Welcome to the Butterfly Logbook Scanner\n"
                           "Upload a file below then press the Read Page\n"
                           "button to begin transcription")
+        top_text.setStyleSheet('color: black')
         layout.addWidget(top_text)
         layout.setAlignment(top_text, Qt.AlignCenter)
 
@@ -36,6 +37,7 @@ class upload_page(QWidget):
         click_input_layout = QHBoxLayout()
 
         click_input_text = QLabel("Or click the folder icon to browse a file to upload")
+        click_input_text.setStyleSheet('color: black')
         click_input_layout.addWidget(click_input_text)
 
         click_input_button = QPushButton("Icon!")
