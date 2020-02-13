@@ -8,7 +8,7 @@ from imutils import resize, grab_contours
 # import the necessary packages
 from pyimagesearch.transform import four_point_transform
 from skimage.filters import threshold_sauvola
-from numpy import array, zeros, greater, concatenate, arange, uint16, hsplit, vsplit, squeeze, greater_equal
+from numpy import array, zeros, greater, concatenate, arange, uint16, hsplit, vsplit, squeeze, greater_equal, diff, cumsum, argmin, sum, abs, delete, insert, ndarray, int32
 from matplotlib import pyplot as plt
 from scipy.ndimage import convolve1d
 from scipy.signal import argrelextrema
@@ -94,16 +94,16 @@ def findLinesandNormalise(source, dest=""):
     # load the image and compute the ratio of the old height
     # to the new height, clone it, and resize it
     image = imread(source)
-    if image is None:
-        return
     orig = image.copy()
     #image = resize(image, height=image.shape[0])
 
     # convert the image to grayscale, blur it, and find edges
     # in the image
     gray = cvtColor(image, COLOR_BGR2GRAY)
+    imwrite(dest + "original.png", gray)
     gray = GaussianBlur(gray, (7, 7), 0)
     edged = Canny(gray, 75, 200)
+    imwrite(dest + "edged.png", edged)
 
     # find the contours in the edged image, keeping only the
     # largest ones, and initialize the screen contour
@@ -124,7 +124,7 @@ def findLinesandNormalise(source, dest=""):
     for c in cnts:
         # approximate the contour
         peri = arcLength(c, True)
-        approx = approxPolyDP(c, 0.02 * peri, True)
+        approx = approxPolyDP(c, 0.01 * peri, True)
 
         # if our approximated contour has four points, then we
         # can assume that we have found our screen
@@ -165,6 +165,7 @@ def findLinesandNormalise(source, dest=""):
     imwrite("shit.png", transformed)'''
 
     transformedColour = merge([transformed, transformed, transformed])
+    imwrite(dest + "pagelayout.png", transformedColour)
     colLocations = calculateColumns(transformed)
     for i in colLocations:
         transformedColour[:, i] = (255, 0, 0)
@@ -229,20 +230,80 @@ def calculateColumns(transformed):
     transformedsumx = transformed.sum(axis=0)
     #print(transformedsumx)
     #showImage(transformedsumx)
-    threshold = transformedsumx.max() * 0.85
+    threshold = transformedsumx.max() * 0.99
     columns = zeros(transformedsumx.shape)
     columns[transformedsumx < threshold] = 255
     columns = array(columns).astype(int)
-    columns = convolve1d(convolve1d(convolve1d(columns, array([1,1,1,3,5,8,4,3,1,1,1]), mode="nearest"), array([1,1,1,3,5,8,4,3,1,1,1]), mode="nearest"), array([1,1,1,3,5,8,4,3,1,1,1]), mode="nearest")
+    columns = convolve1d(convolve1d(columns, array([1,1,1,3,5,8,4,3,1,1,1]), mode="nearest"), array([1,1,1,3,5,8,4,3,1,1,1]), mode="nearest")
     columnsfiltered = argrelextrema(columns, greater)[0] + 2
     #columnsfiltered = concatenate(([0], columnsfiltered, [transformedsumx.shape[0] - 1]))
     return columnsfiltered
+
+
+def refactorRows(rowsfiltered):
+    rowsdiff = diff(rowsfiltered)
+    rowsdiffaverage = (rowsfiltered.max() - rowsfiltered.min()) / (rowsfiltered.shape[0]-1)
+
+    print("Average:", rowsdiffaverage)
+
+    print("Old:", rowsfiltered)
+
+
+
+    #for j in range(0,2):
+    i = 0
+    while (i < rowsdiff.shape[0]):
+
+        dif = rowsdiff[i]
+
+        if ((0.6 * rowsdiffaverage) > dif or dif > (1.6 * rowsdiffaverage)):
+
+            if ((0.6 * rowsdiffaverage) > dif):
+                try:
+                    #print(rowsfiltered[i+1])
+                    newVal = (rowsfiltered[i] + rowsfiltered[i + 1])/2
+                    rowsfiltered = delete(rowsfiltered, i + 1)
+                    rowsfiltered = delete(rowsfiltered, i)
+                    rowsfiltered = insert(rowsfiltered, i, int32(newVal))
+                    #print(rowsfiltered)
+                    rowsdiff = delete(rowsdiff, i)
+                    rowsdiff[i] += dif
+                except:
+                    continue
+                if (i < rowsdiff.shape[0] - 1):
+                    i += 1
+                continue
+
+
+            elif (dif > (1.6 * rowsdiffaverage)):
+                #print(rowsfiltered[i+1])
+                rowsfiltered = insert(rowsfiltered, i + 1, int32(rowsfiltered[i] + rowsdiffaverage))
+                #print(rowsfiltered)
+                rowsdiff = insert(rowsdiff, i + 1, int32(dif - rowsdiffaverage))
+
+        i += 1
+
+    print("New:", rowsfiltered)
+
+    return rowsfiltered
+
+
 
 def calculateRows(transformed):
     transformedsumy = transformed.sum(axis=1)[1:-1].astype("int64")
 
     tsy2 = convolve1d(convolve1d(transformedsumy, array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest")
     rowsfiltered = argrelextrema(tsy2, greater_equal)[0]
+
+    rowsfiltered = refactorRows(rowsfiltered)
+
+
+
+
+
+
+
+
 
     #Rows are evenly spread along a page by a set interval - let us guess that interval
     #intervals = diff(rowsfiltered)

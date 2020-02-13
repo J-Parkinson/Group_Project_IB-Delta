@@ -34,8 +34,8 @@ def scanImage(filename, destoffset="-new"):
     first = (image.shape[0] // 100)
     second = ((image.shape[0] // 100)) // 2
     element = getStructuringElement(MORPH_RECT, (first // 2, first // 2), (second // 2, second // 2))
-    edged = dilate(edged, element, iterations=3)
-    edged = erode(edged, element, iterations=2)
+    edged = dilate(edged, element, iterations=32)
+    #edged = erode(edged, element, iterations=2)
 
 
     cnts = findContours(edged.copy(), RETR_LIST, CHAIN_APPROX_SIMPLE)

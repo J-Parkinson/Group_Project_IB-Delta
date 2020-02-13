@@ -12,6 +12,10 @@ Add to frame: QPushButton(text, frame)
 Button style: button.setStyleSheet('QPushButton {background-color: #A3C1DA; color: red;}')
 QStackedWidget
 
+I/O and drawing:
+QMouseEvents
+QPainter: write things in paintEvent(), activate it by calling self.update()
+
 Library:OS
 
 https://docs.google.com/document/d/1q7I-9du1ZoeMD09l301Q9pI_6jJUPRgYLEeV0w6grRI/edit
@@ -28,20 +32,23 @@ Upload page Done, not that hard
 Resizable Done, easy
 
 3rd stage:
-Todo: User preference
+Todo: the dragging page
+Process of reaching the dragging page:
+User choose the input file-> (done!)
+Clicks "Read page" button -> (done!)
+Sees a useless-but-makes-you-feel-the-app-is-quite-reliable progress bar (doing...)
+Sees the dragging page
+Todo: warns users when dropped some non-pdf things
 Todo: 1st time opening the app, shows tutorial automatically
-Todo: a menu
-Todo: Read and show csv file
+Read and show csv file -- Suzie
+
 
 4th stage:
-Todo: the query page
+Todo: add preview page (harder than it looks like, procrastinating...)
 Todo: connecting things together (tbc)
 
 Optional things:
 Dynamic tutorial
-Searching
 
-Several questions:
-Add a menu bar?
-Button concurrency issues...
-Qt has a database?
+Some questions:
+Exit button? Home button & page?

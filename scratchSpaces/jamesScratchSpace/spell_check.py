@@ -81,6 +81,7 @@ def best_guess(word, dictionary):
 
 def pick_guess(guesses):
     best_tags = None
+    best_word = ''
     for word, tags in guesses:
         if best_tags is None or is_better(tags, best_tags):
             best_word = word
