@@ -9,11 +9,12 @@ class ColumnContents(Enum):
 
 class Column:
 
-    def __init__(self, tl, br, pageNo, *args):
+    def __init__(self, tl, br, pageNo, fN,  *args):
         self.tlCoord = tl
         self.brCoord = br
         self.pageNo = 0
         self.contents = {"Upper": False, "Lower": False, "Symbol": False, "Digit": False, "Ditto": False}
+        self.fieldName = fN
         for contentValue in args:
             self.contents[contentValue.value] = True
 
