@@ -1,12 +1,10 @@
 import numpy as np
 from scipy import ndimage
 import cv2
+from tempfile import TemporaryDirectory
 
-from PIL import Image
-import matplotlib.pyplot as plt
 
 img = cv2.imread("../../imagePreprocessing/images/segmentedImagesOut/Page 13/cell-1-2.png")
-
 arr = np.array(img)
 height, width, channels = img.shape
 arr.shape = (height, width, channels)
@@ -19,8 +17,26 @@ def cellToWords(cell): # takes one numpy array
         words = rowToWords(row)
         for word in words:
             newWords.append(removeWhiteSpaceFromWord(word))
+    return newWords
+
+def cellsToDirectory(cells):
+    wordsByCell = []
+    rows = len(cells)
+    for cell in cells:
+        wordsByCell.append(cellToWords(cell))
+
 
     # **do the stuff with the temp directory here**
+    with TemporaryDirectory() as tempdir:
+        for x in newWords:
+            # need to write and somehow store the names of the files in
+            # a new array to give to Francesca's part
+
+            for y in x:
+
+
+
+
 
 
 def rowToWords(row):
