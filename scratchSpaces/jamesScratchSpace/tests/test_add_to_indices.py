@@ -2,7 +2,7 @@ from unittest import TestCase
 from .. import matrix_to_csv
 
 
-class TestMatrixToCSV(TestCase):
+class TestAddToIndices(TestCase):
     def test_add_to_indices_out_of_range(self):
         # Assume
         indices = {}
