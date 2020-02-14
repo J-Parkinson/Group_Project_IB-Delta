@@ -65,7 +65,7 @@ class Window(QWidget):
         pic = QLabel(top_left)
 
         # use full ABSOLUTE path to the image, not relative
-        bPM = QPixmap("/Users/suziewelby/GitHub/Group_Project_IB-Delta/scratchSpaces/suzieScratchSpace/butterfly.png")
+        bPM = QPixmap(os.getcwd() + "/../suzieScratchSpace/butterfly.png")
         bPM = bPM.scaledToWidth(150)
         pic.setPixmap(bPM)
         pic.setGeometry(0, 0, 10, 10)
