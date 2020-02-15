@@ -3,17 +3,17 @@ from tempfile import TemporaryDirectory
 import cv2
 # Imports for testing - plotting histograms
 # TODO: REMOVE
-import matplotlib as plt
 import numpy as np
 from cv2 import getStructuringElement, GaussianBlur, Canny, erode, cvtColor, arcLength, COLOR_BGR2GRAY, approxPolyDP, \
-    CHAIN_APPROX_SIMPLE, dilate, imread, MORPH_RECT, contourArea, findContours, RETR_LIST, imwrite, waitKey
+    CHAIN_APPROX_SIMPLE, dilate, imread, MORPH_RECT, contourArea, findContours, RETR_LIST, imwrite
 from imutils import resize, grab_contours
 from numpy import array, zeros, greater, hsplit, vsplit, greater_equal, diff, delete, insert, int32
 from scipy.ndimage import convolve1d
 from scipy.signal import argrelextrema
 from skimage.filters import threshold_sauvola
 
-
+# Imports for testing - showing histogram of columns
+'''
 def showImage(img, lines=array([]), wait=True):
     plt.plot(img)
 
@@ -24,7 +24,7 @@ def showImage(img, lines=array([]), wait=True):
         plt.show()
         waitKey()
     return
-
+'''
 
 # Imports for testing - scanning in PDFs
 '''
@@ -82,9 +82,8 @@ pdfToImages("images/scantest.pdf", "images/pdftest/", "image", ".png")
 
 ''' splitCellsAndNormalise
     Normalises the image, splits into cells, performs word detection, deslants words, and resizes ready for our NN.
-    Returns a directory for the images to be word-detected.'''
-
-
+    Returns a directory for the images to be word-detected.
+'''
 def splitCellsAndNormalise(source):
     # load the image and compute the ratio of the old height
     # to the new height, clone it, and resize it
@@ -118,8 +117,6 @@ def splitCellsAndNormalise(source):
     Calculates which of the four coordinates provided are which (TL, BR, TR, BL)
     Returns rect, with coords in CW direction, and the first coordinate being the top left coord
 '''
-
-
 def orderPoints(pts):
     # initialzie a list of coordinates that will be ordered
     # such that the first entry in the list is the top-left,
@@ -246,6 +243,10 @@ def normaliseImage(image, orig):
     return transformed
 
 
+''' storeFilesTemporarily
+    Takes cells and stores these cells in a temp dir
+    Returns the string of the dir
+    Not used - for testing purposes'''
 def storeFilesTemporarily(cells, noCols):
     # create new temp directory
     with TemporaryDirectory() as dir:
@@ -257,18 +258,16 @@ def storeFilesTemporarily(cells, noCols):
 
 ''' splitIntoCells
     Splits a large image at the prescribed locations given by [rows] and [cols], and returns a flat list of each sub-image (cell)
-    Returns a list of binary cell images'''
-
-
+    Returns a list of binary cell images
+'''
 def splitIntoCells(image, rows, cols):
     return [a for b in [hsplit(row, cols) for row in vsplit(image, rows)] for a in b]
 
 
 ''' calculateColumns
     Calculates the column locations
-    Returns a list of binary cell images'''
-
-
+    Returns a list of binary cell images
+'''
 def calculateColumns(transformed):
     # find the sum of the columns of pixels - white given as 255, black given as 0
     transformedsumx = transformed.sum(axis=0)
@@ -296,9 +295,8 @@ def calculateColumns(transformed):
 
 ''' refactorRows
     Takes the suggested rows, and interpolates in order to fill in gaps or remove thin lines
-    Returns interpolated rows'''
-
-
+    Returns interpolated rows
+'''
 def refactorRows(rowsfiltered):
     # Find difference between adjacent row lines (i.e. row thicknesses)
     rowsdiff = diff(rowsfiltered)
@@ -340,9 +338,8 @@ def refactorRows(rowsfiltered):
 
 ''' calculateRows
     Calculates position of rows using histogram analysis
-    Returns locations of rows in list'''
-
-
+    Returns locations of rows in list
+'''
 def calculateRows(transformed):
     # Find the sum of each row - white = 255, black = 0
     transformedsumy = transformed.sum(axis=1)[1:-1].astype("int64")
