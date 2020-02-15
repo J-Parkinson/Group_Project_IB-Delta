@@ -10,7 +10,7 @@ import time
 class State(Enum):
     Unloaded = 0
     Loaded = 1
-    Running = 2  # Don't know if this is gonna be helpful in the future or not lol
+    Running = 2
 
 
 class dnd_widget(QLabel):
@@ -115,11 +115,18 @@ class file_select(QWidget):
             print(fileName)
 
     def upload(self):
-
+        '''
+        Commented out for easy testing
+        self.show_progress_bar()
+        self.state = State.Running
+        self.parent.parent.state = 1  # Loading
+        self.parent.setCurrentIndex(1)
+        '''
         if self.state == State.Loaded:
             self.show_progress_bar()
-            self.state = State.Unloaded
+            self.state = State.Running
             self.parent.parent.state = 1  # Loading
+            self.parent.setCurrentIndex(1)
 
         else:
             msg = QMessageBox()
@@ -137,6 +144,22 @@ class file_select(QWidget):
         return
 
 
+class drag_page(QWidget):
+
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+
+        layout = QVBoxLayout()
+        preview = QWidget()
+        b = QPushButton("Working atm\nClick me to go back", preview)
+        b.clicked.connect(lambda x:self.parent.setCurrentIndex(0))
+        control = QWidget()
+        layout.addWidget(preview)
+        layout.addWidget(control)
+        self.setLayout(layout)
+
+
 class upload_page(QStackedWidget):
 
     def __init__(self, parent):
@@ -145,5 +168,9 @@ class upload_page(QStackedWidget):
 
         file_select_page = file_select(self)
 
+        drag = drag_page(self)
+
+
         self.addWidget(file_select_page)
+        self.addWidget(drag)
         self.setCurrentIndex(0)

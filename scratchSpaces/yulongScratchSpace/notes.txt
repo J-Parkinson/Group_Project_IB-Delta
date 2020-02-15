@@ -36,14 +36,24 @@ Todo: the dragging page
 Process of reaching the dragging page:
 User choose the input file-> (done!)
 Clicks "Read page" button -> (done!)
-Sees a useless-but-makes-you-feel-the-app-is-quite-reliable progress bar (doing...)
+Sees a useless-but-makes-you-feel-the-app-is-quite-reliable progress bar (doing it later...)
 Sees the dragging page
 Todo: warns users when dropped some non-pdf things
 Todo: 1st time opening the app, shows tutorial automatically
 Read and show csv file -- Suzie
 
+New things from dragging page:
+Confirm button clicked
+The backend running...
+Todo: Something to show the user while it is running
+Todo:(fun butterfly facts?) (fun computer science facts???) client says both!
+Save file page shown (already done!)
 
-4th stage:
+Another function: split to standard format button
+Todo: design and implement the page......
+
+
+Far, far away stage:
 Todo: add preview page (harder than it looks like, procrastinating...)
 Todo: connecting things together (tbc)
 
