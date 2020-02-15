@@ -1,8 +1,6 @@
 from tempfile import TemporaryDirectory
 
 import cv2
-# Imports for testing - plotting histograms
-# TODO: REMOVE
 import numpy as np
 from cv2 import getStructuringElement, GaussianBlur, Canny, erode, cvtColor, arcLength, COLOR_BGR2GRAY, approxPolyDP, \
     CHAIN_APPROX_SIMPLE, dilate, imread, MORPH_RECT, contourArea, findContours, RETR_LIST, imwrite
@@ -11,6 +9,9 @@ from numpy import array, zeros, greater, hsplit, vsplit, greater_equal, diff, de
 from scipy.ndimage import convolve1d
 from scipy.signal import argrelextrema
 from skimage.filters import threshold_sauvola
+
+from dataStructures.logbookScan import Column, PageLayout
+from frontend.ColumnScreen import queryUserAboutColumns
 
 # Imports for testing - showing histogram of columns
 '''
@@ -96,11 +97,15 @@ def splitCellsAndNormalise(source):
     # determines where the columns are
     colLocations = calculateColumns(transformed)
 
+    # adjust columns depending on user input to fix stuff
+    adjusted, newColLocations, minX, maxX, minY, maxY, columnObjects = handleColumns(colLocations, image.shape[0],
+                                                                                     image.shape[1])
+
     # determines where the rows are - interpolation used (so assuming equally spaced lines)
-    rowLocations = calculateRows(transformed)
+    rowLocations = calculateRows(adjusted)
 
     # splits image along col and row locations
-    cells = splitIntoCells(transformed, rowLocations, colLocations)
+    cells = splitIntoCells(adjusted, rowLocations, newColLocations)
 
     '''dir = storeFilesTemporarily(cells, len(colLocations))'''
 
@@ -113,10 +118,41 @@ def splitCellsAndNormalise(source):
     return None  # will eventually return string representing the location of the dir Francesca is using to read in cells and
 
 
+''' handleColumns
+    Checks with the user if the columns are in the correct location, and returns the new user-made columns
+    Returns user-checked columns
+'''
+
+
+def handleColumns(cols, height, image):
+    columnObjects = PageLayout(1)
+    for x in range(0, len(cols) - 2):
+        newColumn = Column((cols[x], 0), (cols[x + 1], height), 0, "COLUMN NAME HERE")
+        columnObjects.addColumn(newColumn)
+
+    newCols = queryUserAboutColumns(columnObjects)
+
+    maxY, maxX, minY, minX = 0
+
+    for columm in newCols:
+        maxY = max(maxY, columm.getCoords()[0][1], columm.getCoords()[1][1])
+        minY = min(minY, columm.getCoords()[0][1], columm.getCoords()[1][1])
+        maxX = max(maxX, columm.getCoords()[0][0], columm.getCoords()[1][0])
+        minX = min(minX, columm.getCoords()[0][0], columm.getCoords()[1][0])
+
+    allColX = [col[0][0] - minX for col in newCols.getCoords()] + [col[1][0] - minX for col in newCols.getCoords()]
+
+    newImage = image[minY:maxY][minX:maxX]
+
+    return (newImage, newCols, minX, maxX, minY, maxY, allColX)
+
+
 ''' orderPoints
     Calculates which of the four coordinates provided are which (TL, BR, TR, BL)
     Returns rect, with coords in CW direction, and the first coordinate being the top left coord
 '''
+
+
 def orderPoints(pts):
     # initialzie a list of coordinates that will be ordered
     # such that the first entry in the list is the top-left,
@@ -290,6 +326,7 @@ def calculateColumns(transformed):
     # +2 used to combat asymmetry of convolutions
     # find max vals (i.e. most probable cols)
     columnsfiltered = argrelextrema(columns, greater)[0] + 2
+    columnsfiltered = [0] + columnsfiltered + [len(transformedsumx)]
     return columnsfiltered
 
 
