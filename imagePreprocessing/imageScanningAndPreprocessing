@@ -1,23 +1,123 @@
 from tempfile import TemporaryDirectory
 
 import cv2
+# Imports for testing - plotting histograms
+# TODO: REMOVE
+import matplotlib as plt
 import numpy as np
-from cv2 import getStructuringElement, GaussianBlur, Canny, erode, cvtColor, \
-    arcLength, COLOR_BGR2GRAY, approxPolyDP, CHAIN_APPROX_SIMPLE, dilate, imread, MORPH_RECT, contourArea, \
-    findContours, RETR_LIST, imwrite
+from cv2 import getStructuringElement, GaussianBlur, Canny, erode, cvtColor, arcLength, COLOR_BGR2GRAY, approxPolyDP, \
+    CHAIN_APPROX_SIMPLE, dilate, imread, MORPH_RECT, contourArea, findContours, RETR_LIST, imwrite, waitKey
 from imutils import resize, grab_contours
 from numpy import array, zeros, greater, hsplit, vsplit, greater_equal, diff, delete, insert, int32
 from scipy.ndimage import convolve1d
 from scipy.signal import argrelextrema
-# import the necessary packages
 from skimage.filters import threshold_sauvola
 
-# import fitz
+
+def showImage(img, lines=array([]), wait=True):
+    plt.plot(img)
+
+    for coord in lines:
+        plt.axvline(x=coord)
+
+    if wait:
+        plt.show()
+        waitKey()
+    return
+
+
+# Imports for testing - scanning in PDFs
+'''
+import fitz
+from os import makedirs, listdir
+from sys import stderr
+from tempfile import NamedTemporaryFile
+
+def safeMakeDir(dir):
+    if not path.exists(dir):
+        makedirs(dir)
+    else:
+        stderr.write("Path " + dir + " already exists.\n")
+        stderr.flush()
+
+def pdfToImages(source, destFolder, filename, suffix, offset=0):
+
+    safeMakeDir(destFolder[:-1])
+
+    allImages = fitz.open(source)
+    for x, page in enumerate(allImages):
+        with NamedTemporaryFile(suffix=suffix) as temp:
+            page.getPixmap().writePNG(temp.name)
+            #scanImage(temp.name, destFolder + filename + str(x + offset) + suffix)
+            safeMakeDir(destFolder + "Page " + str(x + offset))
+            findLinesandNormalise(temp.name, destFolder + "Page " + str(x + offset) + "/")
+    return len(allImages)
+
+def directoryMixedToDirectoryImages(directory, destFolder, filename, suffix):
+    countNoImages = 0
+
+    for file in listdir(directory):
+        currentFilename = file.lower()
+
+        if currentFilename.endswith(".pdf"):
+
+            countNoImages += pdfToImages(directory + currentFilename, destFolder, filename, suffix, countNoImages)
+
+        elif currentFilename.endswith((".png", ".jpg", ".jpeg")):
+
+            safeMakeDir(destFolder + "Page " + str(countNoImages))
+
+            #scanImage(directory + currentFilename, destFolder + filename + str(countNoImages) + suffix)
+            findLinesandNormalise(directory + currentFilename, destFolder + "Page " + str(countNoImages) + "/")
+            countNoImages += 1
+
+        else:
+            continue
+    return
+
+pdfToImages("images/scantest.pdf", "images/pdftest/", "image", ".png")
+
+#directoryMixedToDirectoryImages("images/New Scans Small/", "images/segmentedImagesOut/", "image", ".png")
+'''
+
+''' splitCellsAndNormalise
+    Normalises the image, splits into cells, performs word detection, deslants words, and resizes ready for our NN.
+    Returns a directory for the images to be word-detected.'''
+
+
+def splitCellsAndNormalise(source):
+    # load the image and compute the ratio of the old height
+    # to the new height, clone it, and resize it
+    image = imread(source)
+    orig = image.copy()
+
+    # deslants page into a rectangle - perspective transform
+    transformed = normaliseImage(image, orig)
+
+    # determines where the columns are
+    colLocations = calculateColumns(transformed)
+
+    # determines where the rows are - interpolation used (so assuming equally spaced lines)
+    rowLocations = calculateRows(transformed)
+
+    # splits image along col and row locations
+    cells = splitIntoCells(transformed, rowLocations, colLocations)
+
+    '''dir = storeFilesTemporarily(cells, len(colLocations))'''
+
+    ''' So at the moment we have it split into cells, and a flat 1d Python list of cells (1d list of 2d Numpy arrays of B/W cells)
+        Row number = x // len(colLocations)
+        Col number = x % len(colLocations)
+        Run your code on each element in that and yh should work :D
+    '''
+
+    return None  # will eventually return string representing the location of the dir Francesca is using to read in cells and
 
 
 ''' orderPoints
     Calculates which of the four coordinates provided are which (TL, BR, TR, BL)
-    Returns rect, with coords in CW direction, and the first coordinate being the top left coord'''
+    Returns rect, with coords in CW direction, and the first coordinate being the top left coord
+'''
 
 
 def orderPoints(pts):
@@ -46,9 +146,8 @@ def orderPoints(pts):
 
 ''' fourPointTransform
     Finds the points which we can pass to cv2.PerspectiveTransform/warpPerspective
-    Returns warped image'''
-
-
+    Returns warped image
+'''
 def fourPointTransform(image, pts):
     # obtain a consistent order of the points and unpack them
     # individually
@@ -89,9 +188,9 @@ def fourPointTransform(image, pts):
 
 
 ''' normaliseImage
-    Takes our original image, converts to greyscale, finds the contours of the page and performs a perspective transform on the original image'''
-
-
+    Takes our original image, converts to greyscale, finds the contours of the page and performs a perspective transform on the original image
+    Returns B/W thresholded, transformed image
+'''
 def normaliseImage(image, orig):
     # convert the image to grayscale, blur it, and find edges
     # in the image
@@ -147,56 +246,74 @@ def normaliseImage(image, orig):
     return transformed
 
 
-def findLinesandNormalise(source, dest):
-    # load the image and compute the ratio of the old height
-    # to the new height, clone it, and resize it
-    image = imread(source)
-    orig = image.copy()
-
-    transformed = normaliseImage(image, orig)
-
-    colLocations = calculateColumns(transformed)
-
-    rowLocations = calculateRows(transformed)
-
-    cells = splitIntoCells(transformed, rowLocations, colLocations)
-
+def storeFilesTemporarily(cells, noCols):
+    # create new temp directory
     with TemporaryDirectory() as dir:
         for x, image in enumerate(cells):
-            imwrite(dir + "/cell-" + str(x // len(colLocations)) + "-" + str(x % len(colLocations)) + ".png", image)
+            # write to temp dir, with name referencing position in image
+            imwrite(dir + "/cell-" + str(x // noCols) + "-" + str(x % noCols) + ".png", image)
+    return dir
 
-    return
+
+''' splitIntoCells
+    Splits a large image at the prescribed locations given by [rows] and [cols], and returns a flat list of each sub-image (cell)
+    Returns a list of binary cell images'''
 
 
 def splitIntoCells(image, rows, cols):
-    splitRows = vsplit(image, rows)
+    return [a for b in [hsplit(row, cols) for row in vsplit(image, rows)] for a in b]
 
-    return [a for b in [hsplit(row, cols) for row in splitRows] for a in b]
+
+''' calculateColumns
+    Calculates the column locations
+    Returns a list of binary cell images'''
 
 
 def calculateColumns(transformed):
+    # find the sum of the columns of pixels - white given as 255, black given as 0
     transformedsumx = transformed.sum(axis=0)
+
+    # find the threshold
     threshold = transformedsumx.max() * 0.99
     columns = zeros(transformedsumx.shape)
+    # Set non-columns to 255
     columns[transformedsumx < threshold] = 255
+
+    '''#TODO: REMOVE- USED FOR TESTING
+    showImage(columns)'''
+
+    # Create new column Numpy array (for convolutions)
     columns = array(columns).astype(int)
+    # Convolve to smooth spikes and remove adjacent spikes (by smoothing into each other)
+    # Asymmetric to try and combat dual spikes
     columns = convolve1d(convolve1d(columns, array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"),
                          array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest")
+    # +2 used to combat asymmetry of convolutions
+    # find max vals (i.e. most probable cols)
     columnsfiltered = argrelextrema(columns, greater)[0] + 2
     return columnsfiltered
 
 
+''' refactorRows
+    Takes the suggested rows, and interpolates in order to fill in gaps or remove thin lines
+    Returns interpolated rows'''
+
+
 def refactorRows(rowsfiltered):
+    # Find difference between adjacent row lines (i.e. row thicknesses)
     rowsdiff = diff(rowsfiltered)
+    # Find average
     rowsdiffaverage = (rowsfiltered.max() - rowsfiltered.min()) / (rowsfiltered.shape[0] - 1)
 
     i = 0
+    # Loop over shape of rowsdiff
     while (i < rowsdiff.shape[0]):
 
         dif = rowsdiff[i]
 
         if ((0.6 * rowsdiffaverage) > dif or dif > (1.6 * rowsdiffaverage)):
 
+            #if too small interpolate row in middle of existing rows
             if ((0.6 * rowsdiffaverage) > dif):
                 try:
                     newVal = (rowsfiltered[i] + rowsfiltered[i + 1]) / 2
@@ -211,6 +328,7 @@ def refactorRows(rowsfiltered):
                     i += 1
                 continue
 
+            # if too large insert one row with average thickness
             elif (dif > (1.6 * rowsdiffaverage)):
                 rowsfiltered = insert(rowsfiltered, i + 1, int32(rowsfiltered[i] + rowsdiffaverage))
                 rowsdiff = insert(rowsdiff, i + 1, int32(dif - rowsdiffaverage))
@@ -220,61 +338,22 @@ def refactorRows(rowsfiltered):
     return rowsfiltered
 
 
+''' calculateRows
+    Calculates position of rows using histogram analysis
+    Returns locations of rows in list'''
+
+
 def calculateRows(transformed):
+    # Find the sum of each row - white = 255, black = 0
     transformedsumy = transformed.sum(axis=1)[1:-1].astype("int64")
 
+    # convolve - smooth out response, remove small rows next to each other
     tsy2 = convolve1d(convolve1d(transformedsumy, array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"),
                       array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest")
+
+    # find max vals (i.e. most probable rows)
     rowsfiltered = argrelextrema(tsy2, greater_equal)[0]
 
+    # interpolate rows to remove anomalies
     rowsfiltered = refactorRows(rowsfiltered)
     return rowsfiltered
-
-
-'''
-
-def safeMakeDir(dir):
-    if not path.exists(dir):
-        makedirs(dir)
-    else:
-        stderr.write("Path " + dir + " already exists.\n")
-        stderr.flush()
-
-def pdfToImages(source, destFolder, filename, suffix, offset=0):
-
-    safeMakeDir(destFolder[:-1])
-
-    allImages = fitz.open(source)
-    for x, page in enumerate(allImages):
-        with NamedTemporaryFile(suffix=suffix) as temp:
-            page.getPixmap().writePNG(temp.name)
-            #scanImage(temp.name, destFolder + filename + str(x + offset) + suffix)
-            safeMakeDir(destFolder + "Page " + str(x + offset))
-            findLinesandNormalise(temp.name, destFolder + "Page " + str(x + offset) + "/")
-    return len(allImages)
-
-def directoryMixedToDirectoryImages(directory, destFolder, filename, suffix):
-    countNoImages = 0
-
-    for file in listdir(directory):
-        currentFilename = file.lower()
-
-        if currentFilename.endswith(".pdf"):
-
-            countNoImages += pdfToImages(directory + currentFilename, destFolder, filename, suffix, countNoImages)
-
-        elif currentFilename.endswith((".png", ".jpg", ".jpeg")):
-
-            safeMakeDir(destFolder + "Page " + str(countNoImages))
-
-            #scanImage(directory + currentFilename, destFolder + filename + str(countNoImages) + suffix)
-            findLinesandNormalise(directory + currentFilename, destFolder + "Page " + str(countNoImages) + "/")
-            countNoImages += 1
-
-        else:
-            continue
-    return
-
-pdfToImages("images/scantest.pdf", "images/pdftest/", "image", ".png")
-
-#directoryMixedToDirectoryImages("images/New Scans Small/", "images/segmentedImagesOut/", "image", ".png")'''
