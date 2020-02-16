@@ -1,7 +1,7 @@
 from enum import Enum
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxLayout, QPushButton, QFileDialog, \
-    QMessageBox, QProgressBar, QDialog
+    QMessageBox, QProgressBar, QDialog, QListWidget, QLineEdit
 from PyQt5.QtCore import Qt
 
 import time
@@ -29,7 +29,7 @@ class dnd_widget(QLabel):
     def dropEvent(self, e):
         filename = e.mimeData().text()
         self.parent.state = State.Loaded
-        self.parent.filename = filename
+        self.parent.parent.filename = filename
         print(filename)
 
 
@@ -40,7 +40,7 @@ class file_select(QWidget):
         layout = QVBoxLayout()
         self.parent = parent
         self.state = State.Unloaded
-        self.filename = ""
+
         #################################################
         # Welcome text (upload page)
         #################################################
@@ -61,6 +61,7 @@ class file_select(QWidget):
         d_n_p = QStackedWidget()
         d_n_p.addWidget(drag_n_drop)
         d_n_p.setCurrentIndex(0)
+        # Todo: PDF preview
 
         layout.addWidget(d_n_p)
         layout.setAlignment(d_n_p, Qt.AlignCenter)
@@ -111,16 +112,19 @@ class file_select(QWidget):
         if fileName:
             # Todo: Do something here! Load the file! Show a pretty preview!
             self.state = State.Loaded
-            self.filename = fileName
+            self.parent.filename = fileName
             print(fileName)
 
     def upload(self):
         '''
         Commented out for easy testing
+        '''
         self.show_progress_bar()
         self.state = State.Running
         self.parent.parent.state = 1  # Loading
         self.parent.setCurrentIndex(1)
+        self.parent.drag.reset()
+
         '''
         if self.state == State.Loaded:
             self.show_progress_bar()
@@ -138,9 +142,63 @@ class file_select(QWidget):
             # msg.setStandardButtons(QMessageBox.Ok)
 
             msg.exec_()
+        #'''
 
     def show_progress_bar(self):
         # Todo: add a fake progress bar
+        return
+
+
+class preview(QWidget):
+    def __init__(self):
+        super().__init__()
+        b = QPushButton("Working atm\nClick me to go back", self)
+
+    def draw(self, page):
+        # draw the boxes
+        return
+
+
+class control(QWidget):
+    def __init__(self):
+        super().__init__()
+        layout = QHBoxLayout()
+
+        self.buttons = self.init_buttons()
+        layout.addWidget(self.buttons)
+
+        self.columns = QListWidget()
+        self.edit = QLineEdit()
+
+        layout.addWidget(self.columns)
+        layout.addWidget(self.edit)
+        self.setLayout(layout)
+
+    def init_buttons(self):
+        buttons = QWidget()
+        buttons_layout = QVBoxLayout()
+
+        add_button = QPushButton("Add")
+        del_button = QPushButton("Delete")
+        cfm_button = QPushButton("Confirm")
+
+        buttons_layout.addWidget(add_button)
+        buttons_layout.addWidget(del_button)
+        buttons_layout.addWidget(cfm_button)
+
+        buttons.setLayout(buttons_layout)
+        return buttons
+
+    def add(self):
+        # Add a new box
+        return
+
+    def delete(self):
+        # Delete current box
+        return
+
+    def confirm(self):
+        # Confirm boxes, go to backend
         return
 
 
@@ -151,13 +209,18 @@ class drag_page(QWidget):
         self.parent = parent
 
         layout = QVBoxLayout()
-        preview = QWidget()
-        b = QPushButton("Working atm\nClick me to go back", preview)
-        b.clicked.connect(lambda x:self.parent.setCurrentIndex(0))
-        control = QWidget()
-        layout.addWidget(preview)
-        layout.addWidget(control)
+        self.preview = preview()
+        self.control = control()
+
+        layout.addWidget(self.preview)
+        layout.addWidget(self.control)
+        layout.setStretch(1, 1)
+        layout.setStretch(0, 2.5)
         self.setLayout(layout)
+
+    def reset(self):
+        print(1)
+        # To backend function: filename -> page layout
 
 
 class upload_page(QStackedWidget):
@@ -165,12 +228,11 @@ class upload_page(QStackedWidget):
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
+        self.filename = ""
+        self.file_select_page = file_select(self)
 
-        file_select_page = file_select(self)
+        self.drag = drag_page(self)
 
-        drag = drag_page(self)
-
-
-        self.addWidget(file_select_page)
-        self.addWidget(drag)
+        self.addWidget(self.file_select_page)
+        self.addWidget(self.drag)
         self.setCurrentIndex(0)

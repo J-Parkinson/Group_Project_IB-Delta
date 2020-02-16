@@ -151,6 +151,7 @@ class Window(QWidget):
             buttons[0].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
             bottom_right.setCurrentIndex(0)
             upload_page.state = 0  # Unloaded
+            upload_page.setCurrentIndex(0)
 
         buttons[0].setText("Upload PDF")
         buttons[0].clicked.connect(upload_signal)
@@ -216,7 +217,6 @@ class Window(QWidget):
         msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
 
         return_value = msg.exec_()
-        print(return_value)
         return return_value == QMessageBox.Yes
 
     def run(self):
