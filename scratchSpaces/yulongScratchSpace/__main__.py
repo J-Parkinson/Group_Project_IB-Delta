@@ -10,7 +10,7 @@ from pathlib import Path
 import os
 
 from scratchSpaces.yulongScratchSpace import upload_widget
-from scratchSpaces.suzieScratchSpace import saveCSV
+from scratchSpaces.suzieScratchSpace import saveCSV, modifyCSV
 
 application = QApplication([])
 
@@ -104,7 +104,9 @@ class Window(QWidget):
 
         # Data page
         # Todo: make it prettier!
-        data_page = saveCSV.saveCSVWindow()
+        #data_page = saveCSV.saveCSVWindow()
+
+        data_page = modifyCSV.modifyCSVWindow()
 
         # Tutorial page, working atm
         # Todo: design a tutorial page, but not now, no hurry
