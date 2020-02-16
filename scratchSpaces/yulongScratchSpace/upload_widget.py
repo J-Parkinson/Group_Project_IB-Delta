@@ -1,15 +1,13 @@
 from enum import Enum
 
+from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxLayout, QPushButton, QFileDialog, \
-    QMessageBox, QProgressBar, QDialog, QListWidget, QLineEdit
+    QMessageBox, QProgressBar, QDialog, QListWidget, QLineEdit, QGridLayout
 from PyQt5.QtCore import Qt
 
 import dataStructures.logbookScan as Scan
 
 import time
-
-test = Scan.PageLayout(1)
-test.addColumn(Scan.Column(0,50,0,""))
 
 
 class State(Enum):
@@ -169,22 +167,61 @@ class control(QWidget):
         super().__init__()
         layout = QHBoxLayout()
 
-        self.buttons = self.init_buttons()
-        layout.addWidget(self.buttons)
-
         self.columns = QListWidget()
-        self.edit = QLineEdit()
+        self.page = None
+        self.name_index = 0
+        self.edit = self.init_lines()
+        self.buttons = self.init_buttons()
 
+        layout.addWidget(self.buttons)
         layout.addWidget(self.columns)
         layout.addWidget(self.edit)
         self.setLayout(layout)
+
+    def init_lines(self):
+        lines = QWidget()
+        layout = QGridLayout()
+
+        layout.addWidget(QLabel("Top-left Corner:"),0,0)
+
+        lines.tlx = QLineEdit()
+        lines.tlx.setValidator(QIntValidator())
+        lines.tlx.setMaxLength(4)
+        layout.addWidget(lines.tlx,0,1)
+
+        lines.tly = QLineEdit()
+        lines.tly.setValidator(QIntValidator())
+        lines.tly.setMaxLength(4)
+        layout.addWidget(lines.tly,0,2)
+
+        layout.addWidget(QLabel("Bottom-right Corner:"),1,0)
+
+        lines.brx = QLineEdit()
+        lines.brx.setValidator(QIntValidator())
+        lines.brx.setMaxLength(4)
+        layout.addWidget(lines.brx,1,1)
+
+        lines.bry = QLineEdit()
+        lines.bry.setValidator(QIntValidator())
+        lines.bry.setMaxLength(4)
+        layout.addWidget(lines.bry,1,2)
+
+        layout.addWidget(QLabel("Column Title:"),2,0)
+        lines.title = QLineEdit()
+        layout.addWidget(lines.title,2,1,1,2)
+
+        lines.setLayout(layout)
+        return lines
 
     def init_buttons(self):
         buttons = QWidget()
         buttons_layout = QVBoxLayout()
 
         add_button = QPushButton("Add")
+        add_button.clicked.connect(self.add)
+
         del_button = QPushButton("Delete")
+        del_button.clicked.connect(self.delete)
         cfm_button = QPushButton("Confirm")
 
         buttons_layout.addWidget(add_button)
@@ -196,18 +233,25 @@ class control(QWidget):
 
     def add(self):
         # Add a new box
+        self.columns.addItem("new column " + str(self.name_index))
+        self.name_index += 1
+        # Todo: manage data structure
         return
 
     def delete(self):
         # Delete current box
+        self.columns.takeItem(self.columns.currentRow())
+        # Todo: manage data structure
         return
 
     def confirm(self):
         # Confirm boxes, go to backend
         return
 
-    def reset(self,page):
-        # fetch things
+    def reset(self, page):
+        self.page = page
+        self.name_index = 0
+        self.columns.clear()
         return
 
 
