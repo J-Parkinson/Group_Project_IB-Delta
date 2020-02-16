@@ -4,7 +4,12 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxL
     QMessageBox, QProgressBar, QDialog, QListWidget, QLineEdit
 from PyQt5.QtCore import Qt
 
+import dataStructures.logbookScan as Scan
+
 import time
+
+test = Scan.PageLayout(1)
+test.addColumn(Scan.Column(0,50,0,""))
 
 
 class State(Enum):
@@ -154,7 +159,7 @@ class preview(QWidget):
         super().__init__()
         b = QPushButton("Working atm\nClick me to go back", self)
 
-    def draw(self, page):
+    def reset(self, page):
         # draw the boxes
         return
 
@@ -199,6 +204,10 @@ class control(QWidget):
 
     def confirm(self):
         # Confirm boxes, go to backend
+        return
+
+    def reset(self,page):
+        # fetch things
         return
 
 

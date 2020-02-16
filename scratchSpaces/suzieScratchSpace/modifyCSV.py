@@ -25,7 +25,7 @@ class modifyCSVWindow(QWidget):
 
         plus = QPushButton("+")
 # TODO: find paper with layout on and work out layout grid and how to add to grid
-        plush.clicked.connect(self.addnewDropDown(plus1, ))
+        #plush.clicked.connect(self.addnewDropDown(plus1, ))
 
         dropDown = QComboBox()
         dropDown.addItems(["item 1", "item 2", "item 3"])

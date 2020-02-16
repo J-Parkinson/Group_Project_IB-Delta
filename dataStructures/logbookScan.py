@@ -46,7 +46,7 @@ class PageLayout:
         self.columnList = []
 
     def addColumn(self, column):
-        self.columnList.add(column)
+        self.columnList.append(column)
 
     def removeColumn(self, column):
         self.columnList.remove(column)
