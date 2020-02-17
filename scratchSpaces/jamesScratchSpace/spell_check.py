@@ -102,7 +102,7 @@ test = 'cloan'
 test_dict = get_dictionary('./scratchSpaces/jamesScratchSpace/dict2.txt')
 print(f'Correcting \'{test}\' to \'{best_guess(test, test_dict)}\'')
 
-test = "Lycaene phlaeees"
-test_dict = get_dictionary('./scratchSpaces/jamesScratchSpace/species_dict.txt')
+test = "Euclidia glyphica"
+test_dict = get_dictionary('./scratchSpaces/jamesScratchSpace/NHM_butterfly_dict.txt')
 print(f'Correcting \'{test}\' to \'{correct_latin_name(test, test_dict)}\'')
 

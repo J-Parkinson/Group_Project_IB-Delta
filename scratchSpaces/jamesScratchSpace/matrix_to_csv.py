@@ -129,7 +129,7 @@ def matrix_to_csv(table, path):
 def matrix_to_standard(table, field_map, joiner=' '):
     # the field map will map the standard field headers to table's field headers
     result = [["" for _ in range(len(STANDARD_HEADER[0]))] for _ in range(len(table) - 1)]
-    for i in [1, 2]:
+    for i in range(len(STANDARD_HEADER)):
         for field in STANDARD_HEADER[i]:
             if field in field_map:
                 std_field_index = STANDARD_HEADER[1].index(field)
@@ -167,7 +167,6 @@ std_test = [['Invertebrates; Insects', 'Object', 'Present', 'I.2019.2147', '', '
 
 matrix_to_csv(test, './jamesScratchSpace/test.csv')
 matrix_to_csv(test2, './jamesScratchSpace/test2.csv')
-matrix_to_csv(STANDARD_HEADER + std_test, './jamesScratchSpace/test3.csv')
 
 split_col(test2, 'Present Determination', ['Genus', 'Species'])
 split_col(test2, 'Determined By', ['First name', 'Middle Names', 'Surname'], optional=['0', '*', '-1'])
