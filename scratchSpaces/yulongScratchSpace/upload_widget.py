@@ -1,6 +1,6 @@
 from enum import Enum
 
-from PyQt5.QtGui import QIntValidator
+from PyQt5.QtGui import QIntValidator, QPainter
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxLayout, QPushButton, QFileDialog, \
     QMessageBox, QProgressBar, QDialog, QListWidget, QLineEdit, QGridLayout
 from PyQt5.QtCore import Qt
@@ -8,6 +8,12 @@ from PyQt5.QtCore import Qt
 import dataStructures.logbookScan as Scan
 
 import time
+
+test = Scan.PageLayout(1)
+test.addColumn(Scan.Column((0, 0), (40, 200), 1, "name"))
+test.addColumn(Scan.Column((50, 0), (90, 200), 1, "name"))
+test.addColumn(Scan.Column((100, 0), (140, 200), 1, "name"))
+test.addColumn(Scan.Column((150, 0), (190, 200), 1, "name"))
 
 
 class State(Enum):
@@ -155,11 +161,22 @@ class file_select(QWidget):
 class preview(QWidget):
     def __init__(self):
         super().__init__()
-        b = QPushButton("Working atm\nClick me to go back", self)
+        self.page = None
+        b = QPushButton("Working atm\nClick me to reduce stress :-)", self)
 
     def reset(self, page):
         # draw the boxes
+        self.page = page
+        self.update()
         return
+
+    def paintEvent(self, e):
+        qp = QPainter()
+        qp.begin(self)
+        for c in self.page.columnList:
+            (x1, y1), (x2, y2) = c.getCoords()
+            qp.drawRect(x1, y1, x2 - x1, y2 - y1)
+        qp.end()
 
 
 class control(QWidget):
@@ -182,33 +199,33 @@ class control(QWidget):
         lines = QWidget()
         layout = QGridLayout()
 
-        layout.addWidget(QLabel("Top-left Corner:"),0,0)
+        layout.addWidget(QLabel("Top-left Corner:"), 0, 0)
 
         lines.tlx = QLineEdit()
         lines.tlx.setValidator(QIntValidator())
         lines.tlx.setMaxLength(4)
-        layout.addWidget(lines.tlx,0,1)
+        layout.addWidget(lines.tlx, 0, 1)
 
         lines.tly = QLineEdit()
         lines.tly.setValidator(QIntValidator())
         lines.tly.setMaxLength(4)
-        layout.addWidget(lines.tly,0,2)
+        layout.addWidget(lines.tly, 0, 2)
 
-        layout.addWidget(QLabel("Bottom-right Corner:"),1,0)
+        layout.addWidget(QLabel("Bottom-right Corner:"), 1, 0)
 
         lines.brx = QLineEdit()
         lines.brx.setValidator(QIntValidator())
         lines.brx.setMaxLength(4)
-        layout.addWidget(lines.brx,1,1)
+        layout.addWidget(lines.brx, 1, 1)
 
         lines.bry = QLineEdit()
         lines.bry.setValidator(QIntValidator())
         lines.bry.setMaxLength(4)
-        layout.addWidget(lines.bry,1,2)
+        layout.addWidget(lines.bry, 1, 2)
 
-        layout.addWidget(QLabel("Column Title:"),2,0)
+        layout.addWidget(QLabel("Column Title:"), 2, 0)
         lines.title = QLineEdit()
-        layout.addWidget(lines.title,2,1,1,2)
+        layout.addWidget(lines.title, 2, 1, 1, 2)
 
         lines.setLayout(layout)
         return lines
@@ -260,6 +277,7 @@ class drag_page(QWidget):
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
+        self.page = None
 
         layout = QVBoxLayout()
         self.preview = preview()
@@ -272,8 +290,10 @@ class drag_page(QWidget):
         self.setLayout(layout)
 
     def reset(self):
-        print(1)
         # To backend function: filename -> page layout
+        self.page = test
+        self.preview.reset(self.page)
+        # self.control.reset(self.page)
 
 
 class upload_page(QStackedWidget):
