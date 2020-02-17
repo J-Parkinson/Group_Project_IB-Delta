@@ -106,7 +106,7 @@ class Window(QWidget):
         # Todo: make it prettier!
         #data_page = saveCSV.saveCSVWindow()
 
-        data_page = modifyCSV.modifyCSVWindow()
+        data_page = modifyCSV.RulesWindow()
 
         # Tutorial page, working atm
         # Todo: design a tutorial page, but not now, no hurry
@@ -166,7 +166,7 @@ class Window(QWidget):
                 buttons[1].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
                 self.state = State.Normal
 
-        buttons[1].setText("Access Data")
+        buttons[1].setText("Convert CSV to Standard Format")
         buttons[1].clicked.connect(data_signal)
 
         # Tutorial page -- button 2
