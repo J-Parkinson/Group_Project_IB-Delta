@@ -44,10 +44,8 @@ class RulesWindow(QWidget):
 
         help_text = QLabel("** help text and information ** \n * \n * \n *")
 
-        self.grid.addWidget(title, 0, 0, 1,2,Qt.AlignCenter)
+        self.grid.addWidget(title, 0, 0, 1, 2, Qt.AlignCenter)
         self.grid.addWidget(help_text, 1, 0, 1, 2, Qt.AlignTop)
-
-        # self.new_rule()
 
         rule1 = NewRule()
         self.grid.addWidget(rule1, self.rules + 2, 0, 1, 2)
@@ -58,15 +56,15 @@ class RulesWindow(QWidget):
         cont_btn = QPushButton("Confirm all buttons and Continue ")
         cont_btn.clicked.connect(self.next)
 
-        self.grid.addWidget(new_rule_btn, 2, 0)
-        self.grid.addWidget(cont_btn, 2, 1)
+        self.grid.addWidget(new_rule_btn, 2, 0, 1, 1)
+        self.grid.addWidget(cont_btn, 2, 1, 1, 1)
 
     def new_rule(self):
         self.rules += 1
 
         rule = NewRule()
 
-        self.grid.addWidget(rule, self.rules+2, 0)
+        self.grid.addWidget(rule, self.rules+2, 0, 1, 2)
 
     def next(self):
         print("confirmed, moving to mappings page")
