@@ -71,7 +71,7 @@ class RulesWindow(QWidget):
 
 
 class NewCol(QWidget):
-    def __init__(self):
+    def __init__(self, grid_layout):
         super().__init__()
 
         self.main_layout = QGridLayout()
@@ -80,6 +80,7 @@ class NewCol(QWidget):
         self.new_col()
 
         self.setLayout(self.main_layout)
+        self.grid_layout = grid_layout
 
     def new_col(self):
 
@@ -96,7 +97,7 @@ class NewCol(QWidget):
         new_col_btn.clicked.connect(self.new_col)
 
         del_col_btn = QPushButton("x")
-        del_col_btn.clicked.connect(self.del_col)
+        del_col_btn.clicked.connect(lambda: self.del_col(layout))
 
         layout.addWidget(new_col1, 0, 0, 1, 2)
         layout.addWidget(advanced_lab, 1, 0, 1, 2)
@@ -107,9 +108,12 @@ class NewCol(QWidget):
         self.main_layout.addLayout(layout, self.col_count, 0)
         self.col_count += 1
 
-    def del_col(self):
+    def del_col(self, layout):
         #do something
         print ("delete col")
+        for i in reversed(range(layout.count())):
+            layout.itemAt(i).widget().deleteLater()
+
 
 
 
@@ -122,7 +126,7 @@ class NewRule(QWidget):
         col_to_split.addItems(["field 1", "field 2", "field 3", "etc"])
 
         new_col_label = QLabel("Type name of new column:")
-        new_col = NewCol()
+        new_col = NewCol(rule_layout)
 
         res_lab = QLabel("Resolution:")
         res = QComboBox()
