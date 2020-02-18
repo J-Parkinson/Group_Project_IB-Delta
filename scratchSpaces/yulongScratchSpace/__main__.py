@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGr
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap, QPainter, QImage
 from pathlib import Path
+import platform
 import os
 
 from scratchSpaces.yulongScratchSpace import upload_widget
@@ -199,7 +200,17 @@ class Window(QWidget):
         main_layout.setRowStretch(0, 1)
         main_layout.setRowStretch(1, 9)
         self.setLayout(main_layout)
-        application.setStyle('Windows')
+        p = platform.system()
+        if p == "Windows":
+            print(1)
+            application.setStyle("Windows")
+        else:
+            if p == "Darwin":
+                application.setStyle("Macintosh")
+            else:
+                application.setStyle("Plastique")
+
+
 
     def preference(self):
         # Todo: JUST DO IT!!!!!!

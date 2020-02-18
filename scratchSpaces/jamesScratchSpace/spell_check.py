@@ -92,3 +92,12 @@ def pick_guess(guesses):
 
 def is_better(tags1, tags2):
     return tags1.count('sub') > tags2.count('sub')
+
+
+def correct_table(table, column_dicts):
+    for col_index in column_dicts:
+        dictionary = get_dictionary(column_dicts[col_index])
+        for row_index in range(1, len(table)):
+            result = correct_words(table[row_index][col_index], dictionary)
+            if result is not None:
+                table[row_index][col_index] = result

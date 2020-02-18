@@ -222,7 +222,7 @@ class TestSplitCol(TestCase):
         # Action
         try:
             matrix_to_csv.split_col(table, field_name, new_cols, optional=options, separator=separator,
-                                resolution_type=resolution_type)
+                                    resolution_type=resolution_type)
         except Exception:
             self.fail()
 
@@ -254,7 +254,7 @@ class TestSplitCol(TestCase):
         # Action
         try:
             matrix_to_csv.split_col(table, field_name, new_cols, optional=options, separator=separator,
-                                resolution_type=resolution_type)
+                                    resolution_type=resolution_type)
         except Exception:
             self.fail()
 
@@ -287,7 +287,7 @@ class TestSplitCol(TestCase):
         # Action
         try:
             matrix_to_csv.split_col(table, field_name, new_cols, optional=options, separator=separator,
-                                resolution_type=resolution_type, joiner=joiner)
+                                    resolution_type=resolution_type, joiner=joiner)
         except Exception:
             self.fail()
 
@@ -303,4 +303,3 @@ class TestSplitCol(TestCase):
         self.assertEqual(table[1].index('1, 2'), table_index['Items 1-2'])
         self.assertIn('1, 2, 3', table[1])
         self.assertEqual(table[1].index('1, 2, 3'), table_index['Items 1-3'])
-
