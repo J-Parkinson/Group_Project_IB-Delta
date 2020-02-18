@@ -36,9 +36,9 @@ def get_dictionary(path):
     return dictionary
 
 
-def correct_latin_name(s, dictionary):
+def correct_words(s, dictionary):
     corrected = ''
-    words = s.split()
+    words = s.lower().split()
     for word in words:
         guess = best_guess(word, dictionary)
         if guess is not None:
@@ -92,17 +92,3 @@ def pick_guess(guesses):
 
 def is_better(tags1, tags2):
     return tags1.count('sub') > tags2.count('sub')
-
-
-test = "fest"
-test_dict = get_dictionary('./scratchSpaces/jamesScratchSpace/dict.txt')
-print(f'Correcting \'{test}\' to \'{best_guess(test, test_dict)}\'')
-
-test = 'cloan'
-test_dict = get_dictionary('./scratchSpaces/jamesScratchSpace/dict2.txt')
-print(f'Correcting \'{test}\' to \'{best_guess(test, test_dict)}\'')
-
-test = "Euclidia glyphica"
-test_dict = get_dictionary('./scratchSpaces/jamesScratchSpace/NHM_butterfly_dict.txt')
-print(f'Correcting \'{test}\' to \'{correct_latin_name(test, test_dict)}\'')
-
