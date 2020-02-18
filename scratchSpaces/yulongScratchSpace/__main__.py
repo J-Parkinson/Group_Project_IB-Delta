@@ -225,8 +225,8 @@ class Window(QWidget):
 
         msg.setWindowTitle("Warning!")
         msg.setText("File not saved yet!")
-        msg.setInformativeText("You will lose your loaded file if you go to another window now\n"
-                               "Are you sure to abort?")
+        msg.setInformativeText("You will lose your loaded file if you go to another window now.\n"
+                               "Are you sure you want to abort?")
         msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
 
         return_value = msg.exec_()
