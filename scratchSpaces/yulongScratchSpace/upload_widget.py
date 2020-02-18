@@ -2,7 +2,7 @@ from enum import Enum
 
 from PyQt5.QtGui import QIntValidator, QPainter
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxLayout, QPushButton, QFileDialog, \
-    QMessageBox, QProgressBar, QDialog, QListWidget, QLineEdit, QGridLayout
+    QMessageBox, QProgressBar, QDialog, QListWidget, QLineEdit, QGridLayout, QSpinBox
 from PyQt5.QtCore import Qt
 
 import dataStructures.logbookScan as Scan
@@ -10,10 +10,10 @@ import dataStructures.logbookScan as Scan
 import time
 
 test = Scan.PageLayout(1)
-test.addColumn(Scan.Column((0, 0), (40, 200), 1, "name"))
-test.addColumn(Scan.Column((50, 0), (90, 200), 1, "name"))
-test.addColumn(Scan.Column((100, 0), (140, 200), 1, "name"))
-test.addColumn(Scan.Column((150, 0), (190, 200), 1, "name"))
+test.addColumn(Scan.Column((0, 0), (40, 200), 1, ""))
+test.addColumn(Scan.Column((50, 0), (90, 200), 1, ""))
+test.addColumn(Scan.Column((100, 0), (140, 200), 1, ""))
+test.addColumn(Scan.Column((150, 0), (190, 200), 1, ""))
 
 
 class State(Enum):
@@ -174,7 +174,7 @@ class preview(QWidget):
         qp = QPainter()
         qp.begin(self)
         for c in self.page.columnList:
-            (x1, y1), (x2, y2) = c.getCoords()
+            (x1, y1), (x2, y2) = c.tlCoord, c.brCoord
             qp.drawRect(x1, y1, x2 - x1, y2 - y1)
         qp.end()
 
@@ -186,10 +186,12 @@ class control(QWidget):
 
         self.columns = QListWidget()
         self.page = None
+        self.preview = None
         self.name_index = 0
         self.edit = self.init_lines()
         self.buttons = self.init_buttons()
 
+        self.columns.currentItemChanged.connect(self.show_coords)
         layout.addWidget(self.buttons)
         layout.addWidget(self.columns)
         layout.addWidget(self.edit)
@@ -201,26 +203,26 @@ class control(QWidget):
 
         layout.addWidget(QLabel("Top-left Corner:"), 0, 0)
 
-        lines.tlx = QLineEdit()
-        lines.tlx.setValidator(QIntValidator())
-        lines.tlx.setMaxLength(4)
+        lines.tlx = QSpinBox()
+        lines.tlx.setRange(0,9999)
+        lines.tlx.valueChanged.connect(self.update_tlx_coords)
         layout.addWidget(lines.tlx, 0, 1)
 
-        lines.tly = QLineEdit()
-        lines.tly.setValidator(QIntValidator())
-        lines.tly.setMaxLength(4)
+        lines.tly = QSpinBox()
+        lines.tly.setRange(0,9999)
+        lines.tly.valueChanged.connect(self.update_tly_coords)
         layout.addWidget(lines.tly, 0, 2)
 
         layout.addWidget(QLabel("Bottom-right Corner:"), 1, 0)
 
-        lines.brx = QLineEdit()
-        lines.brx.setValidator(QIntValidator())
-        lines.brx.setMaxLength(4)
+        lines.brx = QSpinBox()
+        lines.brx.setRange(0,9999)
+        lines.brx.valueChanged.connect(self.update_brx_coords)
         layout.addWidget(lines.brx, 1, 1)
 
-        lines.bry = QLineEdit()
-        lines.bry.setValidator(QIntValidator())
-        lines.bry.setMaxLength(4)
+        lines.bry = QSpinBox()
+        lines.bry.setRange(0,9999)
+        lines.bry.valueChanged.connect(self.update_bry_coords)
         layout.addWidget(lines.bry, 1, 2)
 
         layout.addWidget(QLabel("Column Title:"), 2, 0)
@@ -229,6 +231,42 @@ class control(QWidget):
 
         lines.setLayout(layout)
         return lines
+
+    def show_coords(self):
+        row = self.columns.currentRow()
+        if self.page is not None:
+            c = self.page.columnList[row]
+            self.edit.tlx.setValue(c.tlCoord[0])
+            self.edit.tly.setValue(c.tlCoord[1])
+            self.edit.brx.setValue(c.brCoord[0])
+            self.edit.bry.setValue(c.brCoord[1])
+
+    def update_tlx_coords(self,i):
+        row = self.columns.currentRow()
+        c = self.page.columnList[row]
+        c.tlCoord = i, c.tlCoord[1]
+        self.preview.reset(self.page)
+
+    def update_tly_coords(self,i):
+        row = self.columns.currentRow()
+        c = self.page.columnList[row]
+        c.tlCoord = c.tlCoord[0], i
+        self.preview.reset(self.page)
+
+    def update_brx_coords(self,i):
+        row = self.columns.currentRow()
+        c = self.page.columnList[row]
+        c.brCoord = i, c.brCoord[1]
+        self.preview.reset(self.page)
+
+    def update_bry_coords(self,i):
+        row = self.columns.currentRow()
+        c = self.page.columnList[row]
+        c.brCoord = c.brCoord[0], i
+        self.preview.reset(self.page)
+
+
+
 
     def init_buttons(self):
         buttons = QWidget()
@@ -252,23 +290,33 @@ class control(QWidget):
         # Add a new box
         self.columns.addItem("new column " + str(self.name_index))
         self.name_index += 1
-        # Todo: manage data structure
+        self.page.addColumn(Scan.Column((0, 0), (0, 0), 1, ""))
+        self.preview.reset(self.page)
         return
 
     def delete(self):
         # Delete current box
-        self.columns.takeItem(self.columns.currentRow())
-        # Todo: manage data structure
+        row = self.columns.currentRow()
+        self.columns.takeItem(row)
+        self.page.removeColumn(self.page.columnList[row])
+        self.preview.reset(self.page)
         return
 
     def confirm(self):
-        # Confirm boxes, go to backend
+        # Pass self.page to backend
         return
 
     def reset(self, page):
         self.page = page
         self.name_index = 0
         self.columns.clear()
+
+        for c in page.columnList:
+            if not c.fieldName == "":
+                self.columns.addItem(c.fieldName)
+            else:
+                self.columns.addItem("new column " + str(self.name_index))
+                self.name_index += 1
         return
 
 
@@ -280,8 +328,9 @@ class drag_page(QWidget):
         self.page = None
 
         layout = QVBoxLayout()
-        self.preview = preview()
         self.control = control()
+        self.preview = preview()
+        self.control.preview = self.preview
 
         layout.addWidget(self.preview)
         layout.addWidget(self.control)
@@ -293,7 +342,7 @@ class drag_page(QWidget):
         # To backend function: filename -> page layout
         self.page = test
         self.preview.reset(self.page)
-        # self.control.reset(self.page)
+        self.control.reset(self.page)
 
 
 class upload_page(QStackedWidget):
