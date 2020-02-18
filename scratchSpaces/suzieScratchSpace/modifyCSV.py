@@ -34,7 +34,7 @@ class RulesWindow(QWidget):
         self.grid.setHorizontalSpacing(10)
         self.setStyleSheet('color: black; background-color: rgb(248, 246, 238)')
 
-
+        self.rule_list = []
 
         self.initUI()
 
@@ -63,11 +63,58 @@ class RulesWindow(QWidget):
         self.rules += 1
 
         rule = NewRule()
+        rule_list.append(rule)
 
         self.grid.addWidget(rule, self.rules+2, 0, 1, 2)
 
     def next(self):
         print("confirmed, moving to mappings page")
+
+        for i in self.rule_list:
+            self.rule_list[i].getAttributes()
+
+
+class NewRule(QWidget):
+    def __init__(self):
+        super().__init__()
+        rule_layout = QGridLayout()
+        col_label = QLabel("Choose a column to split:")
+        col_to_split = QComboBox()
+        col_to_split.addItems(["field 1", "field 2", "field 3", "etc"])
+
+        new_col_label = QLabel("Type name of new column:")
+        new_col = NewCol(rule_layout)
+
+        res_lab = QLabel("Resolution:")
+        res = QComboBox()
+        res.addItems(["enum1", "enum2", "enum3", "etc"])
+
+        split_char_lab = QLabel("Split on:")
+        split_char = QLineEdit()
+        split_char.setPlaceholderText("Default is a space")
+
+        join_char_lab = QLabel("Join on:")
+        join_char = QLineEdit()
+        join_char.setPlaceholderText("Default is a space")
+
+        # row, column Adding all the widgets to the layout
+
+        rule_layout.addWidget(col_label, 0, 0, Qt.AlignTop)
+        rule_layout.addWidget(col_to_split, 1, 0, Qt.AlignTop)
+        rule_layout.addWidget(new_col_label, 0, 1, Qt.AlignTop)
+        rule_layout.addWidget(new_col, 1, 1, Qt.AlignTop)
+        rule_layout.addWidget(res_lab, 0, 2, Qt.AlignTop)
+        rule_layout.addWidget(res, 1, 2, Qt.AlignTop)
+        rule_layout.addWidget(split_char_lab, 0, 3, Qt.AlignTop)
+        rule_layout.addWidget(split_char, 1, 3, Qt.AlignTop)
+        rule_layout.addWidget(join_char_lab, 0, 4, Qt.AlignTop)
+        rule_layout.addWidget(join_char, 1, 4, Qt.AlignTop)
+
+        self.setLayout(rule_layout)
+
+    def getAttributes(self):
+        print("get att")
+
 
 
 class NewCol(QWidget):
@@ -109,49 +156,8 @@ class NewCol(QWidget):
         self.col_count += 1
 
     def del_col(self, layout):
-        #do something
         print ("delete col")
         for i in reversed(range(layout.count())):
             layout.itemAt(i).widget().deleteLater()
 
-
-
-
-class NewRule(QWidget):
-    def __init__(self):
-        super().__init__()
-        rule_layout = QGridLayout()
-        col_label = QLabel("Choose a column to split:")
-        col_to_split = QComboBox()
-        col_to_split.addItems(["field 1", "field 2", "field 3", "etc"])
-
-        new_col_label = QLabel("Type name of new column:")
-        new_col = NewCol(rule_layout)
-
-        res_lab = QLabel("Resolution:")
-        res = QComboBox()
-        res.addItems(["enum1", "enum2", "enum3", "etc"])
-
-        split_char_lab = QLabel("Split on:")
-        split_char = QLineEdit()
-        split_char.setPlaceholderText("Default is a space")
-
-        join_char_lab = QLabel("Join on:")
-        join_char = QLineEdit()
-        join_char.setPlaceholderText("Default is a space")
-
-        # row, column Adding all the widgets to the layout
-
-        rule_layout.addWidget(col_label, 0, 0, Qt.AlignTop)
-        rule_layout.addWidget(col_to_split, 1, 0, Qt.AlignTop)
-        rule_layout.addWidget(new_col_label, 0, 1, Qt.AlignTop)
-        rule_layout.addWidget(new_col, 1, 1, Qt.AlignTop)
-        rule_layout.addWidget(res_lab, 0, 2, Qt.AlignTop)
-        rule_layout.addWidget(res, 1, 2, Qt.AlignTop)
-        rule_layout.addWidget(split_char_lab, 0, 3, Qt.AlignTop)
-        rule_layout.addWidget(split_char, 1, 3, Qt.AlignTop)
-        rule_layout.addWidget(join_char_lab, 0, 4, Qt.AlignTop)
-        rule_layout.addWidget(join_char, 1, 4, Qt.AlignTop)
-
-        self.setLayout(rule_layout)
 
