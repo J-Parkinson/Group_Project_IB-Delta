@@ -175,6 +175,7 @@ class preview(QWidget):
         qp.begin(self)
         for c in self.page.columnList:
             (x1, y1), (x2, y2) = c.tlCoord, c.brCoord
+            # Todo: colors!!!
             qp.drawRect(x1, y1, x2 - x1, y2 - y1)
         qp.end()
 

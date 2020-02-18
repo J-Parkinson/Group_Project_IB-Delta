@@ -1,0 +1,24 @@
+Things to do now:
+
+upload widget:
+We have 3 preview needs:
+    1. drag-n-drop
+    2. file button
+    3. rectangle thing
+Paint the rectangles
+Non-pdf warning in drag-n-drop
+Add drag-n-draw
+Add a fake progress bar
+Add a dictionary input
+Connect backend
+Loading page, show fun facts
+
+
+Tutorial:
+    - Show it first time
+    - Merge things before you pass
+    - Identify the number of pages per image
+
+Integration:
+    - Modify data structure: each column might have a dictionary
+

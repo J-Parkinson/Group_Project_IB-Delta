@@ -34,7 +34,7 @@ class Example(QWidget):
     def paintEvent(self, e):
         qp = QPainter()
         qp.begin(self)
-        qp.drawRect(20, 15, randint(0,200), 60)
+        self.drawRectangles(qp)
         qp.end()
 
     def mousePressEvent(self, QMouseEvent):
