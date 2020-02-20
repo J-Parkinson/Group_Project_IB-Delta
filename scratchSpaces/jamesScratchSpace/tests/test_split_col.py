@@ -50,7 +50,7 @@ class TestSplitCol(TestCase):
 
         # Action
         try:
-            matrix_to_csv.split_col(table, field_name, new_cols, optional=optional, separator=separator, joiner=joiner)
+            matrix_to_csv.split_col(table, field_name, new_cols, which_words=optional, separator=separator, joiner=joiner)
         except Exception:
             self.fail()
 
@@ -68,7 +68,7 @@ class TestSplitCol(TestCase):
 
         # Action
         try:
-            matrix_to_csv.split_col(table, field_name, new_cols, optional=options)
+            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options)
         except Exception:
             self.fail()
 
@@ -97,7 +97,7 @@ class TestSplitCol(TestCase):
 
         # Action
         try:
-            matrix_to_csv.split_col(table, field_name, new_cols, optional=options)
+            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options)
         except Exception:
             self.fail()
 
@@ -126,7 +126,7 @@ class TestSplitCol(TestCase):
 
         # Action
         try:
-            matrix_to_csv.split_col(table, field_name, new_cols, optional=options, separator=separator, joiner=joiner)
+            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options, separator=separator, joiner=joiner)
         except Exception:
             self.fail()
 
@@ -153,7 +153,7 @@ class TestSplitCol(TestCase):
 
         # Action
         try:
-            matrix_to_csv.split_col(table, field_name, new_cols, optional=options, separator=separator, joiner=joiner)
+            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options, separator=separator, joiner=joiner)
         except Exception:
             self.fail()
 
@@ -178,7 +178,7 @@ class TestSplitCol(TestCase):
 
         # Action & Assert
         with self.assertRaises(Exception):
-            matrix_to_csv.split_col(table, field_name, new_cols, optional=options)
+            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options)
 
     def test_split_col_words_and_cols_mismatch(self):
         # Assume
@@ -204,10 +204,10 @@ class TestSplitCol(TestCase):
 
         # Action & Assert
         with self.assertRaises(Exception):
-            matrix_to_csv.split_col(table, field_name, new_cols, optional=options1, separator=separator, joiner=joiner)
+            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options1, separator=separator, joiner=joiner)
 
         with self.assertRaises(Exception):
-            matrix_to_csv.split_col(table, field_name, new_cols, optional=options2, separator=separator, joiner=joiner)
+            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options2, separator=separator, joiner=joiner)
 
     def test_split_col_just_first_resolution(self):
         # Assume
@@ -221,7 +221,7 @@ class TestSplitCol(TestCase):
 
         # Action
         try:
-            matrix_to_csv.split_col(table, field_name, new_cols, optional=options, separator=separator,
+            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options, separator=separator,
                                     resolution_type=resolution_type)
         except Exception:
             self.fail()
@@ -253,7 +253,7 @@ class TestSplitCol(TestCase):
 
         # Action
         try:
-            matrix_to_csv.split_col(table, field_name, new_cols, optional=options, separator=separator,
+            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options, separator=separator,
                                     resolution_type=resolution_type)
         except Exception:
             self.fail()
@@ -286,7 +286,7 @@ class TestSplitCol(TestCase):
 
         # Action
         try:
-            matrix_to_csv.split_col(table, field_name, new_cols, optional=options, separator=separator,
+            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options, separator=separator,
                                     resolution_type=resolution_type, joiner=joiner)
         except Exception:
             self.fail()
