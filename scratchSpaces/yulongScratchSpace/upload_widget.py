@@ -16,6 +16,17 @@ test.addColumn(Scan.Column((100, 0), (150, 200), 1, ""))
 test.addColumn(Scan.Column((150, 0), (200, 200), 1, ""))
 
 
+def warning(title, text, description):
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Warning)
+
+    msg.setWindowTitle(title)
+    msg.setText(text)
+    msg.setInformativeText(description)
+
+    msg.exec_()
+
+
 class State(Enum):
     Unloaded = 0
     Loaded = 1
@@ -37,6 +48,9 @@ class dnd_widget(QLabel):
 
     def dropEvent(self, e):
         filename = e.mimeData().text()
+        if not (filename[-4:] == ".pdf"):
+            warning("Warning", "Wrong file type!", "Please select a .pdf or .jpeg file!")
+            return
         self.parent.state = State.Loaded
         self.parent.parent.filename = filename
         print(filename)
@@ -140,17 +154,9 @@ class file_select(QWidget):
             self.state = State.Running
             self.parent.parent.state = 1  # Loading
             self.parent.setCurrentIndex(1)
-
+            self.parent.drag.reset()
         else:
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Warning)
-
-            msg.setWindowTitle("Warning")
-            msg.setText("No file loaded!")
-            msg.setInformativeText("Please select a file to load")
-            # msg.setStandardButtons(QMessageBox.Ok)
-
-            msg.exec_()
+            warning("Warning","No file loaded!","Please select a file to load")
         #'''
 
     def show_progress_bar(self):
@@ -173,7 +179,7 @@ class preview(QWidget):
     def paintEvent(self, e):
         qp = QPainter()
         qp.begin(self)
-        qp.setBrush(QColor(93, 173, 226))   # Light blue, ideally
+        qp.setBrush(QColor(93, 173, 226))  # Light blue, ideally
         qp.setOpacity(0.6)  # Some lovely opaque, ideally
         for c in self.page.columnList:
             (x1, y1), (x2, y2) = c.tlCoord, c.brCoord
@@ -206,29 +212,30 @@ class control(QWidget):
         layout.addWidget(QLabel("Top-left Corner:"), 0, 0)
 
         lines.tlx = QSpinBox()
-        lines.tlx.setRange(0,9999)
+        lines.tlx.setRange(0, 9999)
         lines.tlx.valueChanged.connect(self.update_tlx_coords)
         layout.addWidget(lines.tlx, 0, 1)
 
         lines.tly = QSpinBox()
-        lines.tly.setRange(0,9999)
+        lines.tly.setRange(0, 9999)
         lines.tly.valueChanged.connect(self.update_tly_coords)
         layout.addWidget(lines.tly, 0, 2)
 
         layout.addWidget(QLabel("Bottom-right Corner:"), 1, 0)
 
         lines.brx = QSpinBox()
-        lines.brx.setRange(0,9999)
+        lines.brx.setRange(0, 9999)
         lines.brx.valueChanged.connect(self.update_brx_coords)
         layout.addWidget(lines.brx, 1, 1)
 
         lines.bry = QSpinBox()
-        lines.bry.setRange(0,9999)
+        lines.bry.setRange(0, 9999)
         lines.bry.valueChanged.connect(self.update_bry_coords)
         layout.addWidget(lines.bry, 1, 2)
 
         layout.addWidget(QLabel("Column Title:"), 2, 0)
         lines.title = QLineEdit()
+        lines.title.textChanged.connect(self.update_text)
         layout.addWidget(lines.title, 2, 1, 1, 2)
 
         lines.setLayout(layout)
@@ -242,35 +249,41 @@ class control(QWidget):
             self.edit.tly.setValue(c.tlCoord[1])
             self.edit.brx.setValue(c.brCoord[0])
             self.edit.bry.setValue(c.brCoord[1])
+            if c.fieldName == "" :
+                c.fieldName = self.columns.currentItem().text()
+            self.edit.title.setText(c.fieldName)
 
-    def update_tlx_coords(self,i):
+    def update_tlx_coords(self, i):
         row = self.columns.currentRow()
         c = self.page.columnList[row]
         c.tlCoord = i, c.tlCoord[1]
         if not row == 0:
-            self.page.columnList[row-1].brCoord = i, self.page.columnList[row-1].brCoord[1]
+            self.page.columnList[row - 1].brCoord = i, self.page.columnList[row - 1].brCoord[1]
         self.preview.reset(self.page)
 
-    def update_tly_coords(self,i):
+    def update_tly_coords(self, i):
         for c in self.page.columnList:
             c.tlCoord = c.tlCoord[0], i
         self.preview.reset(self.page)
 
-    def update_brx_coords(self,i):
+    def update_brx_coords(self, i):
         row = self.columns.currentRow()
         c = self.page.columnList[row]
         c.brCoord = i, c.brCoord[1]
-        if row < len(self.page.columnList)-1:
-            self.page.columnList[row+1].tlCoord = i, self.page.columnList[row+1].tlCoord[1]
+        if row < len(self.page.columnList) - 1:
+            self.page.columnList[row + 1].tlCoord = i, self.page.columnList[row + 1].tlCoord[1]
         self.preview.reset(self.page)
 
-    def update_bry_coords(self,i):
+    def update_bry_coords(self, i):
         for c in self.page.columnList:
             c.brCoord = c.brCoord[0], i
         self.preview.reset(self.page)
 
-
-
+    def update_text(self,text):
+        row = self.columns.currentRow()
+        self.page.columnList[row].fieldName = text
+        self.columns.currentItem().setText(text)
+        self.preview.reset(self.page)
 
     def init_buttons(self):
         buttons = QWidget()
