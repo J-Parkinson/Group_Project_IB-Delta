@@ -158,6 +158,7 @@ def matrix_to_standard(table, field_map, joiner=' ', header=STANDARD_HEADER):
 #   field_map:                  dict<String, list String>   maps a standard field header to a list of our field headers
 #   joiner:                     String                      (optional) specifies string used to join words together
 #   header                      list list String            (optional atm) may consist of multiple rows
+
 def matrix_to_standard_csv(table, path, field_map, joiner=' ', header=STANDARD_HEADER):
     with open(path, mode='w') as outfile:
         out = csv.writer(outfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
