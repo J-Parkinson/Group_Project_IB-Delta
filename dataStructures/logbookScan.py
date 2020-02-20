@@ -13,10 +13,10 @@ class Column:
         self.tlCoord = tl
         self.brCoord = br
         self.pageNo = 0
-        self.contents = {"Upper": True, "Lower": True, "Symbol": True, "Digit": True, "Ditto": True}
+        #self.contents = {"Upper": True, "Lower": True, "Symbol": True, "Digit": True, "Ditto": True}
         self.fieldName = fieldName
 
-    def getContents(self, contentValue):
+    '''def getContents(self, contentValue):
         return self.contents[contentValue.value]
 
     def setContents(self, contentValue, value):
@@ -24,7 +24,7 @@ class Column:
 
     # Please use with caution!
     def setContents(self, contents):
-        self.contents = contents
+        self.contents = contents'''
 
     def getCoords(self):
         return self.tlCoord, self.brCoord
@@ -50,3 +50,26 @@ class PageLayout:
 
     def removeColumn(self, column):
         self.columnList.remove(column)
+
+
+class Word:
+
+    def __init__(self, image, row, col):
+        self.image = image
+        self.row = row
+        self.col = col
+
+class CellOfWords:
+
+    def __init__(self, words, row=None, col=None):
+
+        if row is None:
+            row = words.get(0).row
+        if col is None:
+            col = words.get(0).col
+
+        self.words = words
+        self.row = row
+        self.col = col
+
+
