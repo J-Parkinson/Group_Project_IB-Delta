@@ -179,6 +179,7 @@ class NewCol(QWidget):
             layout.itemAt(i).widget().deleteLater()
 
     def getCols(self):
+        1
 
 
 

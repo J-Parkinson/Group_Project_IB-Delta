@@ -93,6 +93,10 @@ def pick_guess(guesses):
 def is_better(tags1, tags2):
     return tags1.count('sub') > tags2.count('sub')
 
+# ----------------------------------------------------------------------------------------------------------
+#   correct_table:      No return value         Mutates table
+#   table:              list list String        expected to contain column headers in first row
+#   column_dicts        dict<int, Path>         Maps column indices to path for that column's dictionary
 
 def correct_table(table, column_dicts):
     for col_index in column_dicts:

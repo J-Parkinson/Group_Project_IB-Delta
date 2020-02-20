@@ -18,6 +18,7 @@ Tutorial:
     - Show it first time
     - Merge things before you pass
     - Identify the number of pages per image
+    - If you can't see layout, change the color scheme (Mac-only problem)
 
 Integration:
     - Modify data structure: each column might have a dictionary
