@@ -1,6 +1,6 @@
 from enum import Enum
 
-from PyQt5.QtGui import QIntValidator, QPainter
+from PyQt5.QtGui import QIntValidator, QPainter, QColor
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxLayout, QPushButton, QFileDialog, \
     QMessageBox, QProgressBar, QDialog, QListWidget, QLineEdit, QGridLayout, QSpinBox
 from PyQt5.QtCore import Qt
@@ -10,10 +10,10 @@ import dataStructures.logbookScan as Scan
 import time
 
 test = Scan.PageLayout(1)
-test.addColumn(Scan.Column((0, 0), (40, 200), 1, ""))
-test.addColumn(Scan.Column((50, 0), (90, 200), 1, ""))
-test.addColumn(Scan.Column((100, 0), (140, 200), 1, ""))
-test.addColumn(Scan.Column((150, 0), (190, 200), 1, ""))
+test.addColumn(Scan.Column((0, 0), (50, 200), 1, ""))
+test.addColumn(Scan.Column((50, 0), (100, 200), 1, ""))
+test.addColumn(Scan.Column((100, 0), (150, 200), 1, ""))
+test.addColumn(Scan.Column((150, 0), (200, 200), 1, ""))
 
 
 class State(Enum):
@@ -173,9 +173,10 @@ class preview(QWidget):
     def paintEvent(self, e):
         qp = QPainter()
         qp.begin(self)
+        qp.setBrush(QColor(93, 173, 226))   # Light blue, ideally
+        qp.setOpacity(0.6)  # Some lovely opaque, ideally
         for c in self.page.columnList:
             (x1, y1), (x2, y2) = c.tlCoord, c.brCoord
-            # Todo: colors!!!
             qp.drawRect(x1, y1, x2 - x1, y2 - y1)
         qp.end()
 
@@ -246,24 +247,26 @@ class control(QWidget):
         row = self.columns.currentRow()
         c = self.page.columnList[row]
         c.tlCoord = i, c.tlCoord[1]
+        if not row == 0:
+            self.page.columnList[row-1].brCoord = i, self.page.columnList[row-1].brCoord[1]
         self.preview.reset(self.page)
 
     def update_tly_coords(self,i):
-        row = self.columns.currentRow()
-        c = self.page.columnList[row]
-        c.tlCoord = c.tlCoord[0], i
+        for c in self.page.columnList:
+            c.tlCoord = c.tlCoord[0], i
         self.preview.reset(self.page)
 
     def update_brx_coords(self,i):
         row = self.columns.currentRow()
         c = self.page.columnList[row]
         c.brCoord = i, c.brCoord[1]
+        if row < len(self.page.columnList)-1:
+            self.page.columnList[row+1].tlCoord = i, self.page.columnList[row+1].tlCoord[1]
         self.preview.reset(self.page)
 
     def update_bry_coords(self,i):
-        row = self.columns.currentRow()
-        c = self.page.columnList[row]
-        c.brCoord = c.brCoord[0], i
+        for c in self.page.columnList:
+            c.brCoord = c.brCoord[0], i
         self.preview.reset(self.page)
 
 
