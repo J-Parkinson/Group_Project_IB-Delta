@@ -8,6 +8,11 @@ from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixma
 # TODO: pg1 for adding rules
 # TODO: pg2 for creating mappings
 
+class ModiyMainWindow(QWidget):
+    def __init__(self):
+        super.__init__()
+
+
 
 class RulesWindow(QWidget):
 
@@ -48,6 +53,7 @@ class RulesWindow(QWidget):
         self.grid.addWidget(help_text, 1, 0, 1, 2, Qt.AlignTop)
 
         rule1 = NewRule()
+        self.rule_list.append(rule1)
         self.grid.addWidget(rule1, self.rules + 2, 0, 1, 2)
 
         new_rule_btn = QPushButton("Add new rule")
@@ -63,15 +69,19 @@ class RulesWindow(QWidget):
         self.rules += 1
 
         rule = NewRule()
-        rule_list.append(rule)
+        self.rule_list.append(rule)
 
         self.grid.addWidget(rule, self.rules+2, 0, 1, 2)
 
     def next(self):
         print("confirmed, moving to mappings page")
-
+        if len(self.rule_list) == 0:
+            print("helpppp")
         for i in self.rule_list:
-            self.rule_list[i].getAttributes()
+            rule_atts = i.getAttributes()
+
+            print("smth")
+            print(rule_atts)
 
 
 class NewRule(QWidget):
@@ -118,6 +128,9 @@ class NewRule(QWidget):
         # column to split
         col_index = self.col_to_split.currentIndex()
 
+        # column names
+        new_names, advanced = self.new_col.getCols()
+
         # res
         res_index = self.res.currentIndex()
 
@@ -127,9 +140,7 @@ class NewRule(QWidget):
         #join char
         join = self.join_char.text()
 
-
-
-
+        return col_index, new_names, advanced, res_index, split, join
 
 
 
@@ -140,9 +151,9 @@ class NewCol(QWidget):
         self.main_layout = QGridLayout()
 
         self.col_count = 0
+        # a list of all new column layouts
         self.col_list = []
         self.new_col()
-
 
         self.setLayout(self.main_layout)
         self.grid_layout = grid_layout
@@ -172,6 +183,9 @@ class NewCol(QWidget):
 
         self.main_layout.addLayout(layout, self.col_count, 0)
         self.col_count += 1
+        # add this layout to the list
+        self.col_list.append(layout)
+
 
     def del_col(self, layout):
         print ("delete col")
@@ -179,6 +193,28 @@ class NewCol(QWidget):
             layout.itemAt(i).widget().deleteLater()
 
     def getCols(self):
+        column_names = []
+        advanced = []
+        for x in self.col_list:
+            name = x.itemAtPosition(0,0).widget().text()
+            column_names.append(name)
+            '''
+            items = [x.itemAt(i) for i in range(x.count())]
+            #column name
+            column_names.append(QLineEdit(items[0]).text())
+
+            # advanced settings
+            advanced.append(QLineEdit(items[2]).text())
+            '''
+            adv = x.itemAtPosition(2,0).widget().text()
+            advanced.append(adv)
+
+
+        return column_names, advanced
+
+
+
+
 
 
 
