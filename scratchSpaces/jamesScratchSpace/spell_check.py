@@ -36,9 +36,9 @@ def get_dictionary(path):
     return dictionary
 
 
-def correct_latin_name(s, dictionary):
+def correct_words(s, dictionary):
     corrected = ''
-    words = s.split()
+    words = s.lower().split()
     for word in words:
         guess = best_guess(word, dictionary)
         if guess is not None:
@@ -81,6 +81,7 @@ def best_guess(word, dictionary):
 
 def pick_guess(guesses):
     best_tags = None
+    best_word = ''
     for word, tags in guesses:
         if best_tags is None or is_better(tags, best_tags):
             best_word = word
@@ -92,16 +93,15 @@ def pick_guess(guesses):
 def is_better(tags1, tags2):
     return tags1.count('sub') > tags2.count('sub')
 
+# ----------------------------------------------------------------------------------------------------------
+#   correct_table:      No return value         Mutates table
+#   table:              list list String        expected to contain column headers in first row
+#   column_dicts        dict<int, Path>         Maps column indices to path for that column's dictionary
 
-test = "fest"
-test_dict = get_dictionary('./scratchSpaces/jamesScratchSpace/dict.txt')
-print(f'Correcting \'{test}\' to \'{best_guess(test, test_dict)}\'')
-
-test = 'cloan'
-test_dict = get_dictionary('./scratchSpaces/jamesScratchSpace/dict2.txt')
-print(f'Correcting \'{test}\' to \'{best_guess(test, test_dict)}\'')
-
-test = "Lycaene phlaeees"
-test_dict = get_dictionary('./scratchSpaces/jamesScratchSpace/species_dict.txt')
-print(f'Correcting \'{test}\' to \'{correct_latin_name(test, test_dict)}\'')
-
+def correct_table(table, column_dicts):
+    for col_index in column_dicts:
+        dictionary = get_dictionary(column_dicts[col_index])
+        for row_index in range(1, len(table)):
+            result = correct_words(table[row_index][col_index], dictionary)
+            if result is not None:
+                table[row_index][col_index] = result
