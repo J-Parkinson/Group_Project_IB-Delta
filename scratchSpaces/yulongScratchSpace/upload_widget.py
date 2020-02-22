@@ -152,11 +152,6 @@ class file_select(QWidget):
 
         columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
 
-        import matplotlib.pyplot as plt
-        plt.figure()
-        plt.imshow(columnImage)
-        plt.show()
-
         '''
         if self.state == State.Loaded:
             self.show_progress_bar()
@@ -192,6 +187,7 @@ class ProgressBar(QMainWindow):
         return
 
     def update(self, string):
+        self.currentStep += 1
         self.progress.setValue(self.currentStep / self.noSteps)
         self.text.setText(string)
         return
