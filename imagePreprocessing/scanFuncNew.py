@@ -167,6 +167,7 @@ def findLinesandNormalise(source, dest=""):
     transformedColour = merge([transformed, transformed, transformed])
     imwrite(dest + "pagelayout.png", transformedColour)
     colLocations = calculateColumns(transformed)
+
     for i in colLocations:
         transformedColour[:, i] = (255, 0, 0)
         try:
@@ -179,9 +180,9 @@ def findLinesandNormalise(source, dest=""):
             #transformedColour[:, i - 2] = (255, 0, 0)
         except:
             continue
-    #imwrite("images/columns.png", transformedColour)
+    imwrite(dest + "columns.png", transformedColour)
 
-    #transformedColour = merge([transformed, transformed, transformed])
+    transformedColour = merge([transformed, transformed, transformed])
     rowLocations = calculateRows(transformed)
     for i in rowLocations:
         transformedColour[i] = (255, 0, 0)
@@ -195,7 +196,7 @@ def findLinesandNormalise(source, dest=""):
             #transformedColour[i - 2] = (255, 0, 0)
         except:
             continue
-    #imwrite("images/rows.png", transformedColour)
+    imwrite(dest + "rows.png", transformedColour)
     #imwrite("images/rowsandcols.png", transformedColour)
     imwrite(dest + "rowsandcols.png", transformedColour)
     print(dest + "rowsandcols.png")
@@ -295,7 +296,7 @@ def calculateRows(transformed):
     tsy2 = convolve1d(convolve1d(transformedsumy, array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest")
     rowsfiltered = argrelextrema(tsy2, greater_equal)[0]
 
-    rowsfiltered = refactorRows(rowsfiltered)
+    #rowsfiltered = refactorRows(rowsfiltered)
 
 
 
