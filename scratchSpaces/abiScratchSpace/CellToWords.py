@@ -1,43 +1,29 @@
 import numpy as np
+from dataStructures.logbookScan import Word, CellOfWords
 from scipy import ndimage
-import cv2
-from tempfile import TemporaryDirectory
+
+# list of 2d numpy arrays (each cell is a numpy array)
+# replace 2D array with list of 2D array
 
 
-img = cv2.imread("../../imagePreprocessing/images/segmentedImagesOut/Page 13/cell-1-2.png")
-arr = np.array(img)
-height, width, channels = img.shape
-arr.shape = (height, width, channels)
-arr = cv2.cvtColor(arr, cv2.COLOR_BGR2GRAY)
+# python list of python lists of 2D numpy array
 
-def cellToWords(cell): # takes one numpy array
+def cellToWords(cell): # takes one CellOfWords
+    row = cell.row
+    col = cell.col
+    cellImage = cell.words[0].image
     newWords = []
-    rows = cellToRows(cell)
+    rows = cellToRows(cellImage)
     for row in rows:
         words = rowToWords(row)
         for word in words:
             newWords.append(removeWhiteSpaceFromWord(word))
-    return newWords
 
-def cellsToDirectory(cells):
-    wordsByCell = []
-    rows = len(cells)
-    for cell in cells:
-        wordsByCell.append(cellToWords(cell))
-
-
-    # **do the stuff with the temp directory here**
-    with TemporaryDirectory() as tempdir:
-        for x in newWords:
-            # need to write and somehow store the names of the files in
-            # a new array to give to Francesca's part
-
-            for y in x:
-
-
-
-
-
+    newCell = CellOfWords([], row, col)
+    for x in newWords:
+        word = Word(x, row, col)
+        newCell.words.append(word)
+    return newCell
 
 def rowToWords(row):
     columnVals = np.sum(row, axis=0)
