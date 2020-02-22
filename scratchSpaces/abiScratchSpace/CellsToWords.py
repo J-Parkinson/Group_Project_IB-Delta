@@ -8,6 +8,11 @@ from scipy import ndimage
 
 # python list of python lists of 2D numpy array
 
+def cellsToWords(cells):
+    cellsOfWords = []
+    for cell in cells:
+        cellsOfWords.append(cellToWords(cell))
+    return cellsOfWords
 def cellToWords(cell): # takes one CellOfWords
     row = cell.row
     col = cell.col
@@ -62,6 +67,3 @@ def removeWhiteSpaceFromWord(word):
     word = np.split(x, indicesToSplit)
     word = [row for row in rows if row.size > 0]
     return word
-
-
-cellToWords(arr)
