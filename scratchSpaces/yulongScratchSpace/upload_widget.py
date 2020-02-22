@@ -2,7 +2,7 @@ from enum import Enum
 
 from PyQt5.QtGui import QIntValidator, QPainter, QColor
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxLayout, QPushButton, QFileDialog, \
-    QMessageBox, QProgressBar, QDialog, QListWidget, QLineEdit, QGridLayout, QSpinBox
+    QMessageBox, QProgressBar, QDialog, QListWidget, QLineEdit, QGridLayout, QSpinBox, QApplication
 from PyQt5.QtCore import Qt
 
 import dataStructures.logbookScan as Scan
@@ -41,10 +41,12 @@ class dnd_widget(QLabel):
         self.setAcceptDrops(True)
 
     def dragEnterEvent(self, e):
+        QApplication.setOverrideCursor(Qt.DragMoveCursor)
         if e.mimeData().hasUrls:
             e.accept()
         else:
             e.ignore()
+        QApplication.setOverrideCursor(Qt.ArrowCursor)
 
     def dropEvent(self, e):
         filename = e.mimeData().text()
@@ -52,8 +54,8 @@ class dnd_widget(QLabel):
             warning("Warning", "Wrong file type!", "Please select a .pdf or .jpeg file!")
             return
         self.parent.state = State.Loaded
-        self.parent.parent.filename = filename
-        print(filename)
+        self.parent.parent.filename = filename[8:]
+        print(filename[8:])
 
 
 class file_select(QWidget):
@@ -169,6 +171,7 @@ class preview(QWidget):
         super().__init__()
         self.page = None
         b = QPushButton("Working atm\nClick me to reduce stress :-)", self)
+        b.move(500,350)
 
     def reset(self, page):
         # draw the boxes
@@ -184,6 +187,9 @@ class preview(QWidget):
         for c in self.page.columnList:
             (x1, y1), (x2, y2) = c.tlCoord, c.brCoord
             qp.drawRect(x1, y1, x2 - x1, y2 - y1)
+        qp.setBrush(QColor(200, 0, 0))
+        qp.setOpacity(1.0)
+
         qp.end()
 
 
@@ -360,6 +366,10 @@ class drag_page(QWidget):
         self.page = test
         self.preview.reset(self.page)
         self.control.reset(self.page)
+
+    def mousePressEvent(self, e):
+        print(e.pos())
+
 
 
 class upload_page(QStackedWidget):
