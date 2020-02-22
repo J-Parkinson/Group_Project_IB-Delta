@@ -9,9 +9,14 @@ from numpy import array, zeros, greater, hsplit, vsplit, greater_equal, diff, de
 from scipy.ndimage import convolve1d
 from scipy.signal import argrelextrema
 from skimage.filters import threshold_sauvola
+from PIL import Image
+from tempfile import NamedTemporaryFile
+import fitz
+from os import makedirs, path
+from sys import stderr
 
 from dataStructures.logbookScan import Column, PageLayout
-from frontend.ColumnScreen import queryUserAboutColumns
+#from frontend.ColumnScreen import queryUserAboutColumns
 
 # Imports for testing - showing histogram of columns
 '''
@@ -85,16 +90,54 @@ pdfToImages("images/scantest.pdf", "images/pdftest/", "image", ".png")
     Normalises the image, splits into cells, performs word detection, deslants words, and resizes ready for our NN.
     Returns a directory for the images to be word-detected.
 '''
-def splitCellsAndNormalise(source):
+
+'''def safeMakeDir(dir):
+    if not path.exists(dir):
+        makedirs(dir)
+    else:
+        stderr.write("Path " + dir + " already exists.\n")
+        stderr.flush()'''
+
+'''def pdfToImages(source, destFolder, filename, suffix, offset=0):
+
+    safeMakeDir(destFolder[:-1])
+
+    allImages = fitz.open(source)
+    for x, page in enumerate(allImages):
+        with NamedTemporaryFile(suffix=suffix) as temp:
+            page.getPixmap().writePNG(temp.name)
+            #scanImage(temp.name, destFolder + filename + str(x + offset) + suffix)
+            safeMakeDir(destFolder + "Page " + str(x + offset))
+            findLinesandNormalise(temp.name, destFolder + "Page " + str(x + offset) + "/")
+    return len(allImages)'''
+
+def concatenateImages(images, resample=Image.BICUBIC):
+    minHeight = min(image.height for image in images)
+    imageResize = [image.resize((int(image.width * minHeight / image.height), minHeight), resample=resample)
+                      for image in images]
+    totalWidth = sum(image.width for image in imageResize)
+    dest = Image.new('RGB', (totalWidth, minHeight))
+    xPosition = 0
+    for image in imageResize:
+        dest.paste(image, (xPosition, 0))
+        xPosition += image.width
+    return dest
+
+
+def splitCellsAndNormalise(source, noPages):
     # load the image and compute the ratio of the old height
     # to the new height, clone it, and resize it
+
+    '''Step 1 - load image'''
     image = imread(source)
     orig = image.copy()
 
     # deslants page into a rectangle - perspective transform
+    '''Step 2 - normalise page'''
     transformed = normaliseImage(image, orig)
 
     # determines where the columns are
+    '''Step 3 - columns'''
     colLocations = calculateColumns(transformed)
 
     # adjust columns depending on user input to fix stuff
@@ -102,9 +145,11 @@ def splitCellsAndNormalise(source):
                                                                                      image.shape[1])
 
     # determines where the rows are - interpolation used (so assuming equally spaced lines)
+    '''Step 4 - rows'''
     rowLocations = calculateRows(adjusted)
 
     # splits image along col and row locations
+    '''Step 5 - cell splitting'''
     cells = splitIntoCells(adjusted, rowLocations, newColLocations)
 
     '''dir = storeFilesTemporarily(cells, len(colLocations))'''
@@ -124,7 +169,7 @@ def splitCellsAndNormalise(source):
 '''
 
 
-def handleColumns(cols, height, image):
+'''def handleColumns(cols, height, image):
     columnObjects = PageLayout(1)
     for x in range(0, len(cols) - 2):
         newColumn = Column((cols[x], 0), (cols[x + 1], height), 0, "COLUMN NAME HERE")
@@ -144,7 +189,7 @@ def handleColumns(cols, height, image):
 
     newImage = image[minY:maxY][minX:maxX]
 
-    return (newImage, newCols, minX, maxX, minY, maxY, allColX)
+    return (newImage, newCols, minX, maxX, minY, maxY, allColX)'''
 
 
 ''' orderPoints
@@ -325,6 +370,7 @@ def calculateColumns(transformed):
                          array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest")
     # +2 used to combat asymmetry of convolutions
     # find max vals (i.e. most probable cols)
+
     columnsfiltered = argrelextrema(columns, greater)[0] + 2
     columnsfiltered = [0] + columnsfiltered + [len(transformedsumx)]
     return columnsfiltered
@@ -391,3 +437,49 @@ def calculateRows(transformed):
     # interpolate rows to remove anomalies
     rowsfiltered = refactorRows(rowsfiltered)
     return rowsfiltered
+
+
+
+
+def handleColumnGUI(source, noPages, progressBar=None):
+    # load the image and compute the ratio of the old height
+    # to the new height, clone it, and resize it
+    if progressBar:
+        progressBar.update("Load images")
+
+    allImages = fitz.open(source)
+    imagesToMerge = []
+    for x, page in enumerate(allImages):
+        if x < noPages:
+            imagesToMerge.append(array(Image.frombytes("RGB", [page.getPixmap().width, page.getPixmap().height], page.getPixmap().samples)))
+        else:
+            break
+    '''Step 1 - load image'''
+
+    transformedImageToMerge = []
+
+    for n, image in enumerate(imagesToMerge, 1):
+        orig = image.copy()
+
+        # deslants page into a rectangle - perspective transform
+        '''Step 2 - normalise page'''
+        if progressBar:
+            progressBar.update("Normalise page " + str(n))
+
+        transformed = normaliseImage(image, orig)
+
+        transformedImageToMerge.append(Image.fromarray(transformed))
+
+    if progressBar:
+        progressBar.update("Merge adjacent pages")
+
+    singleImage = concatenateImages(transformedImageToMerge)
+
+    with open("testfile.png", "wb") as imageOutput:#NamedTemporaryFile(suffix=".png") as imageOutput:
+        imageOutput.write(singleImage.tobytes())
+
+    if progressBar:
+        progressBar.hide()
+    return imageOutput.name # will eventually return string representing the location of the dir Francesca is using to read in cells and
+
+print(handleColumnGUI("C:/Users/Jack/Documents/Cambridge University/Year IB/Group_Project_IB-Delta/scratchSpaces/yulongScratchSpace/scantest.pdf", 2, None))

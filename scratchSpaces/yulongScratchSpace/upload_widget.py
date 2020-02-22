@@ -2,10 +2,12 @@ from enum import Enum
 
 from PyQt5.QtGui import QIntValidator, QPainter, QColor
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxLayout, QPushButton, QFileDialog, \
-    QMessageBox, QProgressBar, QDialog, QListWidget, QLineEdit, QGridLayout, QSpinBox
-from PyQt5.QtCore import Qt
+    QMessageBox, QProgressBar, QDialog, QListWidget, QLineEdit, QGridLayout, QSpinBox, QApplication, QStyle, \
+    QMainWindow, QInputDialog, QProgressBar
+from PyQt5.QtCore import Qt, QSize
 
 import dataStructures.logbookScan as Scan
+import imagePreprocessing.imageScanningAndPreprocessing as ImageProcess
 
 import time
 
@@ -85,7 +87,9 @@ class file_select(QWidget):
         click_input_text.setStyleSheet('color: black')
         click_input_layout.addWidget(click_input_text)
 
-        click_input_button = QPushButton("Icon!")
+        click_input_button = QPushButton()
+        click_input_button.setIcon(QApplication.style().standardIcon(QStyle.SP_DialogOpenButton))
+        click_input_button.setIconSize(QSize(30,30))
         click_input_button.clicked.connect(self.open_file_window)
         click_input_button.setFixedSize(50, 50)
         click_input_layout.addWidget(click_input_button)
@@ -124,15 +128,34 @@ class file_select(QWidget):
             self.parent.filename = fileName
             print(fileName)
 
+    def askForPages(self):
+
+        ok = False
+        num = 0
+
+        while (not ok) or (num < 1):
+            num, ok = QInputDialog.getInt(self, "Set page span", "Enter the number of adjacent pages that make up one logbook table.", 1)
+
+        return num
+
     def upload(self):
         '''
         Commented out for easy testing
         '''
-        self.show_progress_bar()
+        noPages = self.askForPages()
+
+        progressBar = ProgressBar(noPages * 2 + 2)
         self.state = State.Running
         self.parent.parent.state = 1  # Loading
         self.parent.setCurrentIndex(1)
         self.parent.drag.reset()
+
+        columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
+
+        import matplotlib.pyplot as plt
+        plt.figure()
+        plt.imshow(columnImage)
+        plt.show()
 
         '''
         if self.state == State.Loaded:
@@ -153,8 +176,24 @@ class file_select(QWidget):
             msg.exec_()
         #'''
 
-    def show_progress_bar(self):
-        # Todo: add a fake progress bar
+class ProgressBar(QMainWindow):
+    def __init__(self, parent=None, noSteps=1):
+        super(ProgressBar, self).__init__(parent)
+        self.text = QLabel(self)
+        self.text.setText("")
+        self.progress = QProgressBar(self)
+        self.progress.setGeometry(200, 80, 250, 20)
+        self.noSteps = noSteps
+        self.currentStep = 0
+
+
+    def hide(self):
+        self.close()
+        return
+
+    def update(self, string):
+        self.progress.setValue(self.currentStep / self.noSteps)
+        self.text.setText(string)
         return
 
 
@@ -162,7 +201,7 @@ class preview(QWidget):
     def __init__(self):
         super().__init__()
         self.page = None
-        b = QPushButton("Working atm\nClick me to reduce stress :-)", self)
+        #b = QPushButton("Working atm\nClick me to reduce stress :-)", self)
 
     def reset(self, page):
         # draw the boxes
