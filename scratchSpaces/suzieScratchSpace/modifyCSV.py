@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGr
     QStackedWidget, QBoxLayout, QHBoxLayout, QFileDialog, QCheckBox, QComboBox, QLineEdit, QScrollArea
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap
+from ..jamesScratchSpace import matrix_to_csv
 
 
 # TODO: create page for uploading CSV
@@ -75,13 +76,10 @@ class RulesWindow(QWidget):
 
     def next(self):
         print("confirmed, moving to mappings page")
-        if len(self.rule_list) == 0:
-            print("helpppp")
         for i in self.rule_list:
-            rule_atts = i.getAttributes()
-
-            print("smth")
-            print(rule_atts)
+            col_index, new_names, advanced, res_index, splitter, joiner = i.getAttributes()
+            matrix_to_csv.split_col(self.table, col_index, new_names, which_words=advanced,  resolution_type=res_index,
+                                    separator=splitter, joiner=joiner)
 
 
 class NewRule(QWidget):
