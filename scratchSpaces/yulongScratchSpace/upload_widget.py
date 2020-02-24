@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxL
 from PyQt5.QtCore import Qt, QSize
 
 import dataStructures.logbookScan as Scan
-import imagePreprocessing.imageScanningAndPreprocessing as ImageProcess
+#import imagePreprocessing.imageScanningAndPreprocessing as ImageProcess
 
 import time
 
@@ -169,7 +169,7 @@ class file_select(QWidget):
 
 
 
-        columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
+        #columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
 
         '''
         if self.state == State.Loaded:
@@ -184,7 +184,8 @@ class file_select(QWidget):
 
 class ProgressBar(QMainWindow):
     def __init__(self, parent=None, noSteps=1):
-        super(ProgressBar, self).__init__(parent)
+        #super(ProgressBar, self).__init__(parent)
+        super().__init__()
         self.text = QLabel(self)
         self.text.setText("")
         self.progress = QProgressBar(self)
@@ -226,7 +227,9 @@ class preview(QWidget):
         qp.setOpacity(0.6)  # Some lovely opaque, ideally
         for c in self.page.columnList:
             (x1, y1), (x2, y2) = c.tlCoord, c.brCoord
-            qp.drawRect(x1, y1, x2 - x1, y2 - y1)
+            qp.drawRect(x1, y1 + 10, x2 - x1, y2 - y1 + 10)
+        qp.setBrush(QColor(100, 100, 100))
+        qp.drawRect(0, 0, 1000, 10)
         qp.setBrush(QColor(200, 0, 0))
         qp.setOpacity(1.0)
 
@@ -351,15 +354,22 @@ class control(QWidget):
 
     def add(self):
         # Add a new box
+        last = self.page.columnList[self.columns.count() - 1]
         self.columns.addItem("new column " + str(self.name_index))
         self.name_index += 1
-        self.page.addColumn(Scan.Column((0, 0), (0, 0), 1, ""))
+        self.page.addColumn(Scan.Column((last.tlCoord[0] + 50, last.tlCoord[1]),
+                                        (last.brCoord[0] + 50, last.brCoord[1]),
+                                        1, "new column " + str(self.name_index)))
         self.preview.reset(self.page)
+        self.name_index += 1
         return
 
     def delete(self):
         # Delete current box
         row = self.columns.currentRow()
+        if not ((row == 0) or (row == self.columns.count() - 1)):
+            self.page.columnList[row + 1].tlCoord = \
+                (self.page.columnList[row - 1].brCoord[0], self.page.columnList[row + 1].tlCoord[1])
         self.columns.takeItem(row)
         self.page.removeColumn(self.page.columnList[row])
         self.preview.reset(self.page)
