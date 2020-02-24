@@ -15,7 +15,7 @@ class ModifyMainWindow(QWidget):
         layout = QGridLayout()
         main = QStackedWidget()
         main.addWidget(UploadCSV(main))  # index 0
-        main.addWidget(RulesWindow(main))  # currently index 1
+          # currently index 1
         main.addWidget(MapWindow(main))  # index 2
 
         main.setCurrentIndex(0)
@@ -37,7 +37,6 @@ class UploadCSV(QWidget):
         next_btn = QPushButton("next")
         next_btn.clicked.connect(self.goto_rules)
         layout.addWidget(next_btn)
-        #todo create stack local here so that we can move pages
 
         self.setLayout(layout)
 
@@ -45,21 +44,23 @@ class UploadCSV(QWidget):
         # noinspection PyCallByClass
         # taken from __main__ in yulong's scratch space
         fileName, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "",
-                                                  "CSV (*.csv)", "")
+                                                  "", "")
         if fileName:
             # TODO: pass csv to backend to get fields
+            self.table = matrix_to_csv.read_csv(fileName)
             print(fileName)
 
     def goto_rules(self):
         print("something")
-        self.stack_wid.setCurrentIndex(1)
+        self.stack_wid.addWidget(RulesWindow(self.stack_wid, self.table))
+        self.stack_wid.setCurrentIndex(2)
 
 
 class RulesWindow(QWidget):
 
-    def __init__(self, stack):
+    def __init__(self, stack, table):
         super().__init__()
-
+        self.table = table
         main_layout = QVBoxLayout(self)
         self.setLayout(main_layout)
 
@@ -95,7 +96,7 @@ class RulesWindow(QWidget):
         self.grid.addWidget(title, 0, 0, 1, 2, Qt.AlignCenter)
         self.grid.addWidget(help_text, 1, 0, 1, 2, Qt.AlignTop)
 
-        rule1 = NewRule()
+        rule1 = NewRule(self.table)
         self.rule_list.append(rule1)
         self.grid.addWidget(rule1, self.rules + 2, 0, 1, 2)
 
@@ -111,7 +112,7 @@ class RulesWindow(QWidget):
     def new_rule(self):
         self.rules += 1
 
-        rule = NewRule()
+        rule = NewRule(self.table)
         self.rule_list.append(rule)
 
         self.grid.addWidget(rule, self.rules + 2, 0, 1, 2)
@@ -124,17 +125,17 @@ class RulesWindow(QWidget):
                                     resolution_type=matrix_to_csv.ResolutionType(res_index),
                                     separator=splitter, joiner=joiner)
 
-        self.stack_wid.setCurrentIndex(2)
+        self.stack_wid.setCurrentIndex(1)
 
 
 
 class NewRule(QWidget):
-    def __init__(self):
+    def __init__(self,table):
         super().__init__()
         rule_layout = QGridLayout()
         col_label = QLabel("Choose a column to split:")
         self.col_to_split = QComboBox()
-        self.col_to_split.addItems(["field 1", "field 2", "field 3", "etc"])
+        self.col_to_split.addItems(table[0])
 
         new_col_label = QLabel("Type name of new column:")
         self.new_col = NewCol(rule_layout)
