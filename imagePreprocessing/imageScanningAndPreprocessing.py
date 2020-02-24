@@ -488,4 +488,4 @@ def handleColumnGUI(source, noPages, progressBar=None):
         progressBar.hide()
     return imageOutput.name # will eventually return string representing the location of the dir Francesca is using to read in cells and
 
-print(handleColumnGUI("C:/Users/Jack/Documents/Cambridge University/Year IB/Group_Project_IB-Delta/scratchSpaces/yulongScratchSpace/scantest.pdf", 2, None))
+#print(handleColumnGUI("C:/Users/Jack/Documents/Cambridge University/Year IB/Group_Project_IB-Delta/scratchSpaces/yulongScratchSpace/scantest.pdf", 2, None))

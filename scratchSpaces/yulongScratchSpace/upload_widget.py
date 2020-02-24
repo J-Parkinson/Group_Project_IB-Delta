@@ -2,7 +2,6 @@ from enum import Enum
 
 from PyQt5.QtGui import QIntValidator, QPainter, QColor
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxLayout, QPushButton, QFileDialog, \
-
     QMessageBox, QProgressBar, QDialog, QListWidget, QLineEdit, QGridLayout, QSpinBox, QApplication, QStyle, \
     QMainWindow, QInputDialog, QProgressBar
 from PyQt5.QtCore import Qt, QSize
