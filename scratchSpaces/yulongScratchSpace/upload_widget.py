@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxL
 from PyQt5.QtCore import Qt, QSize
 
 import dataStructures.logbookScan as Scan
-# import imagePreprocessing.imageScanningAndPreprocessing as ImageProcess
+import imagePreprocessing.imageScanningAndPreprocessing as ImageProcess
 
 import time
 
@@ -105,7 +105,7 @@ class file_select(QWidget):
 
         click_input_button = QPushButton()
         click_input_button.setIcon(QApplication.style().standardIcon(QStyle.SP_DialogOpenButton))
-        click_input_button.setIconSize(QSize(30, 30))
+        click_input_button.setIconSize(QSize(30,30))
         click_input_button.clicked.connect(self.open_file_window)
         click_input_button.setFixedSize(50, 50)
         click_input_layout.addWidget(click_input_button)
@@ -150,8 +150,7 @@ class file_select(QWidget):
         num = 0
 
         while (not ok) or (num < 1):
-            num, ok = QInputDialog.getInt(self, "Set page span",
-                                          "Enter the number of adjacent pages that make up one logbook table.", 1)
+            num, ok = QInputDialog.getInt(self, "Set page span", "Enter the number of adjacent pages that make up one logbook table.", 1)
 
         return num
 
@@ -167,7 +166,7 @@ class file_select(QWidget):
         self.parent.setCurrentIndex(1)
         self.parent.drag.reset()
 
-        # columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
+        columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
 
         '''
         if self.state == State.Loaded:
@@ -180,17 +179,16 @@ class file_select(QWidget):
             warning("Warning","No file loaded!","Please select a file to load")
         #'''
 
-
 class ProgressBar(QMainWindow):
     def __init__(self, parent=None, noSteps=1):
-        # super(ProgressBar, self).__init__(parent)
-        super().__init__()
+        super(ProgressBar, self).__init__(parent)
         self.text = QLabel(self)
         self.text.setText("")
         self.progress = QProgressBar(self)
         self.progress.setGeometry(200, 80, 250, 20)
         self.noSteps = noSteps
         self.currentStep = 0
+
 
     def hide(self):
         self.close()
@@ -209,7 +207,8 @@ class preview(QWidget):
         self.page = None
 
         b = QPushButton("Working atm\nClick me to reduce stress :-)", self)
-        b.move(500, 350)
+        b.move(500,350)
+
 
     def reset(self, page):
         # draw the boxes
@@ -224,16 +223,11 @@ class preview(QWidget):
         qp.setOpacity(0.6)  # Some lovely opaque, ideally
         for c in self.page.columnList:
             (x1, y1), (x2, y2) = c.tlCoord, c.brCoord
-            qp.drawRect(x1, y1 + 10, x2 - x1, y2 - y1 + 10)
-        qp.setBrush(QColor(100, 100, 100))
-        qp.drawRect(0, 0, 1000, 10)
+            qp.drawRect(x1, y1, x2 - x1, y2 - y1)
         qp.setBrush(QColor(200, 0, 0))
         qp.setOpacity(1.0)
 
         qp.end()
-
-    def mousePressEvent(self, e):
-        print(e.pos())
 
 
 class control(QWidget):
@@ -298,7 +292,7 @@ class control(QWidget):
             self.edit.tly.setValue(c.tlCoord[1])
             self.edit.brx.setValue(c.brCoord[0])
             self.edit.bry.setValue(c.brCoord[1])
-            if c.fieldName == "":
+            if c.fieldName == "" :
                 c.fieldName = self.columns.currentItem().text()
             self.edit.title.setText(c.fieldName)
 
@@ -328,7 +322,7 @@ class control(QWidget):
             c.brCoord = c.brCoord[0], i
         self.preview.reset(self.page)
 
-    def update_text(self, text):
+    def update_text(self,text):
         row = self.columns.currentRow()
         self.page.columnList[row].fieldName = text
         self.columns.currentItem().setText(text)
@@ -353,26 +347,18 @@ class control(QWidget):
         return buttons
 
     def add(self):
-        last = self.page.columnList[self.columns.count() - 1]
+        # Add a new box
         self.columns.addItem("new column " + str(self.name_index))
-        print(last.tlCoord)
-        self.page.addColumn(Scan.Column((last.tlCoord[0]+50,last.tlCoord[1]),
-                                        (last.brCoord[0]+50,last.brCoord[1]),
-                                        1, "new column " + str(self.name_index)))
-        self.preview.reset(self.page)
         self.name_index += 1
+        self.page.addColumn(Scan.Column((0, 0), (0, 0), 1, ""))
+        self.preview.reset(self.page)
         return
 
     def delete(self):
         # Delete current box
         row = self.columns.currentRow()
-        if not ((row == 0) or (row == self.columns.count()-1)):
-            self.page.columnList[row+1].tlCoord = \
-                (self.page.columnList[row-1].brCoord[0],self.page.columnList[row+1].tlCoord[1])
         self.columns.takeItem(row)
         self.page.removeColumn(self.page.columnList[row])
-
-
         self.preview.reset(self.page)
         return
 
@@ -417,6 +403,10 @@ class drag_page(QWidget):
         self.page = test
         self.preview.reset(self.page)
         self.control.reset(self.page)
+
+    def mousePressEvent(self, e):
+        print(e.pos())
+
 
 
 class upload_page(QStackedWidget):
