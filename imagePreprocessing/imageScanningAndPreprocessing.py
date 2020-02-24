@@ -340,6 +340,7 @@ def storeFilesTemporarily(cells, noCols):
 def splitIntoCells(image, rows, cols):
     return [a for b in [hsplit(row, cols) for row in vsplit(image, rows)] for a in b]
 
+
 ''' convertToCellOfWords
     Converts a list of 2d arrays to CellOfWords[]
     Each CellOfWords[] contains a row, col and image (2D Numpy array)
@@ -350,6 +351,7 @@ def convertToCellOfWords(images, noCols):
         newWord = CellOfWords(image, n//noCols, n%noCols)
         returnList.append(newWord)
     return returnList
+
 
 ''' calculateColumns
     Calculates the column locations
@@ -446,7 +448,8 @@ def calculateRows(transformed):
 
 
 
-
+''' handleColumnGUI
+    Handles GUI call from frontend to fetch column stuff '''
 def handleColumnGUI(source, noPages, progressBar=None):
     # load the image and compute the ratio of the old height
     # to the new height, clone it, and resize it
