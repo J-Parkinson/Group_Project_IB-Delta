@@ -78,7 +78,8 @@ class RulesWindow(QWidget):
         print("confirmed, moving to mappings page")
         for i in self.rule_list:
             col_index, new_names, advanced, res_index, splitter, joiner = i.getAttributes()
-            matrix_to_csv.split_col(self.table, col_index, new_names, which_words=advanced,  resolution_type=res_index,
+            matrix_to_csv.split_col(self.table, col_index, new_names, which_words=advanced,
+                                    resolution_type=matrix_to_csv.ResolutionType(res_index),
                                     separator=splitter, joiner=joiner)
 
 
