@@ -159,12 +159,15 @@ class file_select(QWidget):
         Commented out for easy testing
         '''
         noPages = self.askForPages()
+        print(noPages)
 
         progressBar = ProgressBar(noPages * 2 + 2)
         self.state = State.Running
         self.parent.parent.state = 1  # Loading
         self.parent.setCurrentIndex(1)
         self.parent.drag.reset()
+
+
 
         columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
 
