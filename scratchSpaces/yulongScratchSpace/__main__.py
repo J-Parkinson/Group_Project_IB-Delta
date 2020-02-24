@@ -61,8 +61,6 @@ class Window(QWidget):
         # Should be some butterfly icons
         #################################################
 
-        # Todo: Add the icon here - it can be changed by changing the file path
-
         pic = QLabel(top_left)
 
         # use full ABSOLUTE path to the image, not relative
@@ -105,9 +103,8 @@ class Window(QWidget):
 
         # Data page
         # Todo: make it prettier!
-        #data_page = saveCSV.saveCSVWindow()
 
-        data_page = modifyCSV.RulesWindow()
+        data_page = modifyCSV.ModifyMainWindow()
 
         # Tutorial page, working atm
         # Todo: design a tutorial page, but not now, no hurry

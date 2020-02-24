@@ -15,7 +15,7 @@ import fitz
 from os import makedirs, path
 from sys import stderr
 
-from dataStructures.logbookScan import Column, PageLayout
+from dataStructures.logbookScan import Column, PageLayout, CellOfWords
 #from frontend.ColumnScreen import queryUserAboutColumns
 
 # Imports for testing - showing histogram of columns
@@ -140,17 +140,13 @@ def splitCellsAndNormalise(source, noPages):
     '''Step 3 - columns'''
     colLocations = calculateColumns(transformed)
 
-    # adjust columns depending on user input to fix stuff
-    adjusted, newColLocations, minX, maxX, minY, maxY, columnObjects = handleColumns(colLocations, image.shape[0],
-                                                                                     image.shape[1])
-
     # determines where the rows are - interpolation used (so assuming equally spaced lines)
     '''Step 4 - rows'''
-    rowLocations = calculateRows(adjusted)
+    rowLocations = calculateRows(transformed)
 
     # splits image along col and row locations
     '''Step 5 - cell splitting'''
-    cells = splitIntoCells(adjusted, rowLocations, newColLocations)
+    cells = convertToCellOfWords(splitIntoCells(transformed, rowLocations, colLocations), len(rowLocations) + 1)
 
     '''dir = storeFilesTemporarily(cells, len(colLocations))'''
 
@@ -324,15 +320,15 @@ def normaliseImage(image, orig):
     return transformed
 
 
-''' storeFilesTemporarily
-    Takes cells and stores these cells in a temp dir
+''' storeFilesTemporarily these cells in a temp dir
     Returns the string of the dir
     Not used - for testing purposes'''
 def storeFilesTemporarily(cells, noCols):
     # create new temp directory
     with TemporaryDirectory() as dir:
         for x, image in enumerate(cells):
-            # write to temp dir, with name referencing position in image
+            # w
+            #     Takes cells and storesrite to temp dir, with name referencing position in image
             imwrite(dir + "/cell-" + str(x // noCols) + "-" + str(x % noCols) + ".png", image)
     return dir
 
@@ -344,6 +340,16 @@ def storeFilesTemporarily(cells, noCols):
 def splitIntoCells(image, rows, cols):
     return [a for b in [hsplit(row, cols) for row in vsplit(image, rows)] for a in b]
 
+''' convertToCellOfWords
+    Converts a list of 2d arrays to CellOfWords[]
+    Each CellOfWords[] contains a row, col and image (2D Numpy array)
+'''
+def convertToCellOfWords(images, noCols):
+    returnList = []
+    for n, image in images:
+        newWord = CellOfWords(image, n//noCols, n%noCols)
+        returnList.append(newWord)
+    return returnList
 
 ''' calculateColumns
     Calculates the column locations
@@ -482,4 +488,4 @@ def handleColumnGUI(source, noPages, progressBar=None):
         progressBar.hide()
     return imageOutput.name # will eventually return string representing the location of the dir Francesca is using to read in cells and
 
-print(handleColumnGUI("C:/Users/Jack/Documents/Cambridge University/Year IB/Group_Project_IB-Delta/scratchSpaces/yulongScratchSpace/scantest.pdf", 2, None))
+#print(handleColumnGUI("C:/Users/Jack/Documents/Cambridge University/Year IB/Group_Project_IB-Delta/scratchSpaces/yulongScratchSpace/scantest.pdf", 2, None))
