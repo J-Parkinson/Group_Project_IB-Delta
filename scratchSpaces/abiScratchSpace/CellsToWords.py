@@ -26,6 +26,12 @@ for i in paths:
     imgList.append(CellOfWords([Word(arr, row, col)], row, col))
 #################################################################
 
+def cellsToWords(cells):
+    newCells = []
+    for x in cells:
+        newCells.append(cellToWords(x))
+    return newCells
+
 def cellToWords(cellOfWords): # takes one CellOfWords
     newWords = []
     cell = cellOfWords.words[0].image
@@ -87,6 +93,7 @@ def removeWhiteSpaceFromWord(word,i):
 
 
 
-x = cellToWords(imgList[0]).words
+x = cellsToWords(imgList)
 for i in range(len(x)):
-    cv2.imwrite('test-'+str(i)+'.png', x[i].image)
+    for j in range(len(x[i].words)):
+        cv2.imwrite('test-'+str(i)+'-'+str(j)+'.png', x[i].words[j].image)
