@@ -13,6 +13,7 @@ from PIL import Image
 from tempfile import NamedTemporaryFile
 import fitz
 from pdf2image import convert_from_path as loadPDF
+import CellsToWords
 from os import makedirs, path
 from sys import stderr
 
@@ -158,7 +159,7 @@ def splitCellsAndNormalise(source, noPages):
         Run your code on each element in that and yh should work :D
     '''
 
-    return None  # will eventually return string representing the location of the dir Francesca is using to read in cells and
+    return cells # will eventually return string representing the location of the dir Francesca is using to read in cells and
 
 
 ''' handleColumns
