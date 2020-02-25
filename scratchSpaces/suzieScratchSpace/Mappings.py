@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGr
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap
 from ..jamesScratchSpace import matrix_to_csv
+import os, platform, subprocess
 
 
 class MapWindow(QWidget):
@@ -67,8 +68,18 @@ class MapWindow(QWidget):
         #todo: this
 
     def next(self):
-        #todo: move to save page
-        return 0
+        save_path, _ = QFileDialog.getSaveFileName(self, self.tr('Save File'), 'untitled.csv', self.tr('CSV (*.csv'))
+        if save_path != '':
+            matrix_to_csv.matrix_to_standard_csv(self.table, save_path, field_map=self.maps_dict,
+                                                 field_consts=self.const_dict)
+            saved = QLabel("Saved!")
+            saved.show()
+            if platform.system() == 'Darwin':
+                subprocess.call(('open', save_path))
+            elif platform.system() == 'Windows':
+                os.startfile(save_path)
+            else:
+                subprocess.call(('xdg-open', save_path))
 
 
 

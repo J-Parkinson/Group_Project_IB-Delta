@@ -177,6 +177,12 @@ class NewRule(QWidget):
 
         # column names
         new_names, advanced = self.new_col.getCols()
+        if '' in advanced:
+            for option in advanced:
+                if option != '':
+                    # TODO: this is an ERROR, please create an error pop-up to alert user to fix
+                    ()
+            advanced = None
 
         # res
         res_index = self.res.currentIndex() + 1
