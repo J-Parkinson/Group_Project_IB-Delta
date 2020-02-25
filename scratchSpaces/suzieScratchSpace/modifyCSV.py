@@ -2,23 +2,65 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGr
     QStackedWidget, QBoxLayout, QHBoxLayout, QFileDialog, QCheckBox, QComboBox, QLineEdit, QScrollArea
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap
+from ..jamesScratchSpace import matrix_to_csv
 
 
 # TODO: create page for uploading CSV
 # TODO: pg1 for adding rules
 # TODO: pg2 for creating mappings
 
-class ModiyMainWindow(QWidget):
+class ModifyMainWindow(QWidget):
     def __init__(self):
-        super.__init__()
+        super().__init__()
+        layout = QGridLayout()
+        main = QStackedWidget()
+        main.addWidget(UploadCSV(main))  # index 0
+          # currently index 1
+        main.addWidget(MapWindow(main))  # index 2
 
+        main.setCurrentIndex(0)
+        layout.addWidget(main)
+        self.setLayout(layout)
+
+
+class UploadCSV(QWidget):
+    def __init__(self, stack):
+        super().__init__()
+        self.setStyleSheet('color: black')
+        self.stack_wid = stack
+        layout = QGridLayout()
+        click_input_button = QPushButton("Icon!")
+        click_input_button.clicked.connect(self.open_file_window)
+        click_input_button.setFixedSize(50, 50)
+        layout.addWidget(click_input_button)
+
+        next_btn = QPushButton("next")
+        next_btn.clicked.connect(self.goto_rules)
+        layout.addWidget(next_btn)
+
+        self.setLayout(layout)
+
+    def open_file_window(self):
+        # noinspection PyCallByClass
+        # taken from __main__ in yulong's scratch space
+        fileName, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "",
+                                                  "", "")
+        if fileName:
+            # TODO: pass csv to backend to get fields
+            self.table = matrix_to_csv.read_csv(fileName)
+            print(fileName)
+
+    def goto_rules(self):
+        print("something")
+        self.stack_wid.addWidget(RulesWindow(self.stack_wid, self.table))
+        self.stack_wid.setCurrentIndex(2)
 
 
 class RulesWindow(QWidget):
 
-    def __init__(self):
+    def __init__(self, stack, table):
         super().__init__()
-
+        self.table = table
         main_layout = QVBoxLayout(self)
         self.setLayout(main_layout)
 
@@ -31,7 +73,7 @@ class RulesWindow(QWidget):
 
         self.scroll.setWidget(self.scroll_area_content)
 
-        #where to start the rules within the grid
+        # where to start the rules within the grid
         self.col_index_y = 3
 
         self.rules = 1
@@ -40,6 +82,8 @@ class RulesWindow(QWidget):
         self.setStyleSheet('color: black; background-color: rgb(248, 246, 238)')
 
         self.rule_list = []
+
+        self.stack_wid = stack
 
         self.initUI()
 
@@ -52,7 +96,7 @@ class RulesWindow(QWidget):
         self.grid.addWidget(title, 0, 0, 1, 2, Qt.AlignCenter)
         self.grid.addWidget(help_text, 1, 0, 1, 2, Qt.AlignTop)
 
-        rule1 = NewRule()
+        rule1 = NewRule(self.table)
         self.rule_list.append(rule1)
         self.grid.addWidget(rule1, self.rules + 2, 0, 1, 2)
 
@@ -68,29 +112,30 @@ class RulesWindow(QWidget):
     def new_rule(self):
         self.rules += 1
 
-        rule = NewRule()
+        rule = NewRule(self.table)
         self.rule_list.append(rule)
 
-        self.grid.addWidget(rule, self.rules+2, 0, 1, 2)
+        self.grid.addWidget(rule, self.rules + 2, 0, 1, 2)
 
     def next(self):
         print("confirmed, moving to mappings page")
-        if len(self.rule_list) == 0:
-            print("helpppp")
         for i in self.rule_list:
-            rule_atts = i.getAttributes()
+            col_index, new_names, advanced, res_index, splitter, joiner = i.getAttributes()
+            matrix_to_csv.split_col(self.table, col_index, new_names, which_words=advanced,
+                                    resolution_type=matrix_to_csv.ResolutionType(res_index),
+                                    separator=splitter, joiner=joiner)
 
-            print("smth")
-            print(rule_atts)
+        self.stack_wid.setCurrentIndex(1)
+
 
 
 class NewRule(QWidget):
-    def __init__(self):
+    def __init__(self,table):
         super().__init__()
         rule_layout = QGridLayout()
         col_label = QLabel("Choose a column to split:")
         self.col_to_split = QComboBox()
-        self.col_to_split.addItems(["field 1", "field 2", "field 3", "etc"])
+        self.col_to_split.addItems(table[0])
 
         new_col_label = QLabel("Type name of new column:")
         self.new_col = NewCol(rule_layout)
@@ -134,14 +179,13 @@ class NewRule(QWidget):
         # res
         res_index = self.res.currentIndex()
 
-        #split char
+        # split char
         split = self.split_char.text()
 
-        #join char
+        # join char
         join = self.join_char.text()
 
         return col_index, new_names, advanced, res_index, split, join
-
 
 
 class NewCol(QWidget):
@@ -188,7 +232,7 @@ class NewCol(QWidget):
 
 
     def del_col(self, layout):
-        print ("delete col")
+        print("delete col")
         for i in reversed(range(layout.count())):
             layout.itemAt(i).widget().deleteLater()
 
@@ -196,7 +240,7 @@ class NewCol(QWidget):
         column_names = []
         advanced = []
         for x in self.col_list:
-            name = x.itemAtPosition(0,0).widget().text()
+            name = x.itemAtPosition(0, 0).widget().text()
             column_names.append(name)
             '''
             items = [x.itemAt(i) for i in range(x.count())]
@@ -206,17 +250,18 @@ class NewCol(QWidget):
             # advanced settings
             advanced.append(QLineEdit(items[2]).text())
             '''
-            adv = x.itemAtPosition(2,0).widget().text()
+            adv = x.itemAtPosition(2, 0).widget().text()
             advanced.append(adv)
-
 
         return column_names, advanced
 
 
+class MapWindow(QWidget):
+    def __init__(self, stack):
 
-
-
-
-
-
-
+        super().__init__()
+        self.setStyleSheet('color: black')
+        holder = QLabel("** holder **")
+        layout = QGridLayout()
+        layout.addWidget(holder, 0, 0)
+        self.setLayout(layout)
