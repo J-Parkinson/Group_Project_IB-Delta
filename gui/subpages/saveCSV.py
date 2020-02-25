@@ -42,7 +42,6 @@ class saveCSVWindow(QWidget):
         self.setLayout(grid)
 
     def saveFile(self, b):
-        '''
         save_path, _ = QFileDialog.getSaveFileName(self, self.tr('Save File'), 'untitled.csv', self.tr('CSV (*.csv'))
         if save_path != '':
             matrix_to_csv.matrix_to_csv(self.table, save_path)
@@ -55,7 +54,7 @@ class saveCSVWindow(QWidget):
                     os.startfile(save_path)
                 else:
                     subprocess.call(('xdg-open', save_path))
-        '''
+
         self.parent.state = states.uploadState.Unloaded
         self.parent.setCurrentIndex(0)
         self.parent.parent.state = 0  # Normal
