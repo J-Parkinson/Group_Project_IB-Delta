@@ -104,7 +104,7 @@ class Window(QWidget):
         # Data page
         # Todo: make it prettier!
 
-        data_page = modifyCSV.ModifyMainWindow()
+        data_page = saveCSV.saveCSVWindow([['Field'], ['Row1'], ['Row2']])
 
         # Tutorial page, working atm
         # Todo: design a tutorial page, but not now, no hurry

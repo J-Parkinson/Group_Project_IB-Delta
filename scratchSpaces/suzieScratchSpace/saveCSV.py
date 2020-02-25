@@ -53,6 +53,8 @@ class saveCSVWindow(QWidget):
                 else:
                     subprocess.call(('xdg-open', save_path))
 
+        #TODO: jump to a homepage
+
 
 
 
