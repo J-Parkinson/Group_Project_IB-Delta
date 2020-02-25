@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxL
 from PyQt5.QtCore import Qt, QSize
 
 import dataStructures.logbookScan as Scan
-# import imagePreprocessing.imageScanningAndPreprocessing as ImageProcess
+import imagePreprocessing.imageScanningAndPreprocessing as ImageProcess
 
 import time
 
@@ -160,15 +160,16 @@ class file_select(QWidget):
         Commented out for easy testing
         '''
         noPages = self.askForPages()
-        print(noPages)
 
         progressBar = ProgressBar(noPages * 2 + 2)
+        columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
+        print(columnImage)
         self.state = State.Running
         self.parent.parent.state = 1  # Loading
         self.parent.setCurrentIndex(1)
         self.parent.drag.reset()
 
-        # columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
+
 
         '''
         if self.state == State.Loaded:
@@ -183,15 +184,29 @@ class file_select(QWidget):
 
 
 class ProgressBar(QMainWindow):
-    def __init__(self, parent=None, noSteps=1):
+    def __init__(self, noSteps=1):
         # super(ProgressBar, self).__init__(parent)
-        super().__init__()
+        super(ProgressBar, self).__init__()
+
+        self.window = QWidget()
+        self.setWindowTitle("Loading page preview..")
+
+        self.layout = QVBoxLayout()
+
         self.text = QLabel(self)
         self.text.setText("")
+
         self.progress = QProgressBar(self)
         self.progress.setGeometry(200, 80, 250, 20)
+
         self.noSteps = noSteps
         self.currentStep = 0
+
+        self.layout.addWidget(self.text)
+        self.layout.addWidget(self.progress)
+
+        self.window.setLayout(self.layout)
+        self.window.show()
 
     def hide(self):
         self.close()
