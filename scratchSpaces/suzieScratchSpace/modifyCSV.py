@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGridLayout, QLabel, QSizePolicy, \
-    QStackedWidget, QBoxLayout, QHBoxLayout, QFileDialog, QCheckBox, QComboBox, QLineEdit, QScrollArea
+    QStackedWidget, QBoxLayout, QHBoxLayout, QFileDialog, QCheckBox, QComboBox, QLineEdit, QScrollArea, QMessageBox
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap
 from ..jamesScratchSpace import matrix_to_csv
@@ -9,6 +9,17 @@ from . import Mappings
 # TODO: create page for uploading CSV
 # TODO: pg1 for adding rules
 # TODO: pg2 for creating mappings
+
+def warning(title, text, description):
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Warning)
+
+    msg.setWindowTitle(title)
+    msg.setText(text)
+    msg.setInformativeText(description)
+
+    return msg.exec_()
+
 
 class ModifyMainWindow(QWidget):
     def __init__(self):
@@ -117,11 +128,18 @@ class RulesWindow(QWidget):
 
     def next(self):
         print("confirmed, moving to mappings page")
-        for i in self.rule_list:
-            col_index, new_names, advanced, res_index, splitter, joiner = i.getAttributes()
-            matrix_to_csv.split_col(self.table, col_index, new_names, which_words=advanced,
-                                    resolution_type=matrix_to_csv.ResolutionType(res_index),
-                                    separator=splitter, joiner=joiner)
+        table_before = self.table
+        try:
+            for i in self.rule_list:
+                col_index, new_names, advanced, res_index, splitter, joiner = i.getAttributes()
+                matrix_to_csv.split_col(self.table, col_index, new_names, which_words=advanced,
+                                        resolution_type=matrix_to_csv.ResolutionType(res_index),
+                                        separator=splitter, joiner=joiner)
+        except Exception as e:
+            self.table = table_before
+            warning('Error', 'Failed to apply the rules!', str(e))
+            return
+
         self.stack_wid.addWidget(Mappings.MapWindow(self.stack_wid, self.table))
         self.stack_wid.setCurrentIndex(2)
 

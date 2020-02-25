@@ -77,7 +77,7 @@ def split_col(table, field_index, new_cols, which_words=None, separator=' ', res
                 for new_col_index, word_index in enumerate(which_words):
                     if word_index == '*':
                         if wildcard_found:
-                            raise Exception('multiple wildcards passed in optional parameter')
+                            raise Exception('multiple wildcards passed in optional parameter.')
                         else:
                             wildcard_found = True
                             wildcard_index = new_col_index
@@ -90,7 +90,7 @@ def split_col(table, field_index, new_cols, which_words=None, separator=' ', res
                         if end < 0:
                             end = len(words) + end
                         if start >= len(words) or end >= len(words) or start < 0 or end < 0:
-                            raise Exception('index in optional parameter out of range')
+                            raise Exception('index in optional parameter out of range.')
                         for i in range(start, end + 1):
                             add_to_indices(i, new_col_index, indices, resolution_type, len(words))
                     elif re.match('\\[-?\\d+(, ?-?\\d)*\\]', word_index):
@@ -107,7 +107,7 @@ def split_col(table, field_index, new_cols, which_words=None, separator=' ', res
                         index = len(words) + int(word_index)
                         add_to_indices(index, new_col_index, indices, resolution_type, len(words))
                     else:
-                        raise Exception('Failed to match optional parameter')
+                        raise Exception('Failed to match optional parameter.')
 
                 row_addition = [[] for _ in range(len(new_cols))]
                 for word_index, word in enumerate(words):
@@ -122,7 +122,7 @@ def split_col(table, field_index, new_cols, which_words=None, separator=' ', res
                 row += row_string
 
             else:
-                raise Exception(f'number of words and columns provided not equal at index {row_index}')
+                raise Exception(f'number of words and columns provided not equal at row {row_index}.')
         else:
             row += new_cols
 
