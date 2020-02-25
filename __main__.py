@@ -228,6 +228,14 @@ class Window(QWidget):
         self.show()
         application.exec_()
 
+    def closeEvent(self, e):
+        if self.state == State.Loading:
+            if self.load_warning():
+                e.accept()
+            else:
+                e.ignore()
+        else:
+            e.accept()
 
 if __name__ == "__main__":
     app = Window()
