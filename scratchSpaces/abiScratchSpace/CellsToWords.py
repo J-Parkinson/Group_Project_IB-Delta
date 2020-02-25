@@ -14,7 +14,7 @@ import cv2 as cv2
 
 #################################################################
 imgList = []
-paths = ["../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 37/cell-2-3.png","../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 16/cell-1-5.png","../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 25/cell-1-2.png", "../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 13/cell-1-2.png", "../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 13/cell-4-2.png"]
+paths = ["../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 51/cell-0-1.png","../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 16/cell-1-5.png","../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 25/cell-1-2.png", "../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 13/cell-1-2.png", "../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 13/cell-4-2.png"]
 for i in paths:
     row = i[-3]
     col = i[-1]
@@ -104,6 +104,7 @@ x = cellsToWords(imgList)
 count = 0
 for y in x:
     count2 = 0
+    print(count, x[count].words)
     for z in y.words:
         cv2.imwrite('test-'+str(count)+'-'+str(count2)+'.png', z.image)
         count2+=1
