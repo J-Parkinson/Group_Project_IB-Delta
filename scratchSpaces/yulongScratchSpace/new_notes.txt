@@ -5,20 +5,18 @@ We have 3 preview needs:
     1. drag-n-drop
     2. file button
     3. rectangle thing
-Paint the rectangles (done!)
-Non-pdf warning in drag-n-drop (done!)
-Add drag-n-draw (done!)
-Add a fake progress bar (done by other people, but buggy)
+Add a flying butterfly gif while waiting
 Add a dictionary input (totally undefined??)
-Connect backend
-Loading page, show fun facts
+Connect backend (buggy)
+Loading page, show fun facts (perhaps no)
 
 
 Tutorial:
-    - Show it first time
-    - Merge things before you pass
+    - Show it first time (perhaps no)
+    - Merge things before you pass (?)
     - Identify the number of pages per image
     - If you can't see layout, change the color scheme (Mac-only problem)
+    - And, of course, a complete go through of how to use this app
 
 Integration:
     - Modify data structure: each column might have a dictionary

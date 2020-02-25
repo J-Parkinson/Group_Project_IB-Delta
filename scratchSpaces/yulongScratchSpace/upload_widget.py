@@ -11,6 +11,8 @@ import imagePreprocessing.imageScanningAndPreprocessing as ImageProcess
 
 import time
 
+from scratchSpaces.suzieScratchSpace import saveCSV
+
 test = Scan.PageLayout(1)
 test.addColumn(Scan.Column((0, 0), (50, 200), 1, ""))
 test.addColumn(Scan.Column((50, 0), (100, 200), 1, ""))
@@ -18,7 +20,7 @@ test.addColumn(Scan.Column((100, 0), (150, 200), 1, ""))
 test.addColumn(Scan.Column((150, 0), (200, 200), 1, ""))
 
 
-def warning(title, text, description):
+def warning(title, text, description,two_buttons):
     msg = QMessageBox()
     msg.setIcon(QMessageBox.Warning)
 
@@ -26,13 +28,17 @@ def warning(title, text, description):
     msg.setText(text)
     msg.setInformativeText(description)
 
-    msg.exec_()
+    if two_buttons:
+        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
+    return msg.exec_()
 
 
 class State(Enum):
     Unloaded = 0
     Loaded = 1
     Running = 2
+    Saving = 3
 
 
 class dnd_widget(QLabel):
@@ -53,7 +59,7 @@ class dnd_widget(QLabel):
     def dropEvent(self, e):
         filename = e.mimeData().text()
         if not (filename[-4:] == ".pdf"):
-            warning("Warning", "Wrong file type!", "Please select a .pdf or .jpeg file!")
+            warning("Warning", "Wrong file type!", "Please select a .pdf or .jpeg file!",0)
             return
         self.parent.state = State.Loaded
         self.parent.parent.filename = filename[8:]
@@ -149,6 +155,7 @@ class file_select(QWidget):
         ok = False
         num = 0
 
+        # Todo: very problematic behavior, fix it
         while (not ok) or (num < 1):
             num, ok = QInputDialog.getInt(self, "Set page span",
                                           "Enter the number of adjacent pages that make up one logbook table.", 1)
@@ -179,7 +186,7 @@ class file_select(QWidget):
             self.parent.setCurrentIndex(1)
             self.parent.drag.reset()
         else:
-            warning("Warning","No file loaded!","Please select a file to load")
+            warning("Warning","No file loaded!","Please select a file to load",0)
         #'''
 
 
@@ -227,8 +234,10 @@ class preview(QWidget):
         ClickedV = 3
         ClickedH = 4
 
-    def __init__(self):
+    def __init__(self,parent):
         super().__init__()
+
+        self.parent = parent
         self.page = None
         self.control = None
         self.state = self.State.Normal
@@ -278,6 +287,8 @@ class preview(QWidget):
         x = e.x()
         y = e.y()
 
+        # Todo: some bad behaviors here, fix it !!!!!!
+
         if self.state == self.State.ClickedH:
             self.control.columns.setCurrentRow(self.onColumn)
             self.control.edit.brx.setValue(x)
@@ -292,7 +303,7 @@ class preview(QWidget):
             if y < self.offset + 4:
                 i = 0
                 for c in self.page.columnList:
-                    if abs(x - c.brCoord[0]) < 5:
+                    if abs(x - c.brCoord[0]) < 10:
                         self.state = self.State.OnH
                         self.update_cursor()
                         self.onColumn = i
@@ -326,10 +337,11 @@ class preview(QWidget):
 
 
 class control(QWidget):
-    def __init__(self):
+    def __init__(self,parent):
         super().__init__()
         layout = QHBoxLayout()
 
+        self.parent = parent
         self.columns = QListWidget()
         self.page = None
         self.preview = None
@@ -342,6 +354,8 @@ class control(QWidget):
         layout.addWidget(self.columns)
         layout.addWidget(self.edit)
         self.setLayout(layout)
+
+
 
     def init_lines(self):
         lines = QWidget()
@@ -433,6 +447,7 @@ class control(QWidget):
         del_button = QPushButton("Delete")
         del_button.clicked.connect(self.delete)
         cfm_button = QPushButton("Confirm")
+        cfm_button.clicked.connect(self.confirm)
 
         buttons_layout.addWidget(add_button)
         buttons_layout.addWidget(del_button)
@@ -465,7 +480,9 @@ class control(QWidget):
         return
 
     def confirm(self):
-        # Pass self.page to backend
+        # todo: switch to sate 3 in upload page to make stack have the save page
+        self.parent.parent.state = State.Saving
+        self.parent.parent.setCurrentIndex(2)
         return
 
     def reset(self, page):
@@ -490,8 +507,8 @@ class drag_page(QWidget):
         self.page = None
 
         layout = QVBoxLayout()
-        self.control = control()
-        self.preview = preview()
+        self.control = control(self)
+        self.preview = preview(self)
         self.control.preview = self.preview
         self.preview.control = self.control
 
@@ -514,10 +531,12 @@ class upload_page(QStackedWidget):
         super().__init__()
         self.parent = parent
         self.filename = ""
-        self.file_select_page = file_select(self)
 
+        self.file_select_page = file_select(self)
         self.drag = drag_page(self)
+        self.save_page = saveCSV.saveCSVWindow([])
 
         self.addWidget(self.file_select_page)
         self.addWidget(self.drag)
+        self.addWidget(self.save_page)
         self.setCurrentIndex(0)
