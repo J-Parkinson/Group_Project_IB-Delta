@@ -12,6 +12,7 @@ from skimage.filters import threshold_sauvola
 from PIL import Image
 from tempfile import NamedTemporaryFile
 import fitz
+import CellsToWords
 from os import makedirs, path
 from sys import stderr
 
@@ -156,7 +157,7 @@ def splitCellsAndNormalise(source, noPages):
         Run your code on each element in that and yh should work :D
     '''
 
-    return None  # will eventually return string representing the location of the dir Francesca is using to read in cells and
+    return CellsToWords.cellsToWords(cells) # will eventually return string representing the location of the dir Francesca is using to read in cells and
 
 
 ''' handleColumns
