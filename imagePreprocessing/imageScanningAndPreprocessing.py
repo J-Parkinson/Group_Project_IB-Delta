@@ -129,7 +129,7 @@ def splitCellsAndNormalise(source, noPages):
     # to the new height, clone it, and resize it
 
     '''Step 1 - load image'''
-    image = imread(source)
+    image = resize(imread(source), width=imread(source).shape[1]
     orig = image.copy()
 
     # deslants page into a rectangle - perspective transform
