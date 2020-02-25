@@ -24,7 +24,9 @@ class MapWindow(QWidget):
         self.scroll.setWidget(self.scroll_area_content)
         self.maps_list = []
         self.const_list = []
+        # dictionary mapping standard header to tuple ([fields from csv], joiner)
         self.maps_dict = {}
+        # dictionary mapping standard header to string constant
         self.const_dict = {}
         # number of mappings
         self.maps = 0
@@ -50,7 +52,7 @@ class MapWindow(QWidget):
         new_const_btn = QPushButton("Add New Constant")
         new_const_btn.clicked.connect(self.new_const_map)
 
-        cont_btn = QPushButton("Confirm all Mappings and Continue")
+        cont_btn = QPushButton("Confirm all Mappings and Save")
         cont_btn.clicked.connect(self.next)
 
         self.grid.addWidget(new_map_btn, 2, 0, 1, 1)
@@ -63,11 +65,11 @@ class MapWindow(QWidget):
         #todo: this
 
     def new_const_map(self):
-        self.maps += 1
+        self.consts += 1
         #todo: this
 
     def next(self):
-        #todo: move to save page
+        #todo: save window will pop up
         return 0
 
 

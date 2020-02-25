@@ -13,7 +13,7 @@ from PIL import Image
 from tempfile import NamedTemporaryFile
 import fitz
 from pdf2image import convert_from_path as loadPDF
-import CellsToWords
+#import CellsToWords
 from os import makedirs, path
 from sys import stderr
 
@@ -494,4 +494,4 @@ def handleColumnGUI(source, noPages, progressBar=None):
         progressBar.hide()
     return imageOutput.name # will eventually return string representing the location of the dir Francesca is using to read in cells and
 
-print(handleColumnGUI("C:/Users/jrp32/PycharmProjects/Group_Project_IB-Delta/imagePreprocessing/Deprecated/OldImagePreprocessing/images/scantest.pdf", 2, None))
+#print(handleColumnGUI("C:/Users/jrp32/PycharmProjects/Group_Project_IB-Delta/imagePreprocessing/Deprecated/OldImagePreprocessing/images/scantest.pdf", 2, None))

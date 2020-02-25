@@ -16,9 +16,6 @@ class ModifyMainWindow(QWidget):
         layout = QGridLayout()
         main = QStackedWidget()
         main.addWidget(UploadCSV(main))  # index 0
-          # currently index 1
-        #main.addWidget(Mappings.MapWindow(main))  # index 2
-
         main.setCurrentIndex(0)
         layout.addWidget(main)
         self.setLayout(layout)
@@ -44,8 +41,7 @@ class UploadCSV(QWidget):
     def open_file_window(self):
         # noinspection PyCallByClass
         # taken from __main__ in yulong's scratch space
-        fileName, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "",
-                                                  "", "")
+        fileName, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "", "", "")
         if fileName:
 
             self.table = matrix_to_csv.read_csv(fileName)
@@ -54,7 +50,7 @@ class UploadCSV(QWidget):
     def goto_rules(self):
         print("something")
         self.stack_wid.addWidget(RulesWindow(self.stack_wid, self.table))
-        self.stack_wid.addWidget(Mappings.MapWindow(self.stack_wid, self.table))
+
         self.stack_wid.setCurrentIndex(1)
 
 
@@ -126,7 +122,7 @@ class RulesWindow(QWidget):
             matrix_to_csv.split_col(self.table, col_index, new_names, which_words=advanced,
                                     resolution_type=matrix_to_csv.ResolutionType(res_index),
                                     separator=splitter, joiner=joiner)
-
+        self.stack_wid.addWidget(Mappings.MapWindow(self.stack_wid, self.table))
         self.stack_wid.setCurrentIndex(2)
 
 
@@ -236,7 +232,6 @@ class NewCol(QWidget):
         # add this layout to the list
         self.col_list.append(layout)
 
-
     def del_col(self, layout):
         print("delete col")
         for i in reversed(range(layout.count())):
@@ -248,14 +243,7 @@ class NewCol(QWidget):
         for x in self.col_list:
             name = x.itemAtPosition(0, 0).widget().text()
             column_names.append(name)
-            '''
-            items = [x.itemAt(i) for i in range(x.count())]
-            #column name
-            column_names.append(QLineEdit(items[0]).text())
 
-            # advanced settings
-            advanced.append(QLineEdit(items[2]).text())
-            '''
             adv = x.itemAtPosition(2, 0).widget().text()
             advanced.append(adv)
 
