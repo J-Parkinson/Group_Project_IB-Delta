@@ -1,0 +1,29 @@
+Things to do now:
+
+upload widget:
+We have 3 preview needs:
+    1. drag-n-drop
+    2. file button
+    3. rectangle thing
+Add a flying butterfly gif while waiting
+Add a dictionary input (totally undefined??)
+Connect backend (buggy)
+Loading page, show fun facts (perhaps no)
+
+
+Tutorial:
+    - Show it first time (perhaps no)
+    - Merge things before you pass (?)
+    - Identify the number of pages per image
+    - If you can't see layout, change the color scheme (Mac-only problem)
+    - And, of course, a complete go through of how to use this app
+
+Integration:
+    - Modify data structure: each column might have a dictionary
+
+User behavior:
+    -What if the user:
+        Drags columns in a bad way?
+        Keep adding columns?
+        And many more...
+

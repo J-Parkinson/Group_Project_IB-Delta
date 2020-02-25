@@ -10,8 +10,7 @@ from pathlib import Path
 import platform
 import os
 
-from scratchSpaces.yulongScratchSpace import upload_widget
-from scratchSpaces.suzieScratchSpace import saveCSV, modifyCSV
+from gui import upload_widget, modifyCSV
 
 application = QApplication([])
 
@@ -64,7 +63,7 @@ class Window(QWidget):
         pic = QLabel(top_left)
 
         # use full ABSOLUTE path to the image, not relative
-        bPM = QPixmap(os.getcwd() + "/../suzieScratchSpace/butterfly.png")
+        bPM = QPixmap(os.getcwd() + "/gui/resources/butterfly.png")
         bPM = bPM.scaledToWidth(150)
         pic.setPixmap(bPM)
         pic.setGeometry(0, 0, 10, 10)
