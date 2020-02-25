@@ -2,13 +2,18 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGr
     QStackedWidget, QBoxLayout, QHBoxLayout, QFileDialog, QCheckBox
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap
+from PyQt5.uic.properties import QtGui
+
+from ..jamesScratchSpace import matrix_to_csv
+import os, platform, subprocess
 
 
 class saveCSVWindow(QWidget):
 # TODO: make pretty
-    def __init__(self):
+    def __init__(self, table):
         super().__init__()
-
+        self.table = table
+        self.save_path = None
         self.initUI()
 
     def initUI(self):
@@ -39,28 +44,26 @@ class saveCSVWindow(QWidget):
         grid.addWidget(cont_button, 4, 1)
         grid.addWidget(cancel_button, 3, 1)
 
-        location_button.clicked.connect(self.chooseDir)
         cont_button.clicked.connect(lambda: self.saveFile(check_box))
 
         self.setLayout(grid)
 
 
-    def chooseDir(self):
-        dir = QFileDialog.getExistingDirectory(self, "Open Directory to Save File into", "")
-        print(dir)
-
-
     def saveFile(self, b):
+        save_path, _ = QFileDialog.getSaveFileName(self, 'Save File')
+        if save_path is not None:
+            matrix_to_csv.matrix_to_csv(self.table, save_path)
+            saved = QLabel("Saved!")
+            saved.show()
+            if b.isChecked():
+                if platform.system() == 'Darwin':
+                    subprocess.call(('open', save_path))
+                elif platform.system() == 'Windows':
+                    os.startfile(save_path)
+                else:
+                    subprocess.call(('xdg-open', save_path))
 
-        if b.isChecked():
-            print("will open file")
-        else:
-            print("will not open file")
 
-        print("saving file")
-
-        saved = QLabel("Saved!")
-        saved.show()
 
 
 

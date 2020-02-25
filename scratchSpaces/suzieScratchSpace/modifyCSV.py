@@ -177,7 +177,7 @@ class NewRule(QWidget):
         new_names, advanced = self.new_col.getCols()
 
         # res
-        res_index = self.res.currentIndex()
+        res_index = self.res.currentIndex() + 1
 
         # split char
         split = self.split_char.text()
