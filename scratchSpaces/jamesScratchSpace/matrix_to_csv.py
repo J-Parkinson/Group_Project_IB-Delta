@@ -32,10 +32,10 @@ STANDARD_HEADER = [['', '', '', 'Summary Data', '', '', '', 'Taxonomy', '', '', 
 
 
 class ResolutionType(Enum):
-    no_clash = auto()
-    just_first = auto()
-    just_last = auto()
-    all = auto()
+    no_clash = 1
+    just_first = 2
+    just_last = 3
+    all = 4
 
 
 def add_to_indices(word_index, col_index, indices, resolution_type, num_words):
@@ -133,13 +133,13 @@ def matrix_to_csv(table, path):
         out.writerows(table)
 
 
-def matrix_to_standard(table, field_map, joiner=' ', header=STANDARD_HEADER):
+def matrix_to_standard(table, field_map, field_consts, joiner=' ', header=STANDARD_HEADER):
     # the field map will map the standard field headers to table's field headers
     result = [["" for _ in range(len(header[0]))] for _ in range(len(table) - 1)]
     for i in range(len(header)):
         for field in header[i]:
             if field in field_map:
-                std_field_index = header[1].index(field)
+                std_field_index = header[i].index(field)
                 for table_field_name in field_map[field]:
                     table_field_index = table[0].index(table_field_name)
                     for row_num, row in enumerate(result):
@@ -147,6 +147,10 @@ def matrix_to_standard(table, field_map, joiner=' ', header=STANDARD_HEADER):
                             row[std_field_index] = table[row_num + 1][table_field_index]
                         else:
                             row[std_field_index] += joiner + table[row_num + 1][table_field_index]
+            if field in field_consts:
+                std_field_index = header[i].index(field)
+                for row in field_consts:
+                    row[std_field_index] = field_consts[field]
     return result
 
 # ----------------------------------------------------------------------------------------------------------------
@@ -154,14 +158,15 @@ def matrix_to_standard(table, field_map, joiner=' ', header=STANDARD_HEADER):
 #   table:                      list list String            expected to contain field headers in first row
 #   path:                       String                      specifies the output path for the generated CSV
 #   field_map:                  dict<String, list String>   maps a standard field header to a list of our field headers
+#   field_consts                dict<String, String>        maps a standard field header to a constant string
 #   joiner:                     String                      (optional) specifies string used to join words together
 #   header                      list list String            (optional atm) may consist of multiple rows
 
-def matrix_to_standard_csv(table, path, field_map, joiner=' ', header=STANDARD_HEADER):
+def matrix_to_standard_csv(table, path, field_map, field_consts={}, joiner=' ', header=STANDARD_HEADER):
     with open(path, mode='w') as outfile:
         out = csv.writer(outfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
         out.writerows(STANDARD_HEADER)
-        out.writerows(matrix_to_standard(table, field_map, joiner, header))
+        out.writerows(matrix_to_standard(table, field_map, field_consts, joiner, header))
 
 
 def read_csv(path):

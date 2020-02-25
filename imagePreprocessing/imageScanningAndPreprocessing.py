@@ -12,10 +12,12 @@ from skimage.filters import threshold_sauvola
 from PIL import Image
 from tempfile import NamedTemporaryFile
 import fitz
+from pdf2image import convert_from_path as loadPDF
+import CellsToWords
 from os import makedirs, path
 from sys import stderr
 
-from dataStructures.logbookScan import Column, PageLayout
+from dataStructures.logbookScan import Column, PageLayout, CellOfWords
 #from frontend.ColumnScreen import queryUserAboutColumns
 
 # Imports for testing - showing histogram of columns
@@ -130,6 +132,7 @@ def splitCellsAndNormalise(source, noPages):
 
     '''Step 1 - load image'''
     image = imread(source)
+    image = resize(image, width=image.shape[1] * 3)
     orig = image.copy()
 
     # deslants page into a rectangle - perspective transform
@@ -140,17 +143,13 @@ def splitCellsAndNormalise(source, noPages):
     '''Step 3 - columns'''
     colLocations = calculateColumns(transformed)
 
-    # adjust columns depending on user input to fix stuff
-    adjusted, newColLocations, minX, maxX, minY, maxY, columnObjects = handleColumns(colLocations, image.shape[0],
-                                                                                     image.shape[1])
-
     # determines where the rows are - interpolation used (so assuming equally spaced lines)
     '''Step 4 - rows'''
-    rowLocations = calculateRows(adjusted)
+    rowLocations = calculateRows(transformed)
 
     # splits image along col and row locations
     '''Step 5 - cell splitting'''
-    cells = splitIntoCells(adjusted, rowLocations, newColLocations)
+    cells = convertToCellOfWords(splitIntoCells(transformed, rowLocations, colLocations), len(rowLocations) + 1)
 
     '''dir = storeFilesTemporarily(cells, len(colLocations))'''
 
@@ -160,7 +159,7 @@ def splitCellsAndNormalise(source, noPages):
         Run your code on each element in that and yh should work :D
     '''
 
-    return None  # will eventually return string representing the location of the dir Francesca is using to read in cells and
+    return cells # will eventually return string representing the location of the dir Francesca is using to read in cells and
 
 
 ''' handleColumns
@@ -324,15 +323,15 @@ def normaliseImage(image, orig):
     return transformed
 
 
-''' storeFilesTemporarily
-    Takes cells and stores these cells in a temp dir
+''' storeFilesTemporarily these cells in a temp dir
     Returns the string of the dir
     Not used - for testing purposes'''
 def storeFilesTemporarily(cells, noCols):
     # create new temp directory
     with TemporaryDirectory() as dir:
         for x, image in enumerate(cells):
-            # write to temp dir, with name referencing position in image
+            # w
+            #     Takes cells and storesrite to temp dir, with name referencing position in image
             imwrite(dir + "/cell-" + str(x // noCols) + "-" + str(x % noCols) + ".png", image)
     return dir
 
@@ -343,6 +342,18 @@ def storeFilesTemporarily(cells, noCols):
 '''
 def splitIntoCells(image, rows, cols):
     return [a for b in [hsplit(row, cols) for row in vsplit(image, rows)] for a in b]
+
+
+''' convertToCellOfWords
+    Converts a list of 2d arrays to CellOfWords[]
+    Each CellOfWords[] contains a row, col and image (2D Numpy array)
+'''
+def convertToCellOfWords(images, noCols):
+    returnList = []
+    for n, image in images:
+        newWord = CellOfWords(image, n//noCols, n%noCols)
+        returnList.append(newWord)
+    return returnList
 
 
 ''' calculateColumns
@@ -440,18 +451,19 @@ def calculateRows(transformed):
 
 
 
-
+''' handleColumnGUI
+    Handles GUI call from frontend to fetch column stuff '''
 def handleColumnGUI(source, noPages, progressBar=None):
     # load the image and compute the ratio of the old height
     # to the new height, clone it, and resize it
     if progressBar:
         progressBar.update("Load images")
 
-    allImages = fitz.open(source)
+    allImages = loadPDF(source)
     imagesToMerge = []
     for x, page in enumerate(allImages):
         if x < noPages:
-            imagesToMerge.append(array(Image.frombytes("RGB", [page.getPixmap().width, page.getPixmap().height], page.getPixmap().samples)))
+            imagesToMerge.append(array(page))
         else:
             break
     '''Step 1 - load image'''
@@ -482,4 +494,4 @@ def handleColumnGUI(source, noPages, progressBar=None):
         progressBar.hide()
     return imageOutput.name # will eventually return string representing the location of the dir Francesca is using to read in cells and
 
-#print(handleColumnGUI("C:/Users/Jack/Documents/Cambridge University/Year IB/Group_Project_IB-Delta/scratchSpaces/yulongScratchSpace/scantest.pdf", 2, None))
+print(handleColumnGUI("C:/Users/jrp32/PycharmProjects/Group_Project_IB-Delta/imagePreprocessing/Deprecated/OldImagePreprocessing/images/scantest.pdf", 2, None))
