@@ -142,7 +142,7 @@ class NewRule(QWidget):
 
         res_lab = QLabel("Resolution:")
         self.res = QComboBox()
-        self.res.addItems(["enum1", "enum2", "enum3", "etc"])
+        self.res.addItems([name for name, _ in matrix_to_csv.ResolutionType.__members__.items()])
 
         split_char_lab = QLabel("Split on:")
         self.split_char = QLineEdit()
@@ -181,9 +181,13 @@ class NewRule(QWidget):
 
         # split char
         split = self.split_char.text()
+        if split == '':
+            split = ' '
 
         # join char
         join = self.join_char.text()
+        if join == '':
+            join = ' '
 
         return col_index, new_names, advanced, res_index, split, join
 
