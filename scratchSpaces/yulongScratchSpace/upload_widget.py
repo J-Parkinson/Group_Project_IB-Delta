@@ -105,7 +105,7 @@ class file_select(QWidget):
 
         click_input_button = QPushButton()
         click_input_button.setIcon(QApplication.style().standardIcon(QStyle.SP_DialogOpenButton))
-        click_input_button.setIconSize(QSize(30,30))
+        click_input_button.setIconSize(QSize(30, 30))
         click_input_button.clicked.connect(self.open_file_window)
         click_input_button.setFixedSize(50, 50)
         click_input_layout.addWidget(click_input_button)
@@ -150,7 +150,8 @@ class file_select(QWidget):
         num = 0
 
         while (not ok) or (num < 1):
-            num, ok = QInputDialog.getInt(self, "Set page span", "Enter the number of adjacent pages that make up one logbook table.", 1)
+            num, ok = QInputDialog.getInt(self, "Set page span",
+                                          "Enter the number of adjacent pages that make up one logbook table.", 1)
 
         return num
 
@@ -159,17 +160,16 @@ class file_select(QWidget):
         Commented out for easy testing
         '''
         noPages = self.askForPages()
-        print(noPages)
 
-        progressBar = ProgressBar(noPages * 2 + 2)
+        #progressBar = ProgressBar(noPages * 2 + 2)
+        #columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
+        #print(columnImage)
         self.state = State.Running
         self.parent.parent.state = 1  # Loading
         self.parent.setCurrentIndex(1)
         self.parent.drag.reset()
 
 
-
-        columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
 
         '''
         if self.state == State.Loaded:
@@ -182,16 +182,31 @@ class file_select(QWidget):
             warning("Warning","No file loaded!","Please select a file to load")
         #'''
 
+
 class ProgressBar(QMainWindow):
-    def __init__(self, parent=None, noSteps=1):
-        super(ProgressBar, self).__init__(parent)
+    def __init__(self, noSteps=1):
+        # super(ProgressBar, self).__init__(parent)
+        super(ProgressBar, self).__init__()
+
+        self.window = QWidget()
+        self.setWindowTitle("Loading page preview..")
+
+        self.layout = QVBoxLayout()
+
         self.text = QLabel(self)
         self.text.setText("")
+
         self.progress = QProgressBar(self)
         self.progress.setGeometry(200, 80, 250, 20)
+
         self.noSteps = noSteps
         self.currentStep = 0
 
+        self.layout.addWidget(self.text)
+        self.layout.addWidget(self.progress)
+
+        self.window.setLayout(self.layout)
+        self.window.show()
 
     def hide(self):
         self.close()
@@ -205,13 +220,24 @@ class ProgressBar(QMainWindow):
 
 
 class preview(QWidget):
+    class State(Enum):
+        Normal = 0
+        OnV = 1
+        OnH = 2
+        ClickedV = 3
+        ClickedH = 4
+
     def __init__(self):
         super().__init__()
         self.page = None
+        self.control = None
+        self.state = self.State.Normal
+        self.onColumn = 0
+        self.setMouseTracking(1)
+        self.offset = 10
 
         b = QPushButton("Working atm\nClick me to reduce stress :-)", self)
-        b.move(500,350)
-
+        b.move(500, 350)
 
     def reset(self, page):
         # draw the boxes
@@ -222,15 +248,81 @@ class preview(QWidget):
     def paintEvent(self, e):
         qp = QPainter()
         qp.begin(self)
+
         qp.setBrush(QColor(93, 173, 226))  # Light blue, ideally
         qp.setOpacity(0.6)  # Some lovely opaque, ideally
         for c in self.page.columnList:
             (x1, y1), (x2, y2) = c.tlCoord, c.brCoord
-            qp.drawRect(x1, y1, x2 - x1, y2 - y1)
-        qp.setBrush(QColor(200, 0, 0))
+            qp.drawRect(x1, y1 + self.offset, x2 - x1, y2 - y1)
+
+        qp.setBrush(QColor(100, 100, 100))
+        qp.drawRect(0, 0, self.width(), self.offset)
+
+        qp.setBrush((QColor(0, 0, 0)))
         qp.setOpacity(1.0)
+        for c in self.page.columnList:
+            (x1, y1), (x2, y2) = c.tlCoord, c.brCoord
+            qp.drawLine(x1, 0, x1, self.offset)
+            qp.drawLine(x2, 0, x2, self.offset)
 
         qp.end()
+
+    def mousePressEvent(self, e):
+        if self.state == self.State.OnH:
+            self.state = self.State.ClickedH
+        elif self.state == self.State.OnV:
+            self.state = self.State.ClickedV
+        self.update_cursor()
+
+    def mouseMoveEvent(self, e):
+        x = e.x()
+        y = e.y()
+
+        if self.state == self.State.ClickedH:
+            self.control.columns.setCurrentRow(self.onColumn)
+            self.control.edit.brx.setValue(x)
+            return
+
+        if self.state == self.State.ClickedV:
+            self.control.edit.bry.setValue(y)
+            return
+
+        if self.state == self.State.Normal:
+            # Column Dragging test
+            if y < self.offset + 4:
+                i = 0
+                for c in self.page.columnList:
+                    if abs(x - c.brCoord[0]) < 5:
+                        self.state = self.State.OnH
+                        self.update_cursor()
+                        self.onColumn = i
+                        return
+                    else:
+                        i += 1
+
+            # Row Dragging test
+            x1, y1 = self.page.columnList[len(self.page.columnList) - 1].brCoord
+            if x < x1 and abs(y - self.offset - y1) < 5:
+                self.state = self.State.OnV
+                self.update_cursor()
+                return
+
+        self.state = self.State.Normal
+        self.update_cursor()
+
+    def mouseReleaseEvent(self, e):
+        self.state = self.State.Normal
+        self.mouseMoveEvent(e)
+
+    def update_cursor(self):
+        if self.state == self.State.Normal:
+            QApplication.setOverrideCursor(Qt.ArrowCursor)
+        elif self.state == self.State.OnV:
+            QApplication.setOverrideCursor(Qt.SplitVCursor)
+        elif self.state == self.State.OnH:
+            QApplication.setOverrideCursor(Qt.SplitHCursor)
+        else:
+            QApplication.setOverrideCursor(Qt.ClosedHandCursor)
 
 
 class control(QWidget):
@@ -295,7 +387,7 @@ class control(QWidget):
             self.edit.tly.setValue(c.tlCoord[1])
             self.edit.brx.setValue(c.brCoord[0])
             self.edit.bry.setValue(c.brCoord[1])
-            if c.fieldName == "" :
+            if c.fieldName == "":
                 c.fieldName = self.columns.currentItem().text()
             self.edit.title.setText(c.fieldName)
 
@@ -325,7 +417,7 @@ class control(QWidget):
             c.brCoord = c.brCoord[0], i
         self.preview.reset(self.page)
 
-    def update_text(self,text):
+    def update_text(self, text):
         row = self.columns.currentRow()
         self.page.columnList[row].fieldName = text
         self.columns.currentItem().setText(text)
@@ -351,15 +443,22 @@ class control(QWidget):
 
     def add(self):
         # Add a new box
+        last = self.page.columnList[self.columns.count() - 1]
         self.columns.addItem("new column " + str(self.name_index))
         self.name_index += 1
-        self.page.addColumn(Scan.Column((0, 0), (0, 0), 1, ""))
+        self.page.addColumn(Scan.Column((last.brCoord[0], last.tlCoord[1]),
+                                        (last.brCoord[0] + 50, last.brCoord[1]),
+                                        1, "new column " + str(self.name_index)))
         self.preview.reset(self.page)
+        self.name_index += 1
         return
 
     def delete(self):
         # Delete current box
         row = self.columns.currentRow()
+        if not ((row == 0) or (row == self.columns.count() - 1)):
+            self.page.columnList[row + 1].tlCoord = \
+                (self.page.columnList[row - 1].brCoord[0], self.page.columnList[row + 1].tlCoord[1])
         self.columns.takeItem(row)
         self.page.removeColumn(self.page.columnList[row])
         self.preview.reset(self.page)
@@ -394,6 +493,7 @@ class drag_page(QWidget):
         self.control = control()
         self.preview = preview()
         self.control.preview = self.preview
+        self.preview.control = self.control
 
         layout.addWidget(self.preview)
         layout.addWidget(self.control)
@@ -406,10 +506,6 @@ class drag_page(QWidget):
         self.page = test
         self.preview.reset(self.page)
         self.control.reset(self.page)
-
-    def mousePressEvent(self, e):
-        print(e.pos())
-
 
 
 class upload_page(QStackedWidget):
