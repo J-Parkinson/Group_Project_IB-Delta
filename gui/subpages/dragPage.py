@@ -7,14 +7,17 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxL
 from PyQt5.QtCore import Qt, QSize
 import time
 
-from utils.structures import logbookScan as Scan
+from utils.structures import logbookScan as Scan, states
+
 
 # Todo: remove this later
-test = Scan.PageLayout(1)
-test.addColumn(Scan.Column((0, 0), (50, 200), 1, ""))
-test.addColumn(Scan.Column((50, 0), (100, 200), 1, ""))
-test.addColumn(Scan.Column((100, 0), (150, 200), 1, ""))
-test.addColumn(Scan.Column((150, 0), (200, 200), 1, ""))
+def newTest():
+    page = Scan.PageLayout(1)
+    page.addColumn(Scan.Column((0, 0), (50, 200), 1, ""))
+    page.addColumn(Scan.Column((50, 0), (100, 200), 1, ""))
+    page.addColumn(Scan.Column((100, 0), (150, 200), 1, ""))
+    page.addColumn(Scan.Column((150, 0), (200, 200), 1, ""))
+    return page
 
 
 class preview(QWidget):
@@ -184,7 +187,7 @@ class control(QWidget):
 
     def show_coords(self):
         row = self.columns.currentRow()
-        if self.page is not None:
+        if self.page is not None and self.columns.currentItem() is not None:
             c = self.page.columnList[row]
             self.edit.tlx.setValue(c.tlCoord[0])
             self.edit.tly.setValue(c.tlCoord[1])
@@ -270,8 +273,17 @@ class control(QWidget):
 
     def confirm(self):
         # todo: switch to sate 3 in upload page to make stack have the save page
-        self.parent.parent.state = State.Saving
-        self.parent.parent.setCurrentIndex(2)
+        upload = self.parent.parent
+
+        if upload.warning("Confirming the changes?", "WARNING:",
+                          "The program's output DEPENDS ALMOST ENTIRELY on your indication.\n\n"
+                          "Click 'yes' to continue. ",
+                          1) == QMessageBox.No:
+            return
+
+        upload.state = states.uploadState.Saving
+        upload.setCurrentIndex(2)
+
         return
 
     def reset(self, page):
@@ -285,6 +297,7 @@ class control(QWidget):
             else:
                 self.columns.addItem("new column " + str(self.name_index))
                 self.name_index += 1
+        self.columns.setCurrentRow(0)
         return
 
 
@@ -309,6 +322,6 @@ class drag_page(QWidget):
 
     def reset(self):
         # To backend function: filename -> page layout
-        self.page = test
+        self.page = newTest()
         self.preview.reset(self.page)
         self.control.reset(self.page)

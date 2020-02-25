@@ -10,15 +10,13 @@ import time
 import dataStructures.logbookScan as Scan
 import imagePreprocessing.imageScanningAndPreprocessing as ImageProcess
 from gui.subpages import saveCSV, fileSelectPage, dragPage
+from utils.structures import states
 
 test = Scan.PageLayout(1)
 test.addColumn(Scan.Column((0, 0), (50, 200), 1, ""))
 test.addColumn(Scan.Column((50, 0), (100, 200), 1, ""))
 test.addColumn(Scan.Column((100, 0), (150, 200), 1, ""))
 test.addColumn(Scan.Column((150, 0), (200, 200), 1, ""))
-
-
-
 
 
 # Todo: make this work, but not hurry lol
@@ -64,17 +62,18 @@ class upload_page(QStackedWidget):
         super().__init__()
         self.parent = parent
         self.filename = ""
+        self.state = states.uploadState.Unloaded
 
         self.file_select_page = fileSelectPage.file_select(self)
         self.drag = dragPage.drag_page(self)
-        self.save_page = saveCSV.saveCSVWindow([])
+        self.save_page = saveCSV.saveCSVWindow(self,[])
 
         self.addWidget(self.file_select_page)
         self.addWidget(self.drag)
         self.addWidget(self.save_page)
         self.setCurrentIndex(0)
 
-    def warning(self,title, text, description, two_buttons):
+    def warning(self, title, text, description, two_buttons):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Warning)
 

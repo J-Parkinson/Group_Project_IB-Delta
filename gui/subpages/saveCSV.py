@@ -7,26 +7,27 @@ from PyQt5.uic.properties import QtGui
 import os, platform, subprocess
 
 from utils.csv import matrix_to_csv
-
+from utils.structures import states
 
 
 class saveCSVWindow(QWidget):
-# TODO: make pretty
-    def __init__(self, table):
+    # TODO: make pretty
+    def __init__(self, parent, table):
         super().__init__()
         self.table = table
         self.save_path = None
         self.initUI()
+        self.parent = parent
 
     def initUI(self):
-
         grid = QGridLayout()
         grid.setSpacing(10)
 
         self.setStyleSheet('color: black; background-color:white')
-        title = QLabel("The file has successfully been transcribed! \n Select a folder to save the transcribed file into and then press Save.")
+        title = QLabel(
+            "The file has successfully been transcribed! \n Select a folder to save the transcribed file into and then press Save.")
 
-        grid.addWidget(title,1,0, 1,2)
+        grid.addWidget(title, 1, 0, 1, 2)
 
         cont_button = QPushButton()
         cont_button.setText("Save")
@@ -40,8 +41,8 @@ class saveCSVWindow(QWidget):
 
         self.setLayout(grid)
 
-
     def saveFile(self, b):
+        '''
         save_path, _ = QFileDialog.getSaveFileName(self, self.tr('Save File'), 'untitled.csv', self.tr('CSV (*.csv'))
         if save_path != '':
             matrix_to_csv.matrix_to_csv(self.table, save_path)
@@ -54,13 +55,7 @@ class saveCSVWindow(QWidget):
                     os.startfile(save_path)
                 else:
                     subprocess.call(('xdg-open', save_path))
-
-        #TODO: jump to a homepage
-
-
-
-
-
-
-
-
+        '''
+        self.parent.state = states.uploadState.Unloaded
+        self.parent.setCurrentIndex(0)
+        self.parent.parent.state = 0  # Normal
