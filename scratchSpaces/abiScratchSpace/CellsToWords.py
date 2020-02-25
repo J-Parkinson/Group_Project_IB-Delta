@@ -26,11 +26,11 @@ for i in paths:
     imgList.append(CellOfWords([Word(arr, row, col)], row, col))
 #################################################################
 
-# python list of python lists of 2D numpy array
-
-def cellToWords(cell): # takes one numpy array
+def cellToWords(cellOfWords): # takes one CellOfWords
     newWords = []
-    cv2.imwrite('cellorig.png', cell)
+    cell = cellOfWords.words[0].image
+    row = cellOfWords.row
+    col = cellOfWords.col
     rows = cellToRows(cell) # LIST OF NP ARRAYS
     for row in rows: # NP ARRAY
         words = rowToWords(row)
@@ -41,7 +41,11 @@ def cellToWords(cell): # takes one numpy array
                 if  newWord.shape[0]>0 and newWord.shape[1]>0:
                     newWords.append(newWord)
             count+=1
-    return newWords
+
+    newWordList = []
+    for x in newWords:
+        newWordList.append(Word(x, row, col))
+    return CellOfWords(newWordList, row, col)
 
 
 
@@ -51,10 +55,8 @@ def rowToWords(row):
     maxValRow = np.amax(valCols)
     wordsHere = np.argwhere(valCols >= maxValRow).flatten()
     cols = np.array_split(row, wordsHere, axis=1)
-    print(cols)
     cols = [x for x in cols if (x.shape[1] > 1 and x.shape[0]>1)]
-    cv2.imwrite('colorig.png', row)
-    return cols  # LIST OF NP ARRAYS
+    return cols
 
 
 
@@ -63,10 +65,9 @@ def cellToRows(cell):
     valRows = ndimage.convolve1d(rowVals, np.array([1, 1, 1, 1, 1]), mode="nearest")
     maxValRow = np.amax(valRows)
     wordsHere = np.argwhere(valRows>=maxValRow).flatten()
-    #print(wordsHere)
     rows = np.array_split(cell, wordsHere, axis=0)
     rows = [row for row in rows if (row.shape[0] > 1 and row.shape[1]>1)]
-    return rows # LIST OF NP ARRAYS
+    return rows
 
 
 
@@ -77,20 +78,15 @@ def removeWhiteSpaceFromWord(word,i):
     whiteRows = np.argwhere(rowVals==maxValRow).flatten()
     currentArray = np.delete(word, whiteRows, axis=0)
     if currentArray.size != 0:
-        cv2.imwrite('test-row-elim'+str(i)+'.png', currentArray)
-        #if currentArray.shape[0]>0:
         colVals = np.sum(currentArray, axis=0)
         maxValCol = np.amax(colVals)
 
         whiteCols = np.argwhere(colVals == maxValCol).flatten()
         currentArray = np.delete(currentArray, whiteCols, axis=1)
-        cv2.imwrite('test-col-elim'+str(i)+'.png', currentArray)
     return currentArray
 
 
 
-x = cellToWords(imgList[0].words[0].image)
+x = cellToWords(imgList[0]).words
 for i in range(len(x)):
-    cv2.imwrite('test-'+str(i)+'.png', x[i])
-
-print(x)
+    cv2.imwrite('test-'+str(i)+'.png', x[i].image)
