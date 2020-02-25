@@ -14,7 +14,7 @@ import cv2 as cv2
 
 #################################################################
 imgList = []
-paths = ["../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 25/cell-1-2.png", "../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 13/cell-1-2.png", "../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 13/cell-4-2.png"]
+paths = ["../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 16/cell-1-5.png","../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 25/cell-1-2.png", "../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 13/cell-1-2.png", "../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 13/cell-4-2.png"]
 for i in paths:
     row = i[-3]
     col = i[-1]
@@ -68,7 +68,7 @@ def rowToWords(row):
 
 def cellToRows(cell):
     rowVals = np.sum(cell, axis=1)
-    valRows = ndimage.convolve1d(rowVals, np.array([1, 1, 1, 1, 1]), mode="nearest")
+    valRows = ndimage.convolve1d(rowVals, np.array([1, 1, 1, 1]), mode="nearest")
     maxValRow = np.amax(valRows)
     wordsHere = np.argwhere(valRows>=maxValRow).flatten()
     rows = np.array_split(cell, wordsHere, axis=0)
@@ -87,8 +87,14 @@ def removeWhiteSpaceFromWord(word,i):
         colVals = np.sum(currentArray, axis=0)
         maxValCol = np.amax(colVals)
 
-        whiteCols = np.argwhere(colVals == maxValCol).flatten()
-        currentArray = np.delete(currentArray, whiteCols, axis=1)
+        while colVals[0] >= maxValCol:
+            currentArray = np.delete(currentArray, 0, axis=1)
+            colVals = np.delete(colVals, 0)
+
+        while colVals[-1] >= maxValCol:
+            currentArray = np.delete(currentArray, -1, axis=1)
+            colVals = np.delete(colVals, -1)
+
     return currentArray
 
 
@@ -96,4 +102,5 @@ def removeWhiteSpaceFromWord(word,i):
 x = cellsToWords(imgList)
 for i in range(len(x)):
     for j in range(len(x[i].words)):
+        cv2.imwrite('original-'+str(i)+'.png', imgList[i].words[0].image)
         cv2.imwrite('test-'+str(i)+'-'+str(j)+'.png', x[i].words[j].image)
