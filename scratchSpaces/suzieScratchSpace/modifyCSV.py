@@ -36,6 +36,7 @@ class UploadCSV(QWidget):
     def __init__(self, stack):
         super().__init__()
         self.setStyleSheet('color: black')
+        self.table = None
         self.stack_wid = stack
         layout = QGridLayout()
         click_input_button = QPushButton("Icon!")
@@ -52,17 +53,17 @@ class UploadCSV(QWidget):
     def open_file_window(self):
         # noinspection PyCallByClass
         # taken from __main__ in yulong's scratch space
-        fileName, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "", "", "")
-        if fileName:
-
-            self.table = matrix_to_csv.read_csv(fileName)
-            print(fileName)
+        file_name, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "", "", "")
+        if file_name:
+            self.table = matrix_to_csv.read_csv(file_name)
 
     def goto_rules(self):
-        print("something")
-        self.stack_wid.addWidget(RulesWindow(self.stack_wid, self.table))
+        if self.table is not None:
+            self.stack_wid.addWidget(RulesWindow(self.stack_wid, self.table))
 
-        self.stack_wid.setCurrentIndex(1)
+            self.stack_wid.setCurrentIndex(1)
+        else:
+            warning('Error', 'No CSV selected!', 'Please select a CSV file to import')
 
 
 class RulesWindow(QWidget):
