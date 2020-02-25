@@ -63,10 +63,8 @@ def add_to_indices(word_index, col_index, indices, resolution_type, num_words):
 #   resolution_type:    Enum (ResolutionType)   (optional) specifies how word index clashes are resolved
 #   joiner:             String                  (optional) specifies the string used to join words together
 
-def split_col(table, field_name, new_cols, which_words=None, separator=' ', resolution_type=ResolutionType.no_clash,
+def split_col(table, field_index, new_cols, which_words=None, separator=' ', resolution_type=ResolutionType.no_clash,
               joiner=' '):
-    # can extend by allowing slices and lists of indices as column to word mappings, and possibly additional wildcards
-    field_index = table[0].index(field_name)
     for row_index, row in enumerate(table):
         if row_index != 0:
             words = row[field_index].split(separator)
@@ -166,31 +164,11 @@ def matrix_to_standard_csv(table, path, field_map, joiner=' ', header=STANDARD_H
         out.writerows(matrix_to_standard(table, field_map, joiner, header))
 
 
-test = [[f'({x} {y})' for x in range(10)] for y in range(10)]
-test2 = [['Accessor No.', 'Specimen No.', 'Present Determination', 'Determined By', 'Date Determined', 'Collection',
-          'Original Determination', 'Date', 'Location', 'Collector', 'Other data'],
-         ['', '00133', 'Euclidia glyphica', 'M. Hellier', '24/4/87', '', 'glyphica', '23/6/18',
-          'Forest Hill Marlborough', 'Paten', ''],
-         ['', '11504', 'Eurodryas aurinia', 'J. B. Beeson', '30.1.95', '', 'Melitaea aurinia', '1905',
-          'Dartmoor Devon', 'J. Peed', '']]
-std_test = [['Invertebrates; Insects', 'Object', 'Present', 'I.2019.2147', '', '', '', 'Hesperiidae', 'Thymelicus',
-             'lineola', 'Hesperiidae', 'Thymelicus', 'lineola', '', 'Essex Skipper', 'Yes', '', 'Dry', '1',
-             'Pinned whole\nDorsal', 'Male', 'Adult', '', 'Fair',
-             'Right antenna missing\nSlight discolouration on left forewing', '[England, U.K.]', '[Essex]',
-             'Shoeburyness', '', '20/07/[18]90', '', '[Adkin ?]', '[R ?]', '', 'W.H. Ballett Fletcher',
-             'Ex coll W. H. Ballett Fletcher 1941:1\nShoeburyness\n20.7.90\n[R. Adkin ?] 6.11.90\n\n', 'Insect Room',
-             'Lower', 'Cab 1', 'Drawer 40.02', 'Column 1 Row 1', '']]
+def read_csv(path):
+    with open(path, mode='r') as infile:
+        reader = csv.reader(infile, delimiter=',', quotechar='"')
+        table = []
+        for row in reader:
+            table.append(row)
+        return table
 
-matrix_to_csv(test, './jamesScratchSpace/test.csv')
-matrix_to_csv(test2, './jamesScratchSpace/test2.csv')
-
-split_col(test2, 'Present Determination', ['Genus', 'Species'])
-split_col(test2, 'Determined By', ['First name', 'Middle Names', 'Surname'], which_words=['0', '*', '-1'])
-split_col(test2, 'Location', ['Town', 'Place'], which_words=['-1', '0 : -1'], resolution_type=ResolutionType.just_first)
-matrix_to_standard_csv(test2, './jamesScratchSpace/std_test.csv', {'Current Genus': ['Genus'],
-                                                                   'Current species': ['Species'],
-                                                                   'First name': ['First name'],
-                                                                   'Middle Names': ['Middle Names'],
-                                                                   'Surname': ['Surname'],
-                                                                   'Level 3 - eg.Town/City/Village': ['Town'],
-                                                                   'Level 4 (eg.Nearest named place)': ['Place']})

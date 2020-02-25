@@ -7,12 +7,12 @@ class TestSplitCol(TestCase):
         # Assume
         table = [['Full Name'],
                  ['Joe Bloggs']]
-        field_name = 'Full Name'
+        field_index = 0
         new_cols = ['First Name', 'Last Name']
 
         # Action
         try:
-            matrix_to_csv.split_col(table, field_name, new_cols)
+            matrix_to_csv.split_col(table, field_index, new_cols)
         except Exception:
             self.fail()
 
@@ -24,13 +24,13 @@ class TestSplitCol(TestCase):
         # Assume
         table = [['List'],
                  ['1, 2, 3, 4']]
-        field_name = 'List'
+        field_index = 0
         new_cols = ['Item 1', 'Item 2', 'Item 3', 'Item 4']
         separator = ', '
 
         # Action
         try:
-            matrix_to_csv.split_col(table, field_name, new_cols, separator=separator)
+            matrix_to_csv.split_col(table, field_index, new_cols, separator=separator)
         except Exception:
             self.fail()
 
@@ -42,7 +42,7 @@ class TestSplitCol(TestCase):
         # Assume
         table = [['List'],
                  ['1, 2, 3, 4']]
-        field_name = 'List'
+        field_index = 0
         new_cols = ['Item 1', 'Item 2', 'Others']
         optional = ['0', '1', '*']
         separator = ', '
@@ -50,7 +50,7 @@ class TestSplitCol(TestCase):
 
         # Action
         try:
-            matrix_to_csv.split_col(table, field_name, new_cols, which_words=optional, separator=separator, joiner=joiner)
+            matrix_to_csv.split_col(table, field_index, new_cols, which_words=optional, separator=separator, joiner=joiner)
         except Exception:
             self.fail()
 
@@ -62,13 +62,13 @@ class TestSplitCol(TestCase):
         # Assume
         table = [['Items'],
                  ['1 2 3 4']]
-        field_name = 'Items'
+        field_index = 0
         new_cols = ['Item 2', 'Item 4', 'Item 1', 'Item 3']
         options = ['1', '-1', '0', '2']
 
         # Action
         try:
-            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options)
+            matrix_to_csv.split_col(table, field_index, new_cols, which_words=options)
         except Exception:
             self.fail()
 
@@ -91,13 +91,13 @@ class TestSplitCol(TestCase):
         # Assume
         table = [['Full Name'],
                  ['Joe M. Bloggs']]
-        field_name = 'Full Name'
+        field_index = 0
         new_cols = ['First Name', 'Middle Name(s)', 'Last Name']
         options = ['0', '*', '-1']
 
         # Action
         try:
-            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options)
+            matrix_to_csv.split_col(table, field_index, new_cols, which_words=options)
         except Exception:
             self.fail()
 
@@ -118,7 +118,7 @@ class TestSplitCol(TestCase):
         # Assume
         table = [['List'],
                  ['1, 2, 3, 4']]
-        field_name = 'List'
+        field_index = 0
         new_cols = ['1st & 4th', '2nd & 3rd']
         options = ['[0, 3]', '[1,2]']
         separator = ', '
@@ -126,7 +126,7 @@ class TestSplitCol(TestCase):
 
         # Action
         try:
-            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options, separator=separator, joiner=joiner)
+            matrix_to_csv.split_col(table, field_index, new_cols, which_words=options, separator=separator, joiner=joiner)
         except Exception:
             self.fail()
 
@@ -145,7 +145,7 @@ class TestSplitCol(TestCase):
         # Assume
         table = [['List'],
                  ['1, 2, 3, 4, 5']]
-        field_name = 'List'
+        field_index = 0
         new_cols = ['1 - 3', 'Last']
         options = ['0 : 2', '-1']
         separator = ', '
@@ -153,7 +153,7 @@ class TestSplitCol(TestCase):
 
         # Action
         try:
-            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options, separator=separator, joiner=joiner)
+            matrix_to_csv.split_col(table, field_index, new_cols, which_words=options, separator=separator, joiner=joiner)
         except Exception:
             self.fail()
 
@@ -172,30 +172,30 @@ class TestSplitCol(TestCase):
         # Assume
         table = [['Full Name'],
                  ['Joe M. Bloggs']]
-        field_name = 'Full Name'
+        field_index = 0
         new_cols = ['First Name', 'Middle Name(s)', 'Last Name']
         options = ['0', '*', '*']
 
         # Action & Assert
         with self.assertRaises(Exception):
-            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options)
+            matrix_to_csv.split_col(table, field_index, new_cols, which_words=options)
 
     def test_split_col_words_and_cols_mismatch(self):
         # Assume
         table = [['Full Name'],
                  ['Joe M. Bloggs']]
-        field_name = 'Full Name'
+        field_index= 0
         new_cols = ['First Name', 'Last Name']
 
         # Action & Assert
         with self.assertRaises(Exception):
-            matrix_to_csv.split_col(table, field_name, new_cols)
+            matrix_to_csv.split_col(table, field_index, new_cols)
 
     def test_split_col_option_invalid(self):
         # Assume
         table = [['List'],
                  ['1, 2, 3, 4']]
-        field_name = 'List'
+        field_index = 0
         new_cols = ['1 - 2', '3 - 4']
         options1 = ['0:', '2:3']
         options2 = ['[0, 1]', '[2, 3']
@@ -204,16 +204,16 @@ class TestSplitCol(TestCase):
 
         # Action & Assert
         with self.assertRaises(Exception):
-            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options1, separator=separator, joiner=joiner)
+            matrix_to_csv.split_col(table, field_index, new_cols, which_words=options1, separator=separator, joiner=joiner)
 
         with self.assertRaises(Exception):
-            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options2, separator=separator, joiner=joiner)
+            matrix_to_csv.split_col(table, field_index, new_cols, which_words=options2, separator=separator, joiner=joiner)
 
     def test_split_col_just_first_resolution(self):
         # Assume
         table = [['List'],
                  ['1, 2, 3, 4']]
-        field_name = 'List'
+        field_index = 0
         new_cols = ['Item 1', 'Item 2', 'Item 3', 'Item 4']
         options = ['0', '0:1', '0:2', '0:3']
         resolution_type = matrix_to_csv.ResolutionType.just_first
@@ -221,7 +221,7 @@ class TestSplitCol(TestCase):
 
         # Action
         try:
-            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options, separator=separator,
+            matrix_to_csv.split_col(table, field_index, new_cols, which_words=options, separator=separator,
                                     resolution_type=resolution_type)
         except Exception:
             self.fail()
@@ -245,7 +245,7 @@ class TestSplitCol(TestCase):
         # Assume
         table = [['List'],
                  ['1, 2, 3, 4']]
-        field_name = 'List'
+        field_index = 0
         new_cols = ['Item 4', 'Item 3', 'Item 2', 'Item 1']
         options = ['0:3', '0:2', '0:1', '0']
         resolution_type = matrix_to_csv.ResolutionType.just_last
@@ -253,7 +253,7 @@ class TestSplitCol(TestCase):
 
         # Action
         try:
-            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options, separator=separator,
+            matrix_to_csv.split_col(table, field_index, new_cols, which_words=options, separator=separator,
                                     resolution_type=resolution_type)
         except Exception:
             self.fail()
@@ -277,7 +277,7 @@ class TestSplitCol(TestCase):
         # Assume
         table = [['List'],
                  ['1, 2, 3, 4']]
-        field_name = 'List'
+        field_index = 0
         new_cols = ['Item 1', 'Items 1-2', 'Items 1-3']
         options = ['0', '0:1', '0:2']
         resolution_type = matrix_to_csv.ResolutionType.all
@@ -286,7 +286,7 @@ class TestSplitCol(TestCase):
 
         # Action
         try:
-            matrix_to_csv.split_col(table, field_name, new_cols, which_words=options, separator=separator,
+            matrix_to_csv.split_col(table, field_index, new_cols, which_words=options, separator=separator,
                                     resolution_type=resolution_type, joiner=joiner)
         except Exception:
             self.fail()
