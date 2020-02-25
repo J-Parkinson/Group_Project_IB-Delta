@@ -292,7 +292,7 @@ class preview(QWidget):
             if y < self.offset + 4:
                 i = 0
                 for c in self.page.columnList:
-                    if abs(x - c.brCoord[0]) < 5:
+                    if abs(x - c.brCoord[0]) < 10:
                         self.state = self.State.OnH
                         self.update_cursor()
                         self.onColumn = i
