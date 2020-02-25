@@ -5,9 +5,15 @@ import cv2 as cv2
 
 def cellsToWords(cells):
     newCells = []
+    maxRow = 0
+    maxCol = 0
     for x in cells:
-        newCells.append(cellToWords(x))
-    return newCells
+        newp, row, col = cellToWords(x)
+        maxRow = max(row, maxRow)
+        maxCol = max(col, maxCol)
+        newCells.append(newp)
+
+    return newCells, maxRow, maxCol
 
 def cellToWords(cellOfWords): # takes one CellOfWords
     newWords = []
@@ -28,7 +34,7 @@ def cellToWords(cellOfWords): # takes one CellOfWords
     newWordList = []
     for x in newWords:
         newWordList.append(Word(x, row, col))
-    return CellOfWords(newWordList, row, col)
+    return CellOfWords(newWordList, row, col), row, col
 
 
 

@@ -157,7 +157,7 @@ def splitCellsAndNormalise(source, noPages):
         Run your code on each element in that and yh should work :D
     '''
 
-    return CellsToWords.cellsToWords(cells) # will eventually return string representing the location of the dir Francesca is using to read in cells and
+    return cells # will eventually return string representing the location of the dir Francesca is using to read in cells and
 
 
 ''' handleColumns
