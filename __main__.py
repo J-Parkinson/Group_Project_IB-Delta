@@ -143,12 +143,13 @@ class Window(QWidget):
 
         # Upload page -- button 0
         def upload_signal():
-            print("button 0 pressed")
-            reset_buttons_color()
-            buttons[0].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
-            bottom_right.setCurrentIndex(0)
-            upload_page.state = 0  # Unloaded
-            upload_page.setCurrentIndex(0)
+            if self.load_warning():
+                print("button 0 pressed")
+                reset_buttons_color()
+                buttons[0].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
+                bottom_right.setCurrentIndex(0)
+                upload_page.state = 0  # Unloaded
+                upload_page.setCurrentIndex(0)
 
         buttons[0].setText("Upload PDF")
         buttons[0].clicked.connect(upload_signal)
