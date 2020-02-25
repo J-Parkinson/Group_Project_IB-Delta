@@ -12,6 +12,7 @@ from skimage.filters import threshold_sauvola
 from PIL import Image
 from tempfile import NamedTemporaryFile
 import fitz
+from pdf2image import convert_from_path as loadPDF
 from os import makedirs, path
 from sys import stderr
 
@@ -129,7 +130,8 @@ def splitCellsAndNormalise(source, noPages):
     # to the new height, clone it, and resize it
 
     '''Step 1 - load image'''
-    image = resize(imread(source), width=imread(source).shape[1]
+    image = imread(source)
+    image = resize(image, width=image.shape[1] * 3)
     orig = image.copy()
 
     # deslants page into a rectangle - perspective transform
@@ -456,11 +458,11 @@ def handleColumnGUI(source, noPages, progressBar=None):
     if progressBar:
         progressBar.update("Load images")
 
-    allImages = fitz.open(source)
+    allImages = loadPDF(source)
     imagesToMerge = []
     for x, page in enumerate(allImages):
         if x < noPages:
-            imagesToMerge.append(array(Image.frombytes("RGB", [page.getPixmap().width, page.getPixmap().height], page.getPixmap().samples)))
+            imagesToMerge.append(array(page))
         else:
             break
     '''Step 1 - load image'''
@@ -491,4 +493,4 @@ def handleColumnGUI(source, noPages, progressBar=None):
         progressBar.hide()
     return imageOutput.name # will eventually return string representing the location of the dir Francesca is using to read in cells and
 
-print(handleColumnGUI("C:/Users/Jack/Documents/Cambridge University/Year IB/Group_Project_IB-Delta/scratchSpaces/yulongScratchSpace/scantest.pdf", 2, None))
+print(handleColumnGUI("C:/Users/jrp32/PycharmProjects/Group_Project_IB-Delta/imagePreprocessing/Deprecated/OldImagePreprocessing/images/scantest.pdf", 2, None))
