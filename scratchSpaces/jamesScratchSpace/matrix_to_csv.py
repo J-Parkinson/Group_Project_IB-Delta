@@ -32,10 +32,10 @@ STANDARD_HEADER = [['', '', '', 'Summary Data', '', '', '', 'Taxonomy', '', '', 
 
 
 class ResolutionType(Enum):
-    no_clash = auto()
-    just_first = auto()
-    just_last = auto()
-    all = auto()
+    no_clash = 1
+    just_first = 2
+    just_last = 3
+    all = 4
 
 
 def add_to_indices(word_index, col_index, indices, resolution_type, num_words):
