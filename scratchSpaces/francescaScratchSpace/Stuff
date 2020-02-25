@@ -15,10 +15,9 @@ more substantial database of species name: 20 000??
 
 no tags
 
-no insects are bugs: 
+not all insects are bugs:
 
-
-MINE:
+Mine:
 decided bestPath was the best way to go
 chose a model - not many options: 2 main ones
 want to train in on bentham
@@ -30,3 +29,6 @@ we proposed initially wouldn't help: no way to add extra layer: overly complicat
 2d list of Word objects
 Word(
 
+Questions for Yulong:
+Comment with design initial page, but also to go to the tutorial in the 1st instance, which one is it?
+Also, what happened to the to do with the waiting bar

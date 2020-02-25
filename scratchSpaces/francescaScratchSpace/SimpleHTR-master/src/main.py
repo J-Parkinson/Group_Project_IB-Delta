@@ -8,9 +8,11 @@ import editdistance
 from DataLoader import DataLoader, Batch
 from Model import Model, DecoderType
 from SamplePreprocessor import preprocess
+from dataStructures import  logbookScan
 import os  # mine
 import numpy as np
 from collections import Iterable
+from dataStructures.logbookScan import CellOfWords, Word
 
 class FilePaths:
     "filenames and paths to data"
@@ -31,7 +33,10 @@ class FilePaths:
         [ ['../data/latinTest.png', '../data/09352.PNG'], ['../data/quote.png','../data/quote.png' ] ],
         [ ['../data/latinTest.png', '../data/09352.PNG'], ['../data/quote.png','../data/quote.png' ] ]
 
+
                      ]
+    ### NOT IN FILE PATHS
+    newDataStructure = CellOfWords()
 
 def train(model, loader):
     "train NN"
@@ -131,6 +136,7 @@ def infer1(model, fnImg):
 def convertFromFilenameToImage(fnImg):
     return cv2.imread(fnImg, cv2.IMREAD_GRAYSCALE) # bitch
 
+
 def inferImage(model, img):  # TODO: CAN be optimzed to take in a list for batch to have size of the list
     img = preprocess(img, Model.imgSize)
     batch = Batch(None, [img])
@@ -146,25 +152,27 @@ def inferCell(model, cell):
     listOfWords = np.array(inferList(model, cell))
     concatinated = ' '.join(listOfWords)
     return concatinated
-    #return ' '.join(listOfWords)
-
-
-#def inferCell(model, cell):
- #   "take in a cell return a concatinated string"
-  #  inferList = np.vectorize(inferImage)
-   # listOfWords = inferList(model, cell)
-    #return listOfWords
-
-#def inferRow(model, ro):
- #   row = np.array(ro)
-  #  inferRow1 = np.vectorize(inferCell)
-   # return inferRow1(model, row)
 
 def inferRow(model, row):
     toReturn = []
     for cell in row:
         toReturn.append(inferCell(model, cell))
     return toReturn
+
+def inferPages(model, pages):
+    toReturn = []
+    for row in pages:
+        toReturn.append(inferRow(model, row))
+    return toReturn
+
+
+def inferNewCell(model, cellOfWords):
+    cell = cellOfWords.words
+    "take in a cell return a concatinated string"
+    inferList = np.vectorize(inferImage)
+    listOfWords = np.array(inferList(model, cell))
+    concatinated = ' '.join(listOfWords)
+    return concatinated
 
 def inferPages(model, pages):
     toReturn = []
