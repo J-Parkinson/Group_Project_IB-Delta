@@ -161,9 +161,9 @@ class file_select(QWidget):
         '''
         noPages = self.askForPages()
 
-        progressBar = ProgressBar(noPages * 2 + 2)
-        columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
-        print(columnImage)
+        #progressBar = ProgressBar(noPages * 2 + 2)
+        #columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
+        #print(columnImage)
         self.state = State.Running
         self.parent.parent.state = 1  # Loading
         self.parent.setCurrentIndex(1)
@@ -230,6 +230,7 @@ class preview(QWidget):
     def __init__(self):
         super().__init__()
         self.page = None
+        self.control = None
         self.state = self.State.Normal
         self.onColumn = 0
         self.setMouseTracking(1)
@@ -278,20 +279,20 @@ class preview(QWidget):
         y = e.y()
 
         if self.state == self.State.ClickedH:
-            c = self.page.columnList[self.onColumn]
-            c.brCoord = x, c.brCoord[1]
-            if not self.onColumn == len(self.page.columnList) - 1:
-                self.page.columnList[self.onColumn + 1].tlCoord = \
-                    x, self.page.columnList[self.onColumn + 1].tlCoord[1]
-            self.update()
+            self.control.columns.setCurrentRow(self.onColumn)
+            self.control.edit.brx.setValue(x)
+            return
+
+        if self.state == self.State.ClickedV:
+            self.control.edit.bry.setValue(y)
             return
 
         if self.state == self.State.Normal:
             # Column Dragging test
-            if y < self.offset:
+            if y < self.offset + 4:
                 i = 0
                 for c in self.page.columnList:
-                    if abs(x - c.brCoord[0]) < 4:
+                    if abs(x - c.brCoord[0]) < 5:
                         self.state = self.State.OnH
                         self.update_cursor()
                         self.onColumn = i
@@ -299,9 +300,9 @@ class preview(QWidget):
                     else:
                         i += 1
 
-            # Row Dragging test]
+            # Row Dragging test
             x1, y1 = self.page.columnList[len(self.page.columnList) - 1].brCoord
-            if x < x1 and abs(y - self.offset - y1) < 3:
+            if x < x1 and abs(y - self.offset - y1) < 5:
                 self.state = self.State.OnV
                 self.update_cursor()
                 return
@@ -492,6 +493,7 @@ class drag_page(QWidget):
         self.control = control()
         self.preview = preview()
         self.control.preview = self.preview
+        self.preview.control = self.control
 
         layout.addWidget(self.preview)
         layout.addWidget(self.control)
