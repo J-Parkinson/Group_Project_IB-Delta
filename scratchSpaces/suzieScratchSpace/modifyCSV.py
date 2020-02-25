@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGr
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap
 from ..jamesScratchSpace import matrix_to_csv
+from . import Mappings
 
 
 # TODO: create page for uploading CSV
@@ -15,9 +16,6 @@ class ModifyMainWindow(QWidget):
         layout = QGridLayout()
         main = QStackedWidget()
         main.addWidget(UploadCSV(main))  # index 0
-          # currently index 1
-        main.addWidget(MapWindow(main))  # index 2
-
         main.setCurrentIndex(0)
         layout.addWidget(main)
         self.setLayout(layout)
@@ -43,17 +41,17 @@ class UploadCSV(QWidget):
     def open_file_window(self):
         # noinspection PyCallByClass
         # taken from __main__ in yulong's scratch space
-        fileName, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "",
-                                                  "", "")
+        fileName, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "", "", "")
         if fileName:
-            # TODO: pass csv to backend to get fields
+
             self.table = matrix_to_csv.read_csv(fileName)
             print(fileName)
 
     def goto_rules(self):
         print("something")
         self.stack_wid.addWidget(RulesWindow(self.stack_wid, self.table))
-        self.stack_wid.setCurrentIndex(2)
+
+        self.stack_wid.setCurrentIndex(1)
 
 
 class RulesWindow(QWidget):
@@ -103,7 +101,7 @@ class RulesWindow(QWidget):
         new_rule_btn = QPushButton("Add new rule")
         new_rule_btn.clicked.connect(self.new_rule)
 
-        cont_btn = QPushButton("Confirm all buttons and Continue ")
+        cont_btn = QPushButton("Confirm all Rules and Continue ")
         cont_btn.clicked.connect(self.next)
 
         self.grid.addWidget(new_rule_btn, 2, 0, 1, 1)
@@ -124,8 +122,8 @@ class RulesWindow(QWidget):
             matrix_to_csv.split_col(self.table, col_index, new_names, which_words=advanced,
                                     resolution_type=matrix_to_csv.ResolutionType(res_index),
                                     separator=splitter, joiner=joiner)
-
-        self.stack_wid.setCurrentIndex(1)
+        self.stack_wid.addWidget(Mappings.MapWindow(self.stack_wid, self.table))
+        self.stack_wid.setCurrentIndex(2)
 
 
 
@@ -175,9 +173,15 @@ class NewRule(QWidget):
 
         # column names
         new_names, advanced = self.new_col.getCols()
+        if '' in advanced:
+            for option in advanced:
+                if option != '':
+                    # TODO: this is an ERROR, please create an error pop-up to alert user to fix
+                    ()
+            advanced = None
 
         # res
-        res_index = self.res.currentIndex()
+        res_index = self.res.currentIndex() + 1
 
         # split char
         split = self.split_char.text()
@@ -234,7 +238,6 @@ class NewCol(QWidget):
         # add this layout to the list
         self.col_list.append(layout)
 
-
     def del_col(self, layout):
         print("delete col")
         for i in reversed(range(layout.count())):
@@ -246,26 +249,11 @@ class NewCol(QWidget):
         for x in self.col_list:
             name = x.itemAtPosition(0, 0).widget().text()
             column_names.append(name)
-            '''
-            items = [x.itemAt(i) for i in range(x.count())]
-            #column name
-            column_names.append(QLineEdit(items[0]).text())
 
-            # advanced settings
-            advanced.append(QLineEdit(items[2]).text())
-            '''
             adv = x.itemAtPosition(2, 0).widget().text()
             advanced.append(adv)
 
         return column_names, advanced
 
 
-class MapWindow(QWidget):
-    def __init__(self, stack):
 
-        super().__init__()
-        self.setStyleSheet('color: black')
-        holder = QLabel("** holder **")
-        layout = QGridLayout()
-        layout.addWidget(holder, 0, 0)
-        self.setLayout(layout)

@@ -33,6 +33,7 @@ class State(Enum):
     Unloaded = 0
     Loaded = 1
     Running = 2
+    Saving = 3
 
 
 class dnd_widget(QLabel):
@@ -433,6 +434,7 @@ class control(QWidget):
         del_button = QPushButton("Delete")
         del_button.clicked.connect(self.delete)
         cfm_button = QPushButton("Confirm")
+        cfm_button.clicked.connect(self.goto_save)
 
         buttons_layout.addWidget(add_button)
         buttons_layout.addWidget(del_button)
@@ -440,6 +442,10 @@ class control(QWidget):
 
         buttons.setLayout(buttons_layout)
         return buttons
+
+    def goto_save(self):
+        # todo: switch to sate 3 in upload page to make stack have the save page
+        return 0
 
     def add(self):
         # Add a new box
@@ -521,3 +527,6 @@ class upload_page(QStackedWidget):
         self.addWidget(self.file_select_page)
         self.addWidget(self.drag)
         self.setCurrentIndex(0)
+
+        # todo: add save page as a widget with state 3
+        # todo: after processing switch current index to 3
