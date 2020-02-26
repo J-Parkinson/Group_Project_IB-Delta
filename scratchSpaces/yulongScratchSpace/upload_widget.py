@@ -4,10 +4,11 @@ from PyQt5.QtGui import QIntValidator, QPainter, QColor
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxLayout, QPushButton, QFileDialog, \
     QMessageBox, QProgressBar, QDialog, QListWidget, QLineEdit, QGridLayout, QSpinBox, QApplication, QStyle, \
     QMainWindow, QInputDialog, QProgressBar
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, pyqtSignal as QSignal, QThread
 
 import dataStructures.logbookScan as Scan
 import imagePreprocessing.imageScanningAndPreprocessing as ImageProcess
+from PIL import Image
 
 import time
 
@@ -168,9 +169,12 @@ class file_select(QWidget):
         '''
         noPages = self.askForPages()
 
-        #progressBar = ProgressBar(noPages * 2 + 2)
-        #columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
-        #print(columnImage)
+        '''progressBar = ProgressBar()
+        progressBar.start()'''
+
+
+        columnImage, width, height = ImageProcess.handleColumnGUI(self.parent.filename, noPages)#, progressBar)
+        Image.frombytes("RGB", (width, height), columnImage.read()).show()
         self.state = State.Running
         self.parent.parent.state = 1  # Loading
         self.parent.setCurrentIndex(1)
@@ -190,10 +194,10 @@ class file_select(QWidget):
         #'''
 
 
-class ProgressBar(QMainWindow):
-    def __init__(self, noSteps=1):
+'''class ProgressBar(QMainWindow, QThread):
+    def __init__(self, thread, noSteps=1):
         # super(ProgressBar, self).__init__(parent)
-        super(ProgressBar, self).__init__()
+        super(ProgressBar, self).__init__(QThread)
 
         self.window = QWidget()
         self.setWindowTitle("Loading page preview..")
@@ -215,6 +219,8 @@ class ProgressBar(QMainWindow):
         self.window.setLayout(self.layout)
         self.window.show()
 
+        self.connect()
+
     def hide(self):
         self.close()
         return
@@ -223,7 +229,7 @@ class ProgressBar(QMainWindow):
         self.currentStep += 1
         self.progress.setValue(self.currentStep / self.noSteps)
         self.text.setText(string)
-        return
+        return'''
 
 
 class preview(QWidget):

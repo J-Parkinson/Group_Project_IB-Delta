@@ -71,5 +71,3 @@ class CellOfWords:
         self.words = words
         self.row = row
         self.col = col
-
-

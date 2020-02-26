@@ -1,7 +1,6 @@
 import numpy as np
 from dataStructures.logbookScan import Word, CellOfWords
 from scipy import ndimage
-import cv2 as cv2
 
 def cellsToWords(cells):
     newCells = []
