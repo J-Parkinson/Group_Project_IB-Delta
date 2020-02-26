@@ -59,6 +59,9 @@ class Word:
         self.row = row
         self.col = col
 
+    def __str__(self):
+        return "<Object of class 'Word', row=" + str(self.row) + ", col=" + str(self.col) + ">"
+
 class CellOfWords:
 
     def __init__(self, words, row=None, col=None):
@@ -71,3 +74,9 @@ class CellOfWords:
         self.words = words
         self.row = row
         self.col = col
+
+    def __str__(self):
+        if type(self.words[0]).__name__ == "ndarray":
+            return "ndarray"
+        else:
+            return "[" + ", ".join([str(x) for x in self.words]) + "]"
