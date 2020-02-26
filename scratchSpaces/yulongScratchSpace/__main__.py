@@ -98,12 +98,11 @@ class Window(QWidget):
         ini_label.resize(500, 500)
 
         # Upload page
-        # Todo: make it prettier!
         upload_page = upload_widget.upload_page(self)
 
         # Data page
-        # Todo: make it prettier!
 
+        # Todo: This window is buggy, fix it
         data_page = modifyCSV.ModifyMainWindow()
 
         # Tutorial page, working atm
@@ -117,7 +116,6 @@ class Window(QWidget):
         bottom_right.addWidget(tutorial_page)
         bottom_right.addWidget(ini_label)
 
-        # Todo: show tutorial page if first time opening
         if self.state == State.First_time:
             bottom_right.setCurrentIndex(2)
         else:
@@ -207,10 +205,7 @@ class Window(QWidget):
             else:
                 application.setStyle("Plastique")
 
-
-
     def preference(self):
-        # Todo: JUST DO IT!!!!!!
         return 0
 
     def load_warning(self):

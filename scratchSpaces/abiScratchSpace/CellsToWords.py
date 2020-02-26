@@ -14,7 +14,7 @@ import cv2 as cv2
 
 #################################################################
 imgList = []
-paths = ["../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 16/cell-1-5.png","../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 25/cell-1-2.png", "../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 13/cell-1-2.png", "../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 13/cell-4-2.png"]
+paths = ["../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 51/cell-0-1.png","../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 16/cell-1-5.png","../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 25/cell-1-2.png", "../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 13/cell-1-2.png", "../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 13/cell-4-2.png"]
 for i in paths:
     row = i[-3]
     col = i[-1]
@@ -44,7 +44,7 @@ def cellToWords(cellOfWords): # takes one CellOfWords
         for word in words:
             if word.shape[0]>0 and word.shape[1]>0:
                 newWord = removeWhiteSpaceFromWord(word,count)
-                if  newWord.shape[0]>0 and newWord.shape[1]>0:
+                if  newWord.shape[0]>2 and newWord.shape[1]>2:
                     newWords.append(newWord)
             count+=1
 
@@ -68,9 +68,9 @@ def rowToWords(row):
 
 def cellToRows(cell):
     rowVals = np.sum(cell, axis=1)
-    valRows = ndimage.convolve1d(rowVals, np.array([1, 1, 1, 1]), mode="nearest")
+    valRows = ndimage.convolve1d(rowVals, np.array([1, 1, 1, 1, 1]), mode="nearest")
     maxValRow = np.amax(valRows)
-    wordsHere = np.argwhere(valRows>=maxValRow).flatten()
+    wordsHere = np.argwhere(valRows>=maxValRow*0.97).flatten()
     rows = np.array_split(cell, wordsHere, axis=0)
     rows = [row for row in rows if (row.shape[0] > 1 and row.shape[1]>1)]
     return rows
@@ -100,7 +100,12 @@ def removeWhiteSpaceFromWord(word,i):
 
 
 x = cellsToWords(imgList)
-for i in range(len(x)):
-    for j in range(len(x[i].words)):
-        cv2.imwrite('original-'+str(i)+'.png', imgList[i].words[0].image)
-        cv2.imwrite('test-'+str(i)+'-'+str(j)+'.png', x[i].words[j].image)
+
+count = 0
+for y in x:
+    count2 = 0
+    print(count, x[count].words)
+    for z in y.words:
+        cv2.imwrite('test-'+str(count)+'-'+str(count2)+'.png', z.image)
+        count2+=1
+    count+=1
