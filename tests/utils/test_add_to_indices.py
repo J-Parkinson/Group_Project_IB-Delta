@@ -1,5 +1,5 @@
 from unittest import TestCase
-from .. import matrix_to_csv
+from utils.csv import matrix_to_csv
 
 
 class TestAddToIndices(TestCase):
