@@ -26,13 +26,13 @@ class MapWindow(QWidget):
         self.scroll.setWidget(self.scroll_area_content)
         self.maps_list = []
         self.const_list = []
-        # dictionary mapping standard header to tuple ([fields from csv], joiner)
+        # dictionary mapping standard (index) to tuple ([fields from csv(indices)], joiner)
         self.maps_dict = {}
-        # dictionary mapping standard header to string constant
+        # dictionary mapping standard header(index) to string constant
         self.const_dict = {}
         # number of mappings
-        self.maps = 0
-        self.const = 0
+        self.total_maps = 0
+
 
         self.stack_wid = stack
 
@@ -61,7 +61,8 @@ class MapWindow(QWidget):
         self.grid.addWidget(title, 0, 0, 1, 3, Qt.AlignCenter)
         self.grid.addWidget(help_text, 1, 0, 1, 3, Qt.AlignTop)
 
-        #map1 = NewMap()
+        # map1 = NewMap()
+        # todo: add some space at the bottom of the page to be able to see the buttons around the scroll bar
 
         new_map_btn = QPushButton("Add New Mapping")
         new_map_btn.clicked.connect(self.new_map)
@@ -73,19 +74,31 @@ class MapWindow(QWidget):
         cont_btn.clicked.connect(self.next)
 
         self.grid.addWidget(new_map_btn, 2, 0, 1, 1)
-        self.grid.addWidget(new_const_btn,2,1,1,1)
+        self.grid.addWidget(new_const_btn, 2, 1, 1, 1)
         self.grid.addWidget(cont_btn, 2, 2, 1, 1)
 
     def new_map(self):
-        self.maps += 1
+        self.total_maps += 1
         map = NewMap(self.table)
-        #todo: this
+        self.grid.addWidget(map, self.total_maps + 2, 0, 1, 3)
+        self.maps_list.append(map)
 
-    def new_const_map(self):
-        self.consts += 1
-        #todo: this
+    def new_const(self):
+        self.total_maps += 1
+        const = NewConst(self.table)
+        self.grid.addWidget(const, self.total_maps+2,0,1,3)
+        self.const_list.append(const)
+
+    def get_attributes(self):
+        # build dictionaries
+        for x in self.maps_list:
+            self.maps_dict[x.get_standard()] = (x.get_new_cols(), x.get_joiner())
+
+        for y in self.const_list:
+            self.const_dict[y.get_standard()] = y.get_const()
 
     def next(self):
+        self.get_attributes()
         save_path, _ = QFileDialog.getSaveFileName(self, self.tr('Save File'), 'untitled.csv', self.tr('CSV (*.csv'))
         if save_path != '':
             matrix_to_csv.matrix_to_standard_csv(self.table, save_path, field_map=self.maps_dict,
@@ -100,12 +113,70 @@ class MapWindow(QWidget):
                 subprocess.call(('xdg-open', save_path))
 
 
-
 class NewMap(QWidget):
-    def __init__(self,table):
+    def __init__(self, table):
         super().__init__()
-        #todo something else
-        return 1
+        self.table = table
+        layout = QGridLayout()
+        stand_lab = QLabel("Choose a column from\nthe standard format:")
+        layout.addWidget(stand_lab, 0, 0)
+        self.stand = QComboBox()
+        self.stand.addItems(["col1", "col2", "etc"])  # todo: replace with actual standard fields
+        layout.addWidget(stand, 1, 0)
+        self.cols = []  # list to store all the columns to map from
+        new_col_lbl = QLabel("Columns to map:")
+        layout.addWidget(new_col_lbl, 0, 1)
+        self.col_layout = QGridLayout()
+        layout.addLayout(col_layout, 1, 1)
+        add_col()
+        join_lbl = QLabel("Joiner:")
+        self.join = QLineEdit()
+        self.join.setPlaceholderText("Optional")
+        layout.addWidget(join_lbl, 0, 2)
+        layout.addWidget(self.join, 1, 2)
+
+    def add_col(self):
+        fields = QComboBox()
+        fields.addItems(self.table[0])
+        self.col_layout.addWidget(fields)
+        self.cols.append(fields)
+
+        plus = QPushButton("+")
+        plus.clicked.connect(add_col)
+        self.col_layout.addWidget(plus)
+
+    def get_standard(self):
+        return self.stand.currentIndex()
+
+    def get_new_cols(self):
+        col_indices = []
+        for x in self.cols:
+            col_indices.append(x.currentIndex())
+        return col_indices
+
+    def get_joiner(self):
+        return self.join.text()
 
 
+class NewConst(QWidget):
+    def __init__(self,table):
+        super().__innit__()
+        self.table = table
+        layout = QGridLayout()
+        stand_lab = QLabel("Choose a column from\nthe standard format:")
+        layout.addWidget(stand_lab, 0, 0)
+        self.stand = QComboBox()
+        self.stand.addItems(["col1", "col2", "etc"])  # todo: replace with actual standard fields
+        layout.addWidget(stand, 1, 0)
 
+        const_lbl = QLabel("Constant value:")
+        self.const = QLineEdit()
+        self.const.setPlaceholderText("e.g. Cambridge")
+        layout.addWidget(const_lbl, 0, 1)
+        layout.addWidget(self.const, 1, 1)
+
+    def get_standard(self):
+        return self.stand.currentIndex()
+
+    def get_const(self):
+        return self.const.text()
