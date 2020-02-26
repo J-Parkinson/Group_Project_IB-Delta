@@ -125,6 +125,8 @@ class Window(QWidget):
         # The bottom left corner:
         # A bunch of functional buttons
         #################################################
+        #todo: can we change the size of the buttons so that they are a bit smaller? -> theres not enough space for all the
+        # mappings and rule drop downs etc without having to scroll -> not essential, would just look nicer
 
         # Initialize buttons
         bottom_leftLayout = QVBoxLayout()

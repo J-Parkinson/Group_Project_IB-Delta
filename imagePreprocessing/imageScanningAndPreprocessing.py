@@ -17,7 +17,7 @@ from os import makedirs, path
 from sys import stderr
 from io import BytesIO
 
-from dataStructures.logbookScan import Column, PageLayout, CellOfWords
+from dataStructures.logbookScan import Column, PageLayout, CellOfWords, Word
 #from frontend.ColumnScreen import queryUserAboutColumns
 
 # Imports for testing - showing histogram of columns
@@ -163,7 +163,7 @@ def splitCellsAndNormalise(source):
 
 
 
-def splitCellsAndNormaliseFromArray(image, colLocs=None):
+def splitCellsAndNormaliseFromArray(image, colLocs=None, perPageSpread=1):
     # load the image and compute the ratio of the old height
     # to the new height, clone it, and resize it
     #TODO : ADD CODE FOR PER PAGE SPREAD
@@ -176,6 +176,7 @@ def splitCellsAndNormaliseFromArray(image, colLocs=None):
     '''Step 2 - normalise page'''
     transformed = normaliseImage(image, orig)
 
+    imwrite("outtransformed.png", transformed)
     # determines where the columns are
     '''Step 3 - columns'''
     if colLocs == None:
@@ -390,8 +391,8 @@ def splitIntoCells(image, rows, cols):
 '''
 def convertToCellOfWords(images, noCols):
     returnList = []
-    for n, image in images:
-        newWord = CellOfWords(image, n//noCols, n%noCols)
+    for n, image in enumerate(images):
+        newWord = CellOfWords([Word(image, n//noCols, n%noCols)], n//noCols, n%noCols)
         returnList.append(newWord)
     return returnList
 
@@ -500,12 +501,10 @@ def handleColumnGUI(source, noPages):#, progressBar=None):
         progressBar.update("Load images")'''
 
     imagesToMerge = []
-    allImages = ReadPDF(source, dpi=400)
-    for x, page in enumerate(allImages):
-        if x < noPages:
-            imagesToMerge.append(array(page))
-        else:
-            break
+    allImages = ReadPDF(source, dpi=400, first_page=1, last_page=noPages)
+    for page in allImages:
+        imagesToMerge.append(array(page))
+
     '''Step 1 - load image'''
 
     transformedImageToMerge = []

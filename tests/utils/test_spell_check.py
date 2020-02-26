@@ -1,6 +1,6 @@
 from unittest import TestCase
 import pathlib
-from .. import spell_check
+from utils.csv import spell_check
 
 
 class TestSpellCheck(TestCase):
