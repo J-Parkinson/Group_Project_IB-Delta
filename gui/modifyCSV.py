@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGridLayout, QLabel, QSizePolicy, \
-    QStackedWidget, QBoxLayout, QHBoxLayout, QFileDialog, QCheckBox, QComboBox, QLineEdit, QScrollArea
-from PyQt5.QtCore import Qt
+    QStackedWidget, QBoxLayout, QHBoxLayout, QFileDialog, QCheckBox, QComboBox, QLineEdit, QScrollArea, QStyle
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap
 
 from utils.csv import matrix_to_csv
@@ -28,12 +28,20 @@ class UploadCSV(QWidget):
         self.setStyleSheet('color: black')
         self.stack_wid = stack
         layout = QGridLayout()
-        click_input_button = QPushButton("Icon!")
+        title = QLabel("Rules and Mappings")
+        layout.addWidget(title)
+        welc_text = QLabel("Welcome to the Rules and Mappings feature.\nHere you will be able to modify the structure "
+                           "of the CSV file and convert it to a standard format. \nGet started by clicking the file "
+                           "icon to browse and select the CSV file!")
+        layout.addWidget(welc_text)
+        click_input_button = QPushButton()
+        click_input_button.setIcon(QApplication.style().standardIcon(QStyle.SP_DialogOpenButton))
+        click_input_button.setIconSize(QSize(30, 30))
         click_input_button.clicked.connect(self.open_file_window)
-        click_input_button.setFixedSize(50, 50)
+        #click_input_button.setFixedSize(50, 50)
         layout.addWidget(click_input_button)
 
-        next_btn = QPushButton("next")
+        next_btn = QPushButton("Next")
         next_btn.clicked.connect(self.goto_rules)
         layout.addWidget(next_btn)
 
@@ -41,11 +49,12 @@ class UploadCSV(QWidget):
 
     def open_file_window(self):
         # noinspection PyCallByClass
-        # taken from __main__ in yulong's scratch space
-        fileName, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "", "", "")
+        fileName, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "", "CSV (*.csv)", "")
         if fileName:
 
             self.table = matrix_to_csv.read_csv(fileName)
+            name_lab = QLabel(fileName)
+            #todo: find a way to show the file path selected on the page
             print(fileName)
 
     def goto_rules(self):
