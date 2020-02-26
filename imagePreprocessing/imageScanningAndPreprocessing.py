@@ -163,7 +163,7 @@ def splitCellsAndNormalise(source):
 
 
 
-def splitCellsAndNormaliseFromArray(image, colLocs=None):
+def splitCellsAndNormaliseFromArray(image, colLocs=None, perPageSpread=1):
     # load the image and compute the ratio of the old height
     # to the new height, clone it, and resize it
     #TODO : ADD CODE FOR PER PAGE SPREAD
@@ -176,6 +176,7 @@ def splitCellsAndNormaliseFromArray(image, colLocs=None):
     '''Step 2 - normalise page'''
     transformed = normaliseImage(image, orig)
 
+    imwrite("outtransformed.png", transformed)
     # determines where the columns are
     '''Step 3 - columns'''
     if colLocs == None:
@@ -390,7 +391,7 @@ def splitIntoCells(image, rows, cols):
 '''
 def convertToCellOfWords(images, noCols):
     returnList = []
-    for n, image in images:
+    for n, image in enumerate(images):
         newWord = CellOfWords(image, n//noCols, n%noCols)
         returnList.append(newWord)
     return returnList
