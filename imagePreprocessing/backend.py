@@ -38,7 +38,7 @@ def createCSVFile(pdfLocation, columnLocations = [], noPageSpread=1):
         print(wordsDecoded)
 
 
-createCSVFile("../../imagePreprocessing/Deprecated/page.png", columnLocations=[400, 848, 1805, 2239, 2678])
+createCSVFile("C:\\Users\Jack\Documents\Cambridge University\Year IB\Group_Project_IB-Delta\imagePreprocessing\images\scantest2.pdf", columnLocations=[400, 848, 1805, 2239, 2678])
 
 
 
