@@ -61,7 +61,6 @@ class MapWindow(QWidget):
         self.grid.addWidget(title, 0, 0, 1, 3, Qt.AlignCenter)
         self.grid.addWidget(help_text, 1, 0, 1, 3, Qt.AlignTop)
 
-        # map1 = NewMap()
         # todo: add some space at the bottom of the page to be able to see the buttons around the scroll bar
 
         new_map_btn = QPushButton("Add New Mapping")
