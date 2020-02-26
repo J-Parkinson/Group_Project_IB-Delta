@@ -152,6 +152,7 @@ class Window(QWidget):
                 bottom_right.setCurrentIndex(0)
                 upload_page.state = 0  # Unloaded
                 upload_page.setCurrentIndex(0)
+                self.state = State.Normal
 
         buttons[0].setText("Upload PDF")
         buttons[0].clicked.connect(upload_signal)

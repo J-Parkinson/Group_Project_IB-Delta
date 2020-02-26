@@ -119,18 +119,22 @@ class file_select(QWidget):
         ok = False
         num = 0
 
-        # Todo: very problematic behavior, fix it
-        while (not ok) or (num < 1):
-            num, ok = QInputDialog.getInt(self, "Set page span",
+        num, ok = QInputDialog.getInt(self, "Set page span",
                                           "Enter the number of adjacent pages that make up one logbook table.", 1)
 
-        return num
+        if (not ok) or (num < 1):
+            return -1
+        else:
+            return num
 
     def upload(self):
         '''
         Commented out for easy testing
         '''
         noPages = self.askForPages()
+
+        if noPages < 0:
+            return
 
         # progressBar = ProgressBar(noPages * 2 + 2)
         # columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
