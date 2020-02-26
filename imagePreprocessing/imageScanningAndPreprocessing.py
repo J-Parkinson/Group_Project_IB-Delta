@@ -5,17 +5,17 @@ import numpy as np
 from cv2 import getStructuringElement, GaussianBlur, Canny, erode, cvtColor, arcLength, COLOR_BGR2GRAY, approxPolyDP, \
     CHAIN_APPROX_SIMPLE, dilate, imread, MORPH_RECT, contourArea, findContours, RETR_LIST, imwrite
 from imutils import resize, grab_contours
-from numpy import array, zeros, greater, hsplit, vsplit, greater_equal, diff, delete, insert, int32
+from numpy import array, zeros, greater, hsplit, vsplit, greater_equal, diff, delete, insert, int32, asarray, uint8
 from scipy.ndimage import convolve1d
 from scipy.signal import argrelextrema
 from skimage.filters import threshold_sauvola
 from PIL import Image
 from tempfile import NamedTemporaryFile
-import fitz
-from pdf2image import convert_from_path as loadPDF
+from pdf2image import convert_from_path as ReadPDF
 #import CellsToWords
 from os import makedirs, path
 from sys import stderr
+from io import BytesIO
 
 from dataStructures.logbookScan import Column, PageLayout, CellOfWords
 #from frontend.ColumnScreen import queryUserAboutColumns
@@ -126,7 +126,7 @@ def concatenateImages(images, resample=Image.BICUBIC):
     return dest
 
 
-def splitCellsAndNormalise(source, noPages):
+def splitCellsAndNormalise(source):
     # load the image and compute the ratio of the old height
     # to the new height, clone it, and resize it
 
@@ -142,6 +142,45 @@ def splitCellsAndNormalise(source, noPages):
     # determines where the columns are
     '''Step 3 - columns'''
     colLocations = calculateColumns(transformed)
+
+    # determines where the rows are - interpolation used (so assuming equally spaced lines)
+    '''Step 4 - rows'''
+    rowLocations = calculateRows(transformed)
+
+    # splits image along col and row locations
+    '''Step 5 - cell splitting'''
+    cells = convertToCellOfWords(splitIntoCells(transformed, rowLocations, colLocations), len(rowLocations) + 1)
+
+    '''dir = storeFilesTemporarily(cells, len(colLocations))'''
+
+    ''' So at the moment we have it split into cells, and a flat 1d Python list of cells (1d list of 2d Numpy arrays of B/W cells)
+        Row number = x // len(colLocations)
+        Col number = x % len(colLocations)
+        Run your code on each element in that and yh should work :D
+    '''
+
+    return cells # will eventually return string representing the location of the dir Francesca is using to read in cells and
+
+
+
+def splitCellsAndNormaliseFromArray(image, colLocs=None):
+    # load the image and compute the ratio of the old height
+    # to the new height, clone it, and resize it
+
+    '''Step 1 - load image'''
+    image = resize(image)
+    orig = image.copy()
+
+    # deslants page into a rectangle - perspective transform
+    '''Step 2 - normalise page'''
+    transformed = normaliseImage(image, orig)
+
+    # determines where the columns are
+    '''Step 3 - columns'''
+    if colLocs == None:
+        colLocations = calculateColumns(transformed)
+    else:
+        colLocations = colLocs
 
     # determines where the rows are - interpolation used (so assuming equally spaced lines)
     '''Step 4 - rows'''
@@ -453,14 +492,14 @@ def calculateRows(transformed):
 
 ''' handleColumnGUI
     Handles GUI call from frontend to fetch column stuff '''
-def handleColumnGUI(source, noPages, progressBar=None):
+def handleColumnGUI(source, noPages):#, progressBar=None):
     # load the image and compute the ratio of the old height
     # to the new height, clone it, and resize it
-    if progressBar:
-        progressBar.update("Load images")
+    '''if progressBar:
+        progressBar.update("Load images")'''
 
-    allImages = loadPDF(source)
     imagesToMerge = []
+    allImages = ReadPDF(source, dpi=400)
     for x, page in enumerate(allImages):
         if x < noPages:
             imagesToMerge.append(array(page))
@@ -475,23 +514,26 @@ def handleColumnGUI(source, noPages, progressBar=None):
 
         # deslants page into a rectangle - perspective transform
         '''Step 2 - normalise page'''
-        if progressBar:
-            progressBar.update("Normalise page " + str(n))
+        '''if progressBar:
+            progressBar.update("Normalise page " + str(n))'''
 
         transformed = normaliseImage(image, orig)
 
         transformedImageToMerge.append(Image.fromarray(transformed))
 
-    if progressBar:
-        progressBar.update("Merge adjacent pages")
+    '''if progressBar:
+        progressBar.update("Merge adjacent pages")'''
 
     singleImage = concatenateImages(transformedImageToMerge)
 
-    with open("testfile.png", "wb") as imageOutput:#NamedTemporaryFile(suffix=".png") as imageOutput:
-        imageOutput.write(singleImage.tobytes())
+    width, height = singleImage.size
 
-    if progressBar:
-        progressBar.hide()
-    return imageOutput.name # will eventually return string representing the location of the dir Francesca is using to read in cells and
+    singleImage.show()
 
-#print(handleColumnGUI("C:/Users/jrp32/PycharmProjects/Group_Project_IB-Delta/imagePreprocessing/Deprecated/OldImagePreprocessing/images/scantest.pdf", 2, None))
+    imageOutput = BytesIO(singleImage.tobytes())
+
+    '''if progressBar:
+        progressBar.hide()'''
+    return imageOutput, width, height # will eventually return string representing the location of the dir Francesca is using to read in cells and
+
+print(handleColumnGUI("Deprecated\OldImagePreprocessing\images\scantest.pdf", 2))
