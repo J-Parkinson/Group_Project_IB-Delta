@@ -10,8 +10,8 @@ from scratchSpaces.jamesScratchSpace.matrix_to_csv import matrix_to_csv
 # Jame
 
 class Lala:
-    lala = [['Argyresthia 09352', '" " "'],
-            ['" " "', 'Argyresthia 09352'],
+    lala = [['Argyresthia 09352', ' " " " " '],
+            ['" " "', 'Argyresthia 09353'],
             ['" " "', 'Argyresthia 09352']]
 
 def printListOfCellOfWords(lst):
@@ -31,15 +31,16 @@ def createCSVFile(pdfLocation, columnLocations = [], noPageSpread=1):
 
         # Abi's CellsToWords
         wordListEncoded, maxRow, maxCol = cellsToWords(cellOfWordsList)
+        abi = cellsToWords(cellOfWordsList)
 
         # Francesca's neuralNetOutput
-        wordsDecoded = forFrontend(wordListEncoded)
+        wordsDecoded = forFrontend(abi)
 
         print(wordsDecoded)
 
 
-createCSVFile("C:\\Users\Jack\Documents\Cambridge University\Year IB\Group_Project_IB-Delta\imagePreprocessing\images\scantest2.pdf", columnLocations=[400, 848, 1805, 2239, 2678])
-
+#createCSVFile("C:/Users/Francesca/Documents/Cambridge University/Year IB/Group_Project_IB-Delta/imagePreprocessing/images/scantest2.pdf", columnLocations=[400, 848, 1805, 2239, 2678])
+createCSVFile('.../imagePreprocessing/images/scantest2.pdf', columnLocations=[400, 848, 1805, 2239, 2678])
 
 
 
