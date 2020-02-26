@@ -105,7 +105,7 @@ class Window(QWidget):
         data_page = modifyCSV.ModifyMainWindow()
 
         # Tutorial page, working atm
-        # Todo: design a tutorial page, but not now, no hurry
+        # Todo: design a tutorial page, we've finally got our hands on it
         tutorial_page = QWidget()
         QPushButton("tutorial", tutorial_page)
 
@@ -228,6 +228,8 @@ class Window(QWidget):
         self.show()
         application.exec_()
 
+
+
     def closeEvent(self, e):
         if self.state == State.Loading:
             if self.load_warning():
@@ -236,6 +238,7 @@ class Window(QWidget):
                 e.ignore()
         else:
             e.accept()
+
 
 if __name__ == "__main__":
     app = Window()
