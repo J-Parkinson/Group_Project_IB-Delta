@@ -17,7 +17,7 @@ from os import makedirs, path
 from sys import stderr
 from io import BytesIO
 
-from dataStructures.logbookScan import Column, PageLayout, CellOfWords
+from dataStructures.logbookScan import Column, PageLayout, CellOfWords, Word
 #from frontend.ColumnScreen import queryUserAboutColumns
 
 # Imports for testing - showing histogram of columns
@@ -392,7 +392,7 @@ def splitIntoCells(image, rows, cols):
 def convertToCellOfWords(images, noCols):
     returnList = []
     for n, image in enumerate(images):
-        newWord = CellOfWords(image, n//noCols, n%noCols)
+        newWord = CellOfWords([Word(image, n//noCols, n%noCols)], n//noCols, n%noCols)
         returnList.append(newWord)
     return returnList
 
