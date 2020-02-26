@@ -129,7 +129,7 @@ def split_col(table, field_index, new_cols, which_words=None, separator=' ', res
 
 def matrix_to_csv(table, path):
     with open(path, mode='w') as outfile:
-        out = csv.writer(outfile, delimiter=',', quotechar="'", quoting=csv.QUOTE_ALL)
+        out = csv.writer(outfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
         out.writerows(table)
 
 
@@ -163,7 +163,7 @@ def matrix_to_standard(table, field_map, field_consts, header=STANDARD_HEADER):
 
 def matrix_to_standard_csv(table, path, field_map, field_consts={}, header=STANDARD_HEADER):
     with open(path, mode='w') as outfile:
-        out = csv.writer(outfile, delimiter=',', quotechar="'", quoting=csv.QUOTE_ALL)
+        out = csv.writer(outfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
         out.writerows(STANDARD_HEADER)
         out.writerows(matrix_to_standard(table, field_map, field_consts, header))
 
