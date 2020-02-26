@@ -7,8 +7,8 @@ from utils.csv import matrix_to_csv
 from gui.subpages import Mappings
 
 
-# TODO: create page for uploading CSV
-# TODO: pg1 for adding rules
+# TODO: make page for uploading CSV pretty
+# done: pg1 for adding rules
 # TODO: pg2 for creating mappings
 
 class ModifyMainWindow(QWidget):
@@ -38,7 +38,6 @@ class UploadCSV(QWidget):
         click_input_button.setIcon(QApplication.style().standardIcon(QStyle.SP_DialogOpenButton))
         click_input_button.setIconSize(QSize(30, 30))
         click_input_button.clicked.connect(self.open_file_window)
-        #click_input_button.setFixedSize(50, 50)
         layout.addWidget(click_input_button)
 
         next_btn = QPushButton("Next")
