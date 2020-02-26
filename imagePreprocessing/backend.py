@@ -38,11 +38,11 @@ def createCSVFile(pdfLocation, columnLocations = [], noPageSpread=1):
         print(wordsDecoded)
 
 
-#createCSVFile("../../imagePreprocessing/Deprecated/page.png", columnLocations=[400, 848, 1805, 2239, 2678])
+createCSVFile("../../imagePreprocessing/Deprecated/page.png", columnLocations=[400, 848, 1805, 2239, 2678])
 
 
 
 
-matrix_to_csv(Lala.lala, "C:/Users/Francesca/Book1.csv")
+#matrix_to_csv(Lala.lala, "C:/Users/Francesca/Book1.csv")
 
 
