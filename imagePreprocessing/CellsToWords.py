@@ -20,8 +20,8 @@ def cellToWords(cellOfWords): # takes one CellOfWords
     row = cellOfWords.row
     col = cellOfWords.col
     rows = cellToRows(cell) # LIST OF NP ARRAYS
-    for row in rows: # NP ARRAY
-        words = rowToWords(row)
+    for rowArr in rows: # NP ARRAY
+        words = rowToWords(rowArr)
         count = 0
         for word in words:
             if word.shape[0]>0 and word.shape[1]>0:
