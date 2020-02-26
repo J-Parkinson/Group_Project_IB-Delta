@@ -10,24 +10,15 @@ from Model import Model, DecoderType
 from SamplePreprocessor import preprocess
 import os  # mine
 import numpy as np
-from main import inferPages
+from main import inferEverything
+from main import FilePaths
 
 
-#TODO: get rid of this once you get the function
-class FilePaths:
-    "filenames and paths to data"
-    fnInfer = '../data/latinTest.png'
-    #fnInferCell = ['../data/latinTest.png', '../data/09352.PNG', '../data/quote.png']
-    #fnInferRow = [['../data/latinTest.png', '../data/09352.PNG'], ['../data/quote.png', '../data/quote.png']]
-    fnInferTotal = [
-        [ ['../data/latinTest.png', '../data/09352.PNG'], ['../data/quote.png','../data/quote.png' ] ],
-        [ ['../data/latinTest.png', '../data/09352.PNG'], ['../data/quote.png','../data/quote.png' ] ]
-                     ]
-
-def forFrontend():
+def forFrontend(abi): # getRidOfTheArgument
     # TODO: read in Abi's function and replace FilePaths.fnInferTotal
     open(FilePaths.fnAccuracy).read()
-    model = Model(open(FilePaths.fnCharList).read(), DecoderType.BestPath, mustRestore=True, dump=None)
-    return inferPages(model, FilePaths.fnInferTotal)
+    model = Model(open(FilePaths.fnCharList).read(), DecoderType.BestPath, mustRestore=True, dump=None)  # make list of lists of lists
+    return inferEverything(abi, model)
+
 
 
