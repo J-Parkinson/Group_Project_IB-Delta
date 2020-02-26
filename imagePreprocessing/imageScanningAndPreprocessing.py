@@ -166,6 +166,7 @@ def splitCellsAndNormalise(source):
 def splitCellsAndNormaliseFromArray(image, colLocs=None):
     # load the image and compute the ratio of the old height
     # to the new height, clone it, and resize it
+    #TODO : ADD CODE FOR PER PAGE SPREAD
 
     '''Step 1 - load image'''
     image = resize(image)
@@ -536,4 +537,4 @@ def handleColumnGUI(source, noPages):#, progressBar=None):
         progressBar.hide()'''
     return imageOutput, width, height # will eventually return string representing the location of the dir Francesca is using to read in cells and
 
-print(handleColumnGUI("Deprecated\OldImagePreprocessing\images\scantest.pdf", 2))
+#print(handleColumnGUI("Deprecated\OldImagePreprocessing\images\scantest.pdf", 2))
