@@ -22,8 +22,8 @@ from dataStructures.logbookScan import CellOfWords, Word
 
 class FilePaths:
     "filenames and paths to data"
-    fnCharList = '../model/charList.txt'
-    fnAccuracy = '../model/accuracy.txt'
+    fnCharList = '..neuralNetwork/model/charList.txt'
+    fnAccuracy = '..neuralNetwork/model/accuracy.txt'
 
 
 class TrainedModel:
