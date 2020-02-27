@@ -8,6 +8,7 @@ from PyQt5.QtCore import Qt, QSize
 import time
 
 from utils.structures import logbookScan as Scan, states
+from utils.spelling.spell_check import correct_table
 
 
 # Todo: remove this later
@@ -306,6 +307,10 @@ class control(QWidget):
         # Todo: The argument they need should be self.page
         # Todo: About the correction dictionary, it needs more tweaks, which I will do later
         # Todo: Just try whether the back end connection works or not now
+        # table = someBackEndCall(self.page)
+        # correct_table(table, column_dicts)
+        # transfer table to saveCSV
+
         upload.state = states.uploadState.Saving
         upload.setCurrentIndex(2)
 
