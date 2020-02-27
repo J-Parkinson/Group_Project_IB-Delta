@@ -39,7 +39,7 @@ def cellToWords(cellOfWords, width): # takes one CellOfWords
 
 def rowToWords(row, width):
     colVals = np.sum(row, axis=0)
-    arrayToUse = np.ones(width // 120)
+    arrayToUse = np.ones(int(width // 100))
     valCols = ndimage.convolve1d(colVals, arrayToUse, mode="nearest")
     maxValRow = np.amax(valCols)
     wordsHere = np.argwhere(valCols >= maxValRow).flatten()
@@ -51,7 +51,7 @@ def rowToWords(row, width):
 
 def cellToRows(cell, width):
     rowVals = np.sum(cell, axis=1)
-    arrayToUse = np.ones(width // 120)
+    arrayToUse = np.ones(int(width // 100))
     valRows = ndimage.convolve1d(rowVals, arrayToUse, mode="nearest")
     maxValRow = np.amax(valRows)
     wordsHere = np.argwhere(valRows>=maxValRow*0.97).flatten()

@@ -58,7 +58,7 @@ def createCSVFile(pdfLocation, columnLocations = [], widthOfPreviewImage=1, noPa
                 print("Cell of Words List:", printListOfCellOfWords(cellOfWordsList))
 
                 # Abi's CellsToWords
-                inputs = cellsToWords(cellOfWordsList)
+                inputs = cellsToWords(cellOfWordsList, resultingImage.shape[1]/noPageSpread)
 
                 # Francesca's neuralNetOutput
                 wordsDecoded = inferEverything(model, inputs)
@@ -79,7 +79,7 @@ def createCSVFile(pdfLocation, columnLocations = [], widthOfPreviewImage=1, noPa
             print("Cell of Words List:", printListOfCellOfWords(cellOfWordsList))
 
             # Abi's CellsToWords
-            inputs = cellsToWords(cellOfWordsList, resultingImage.shape[1])
+            inputs = cellsToWords(cellOfWordsList, resultingImage.shape[1]/noPageSpread)
 
 
             '''for cellno, cell in enumerate(inputs[0]):

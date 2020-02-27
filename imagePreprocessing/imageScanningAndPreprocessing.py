@@ -481,7 +481,7 @@ def calculateRows(transformed):
 
     #print(linspace(0.0, 10.0, num=int(len(transformedsumy)/746 * 11)))
 
-    arrayToUse = interp(linspace(0.0, 10.0, num=int(len(transformedsumy)/746 * 11)), array([0,1,2,3,4,5,6,7,8,9,10]), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]))
+    arrayToUse = interp(linspace(0.0, 10.0, num=int(len(transformedsumy)/498 * 11)), array([0,1,2,3,4,5,6,7,8,9,10]), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]))
 
     print(arrayToUse)
 
