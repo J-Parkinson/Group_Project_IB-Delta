@@ -118,8 +118,10 @@ def makeSomeAbiInput():
     cellOfWords1 = CellOfWords([cell1word0, cell1word1, cell1word2], 0, 1)
     cellOfWords2 = CellOfWords([cell1word0, cell1word1, cell1word2], 0, 1)
     cellOfWords3 = CellOfWords([cell0word0, cell0word1], 1, 1)
-    listOfCellsOfWords = [cellOfWords0, cellOfWords1, cellOfWords2, cellOfWords3]
-    return (listOfCellsOfWords, 2, 2)
+    cellOfWords4 = CellOfWords([], 1, 1)
+    listOfCellsOfWords = [cellOfWords0, cellOfWords1, cellOfWords2, cellOfWords3, cellOfWords4, cellOfWords4]
+    #listOfCellsOfWords = [cellOfWords0, cellOfWords1, cellOfWords2, cellOfWords3]
+    return (listOfCellsOfWords, 2, 3)
 
 def makeACellOfWords():
     cell0word0 = Word(convertFromFilenameToImage('../data/latinTest.png'), 0, 0)
@@ -153,6 +155,8 @@ def takeOutImagesfromOneCell(cellOfWords):
     """
     toReturn = []
     words = cellOfWords.words
+    if len(words) == 0:
+        return []
     word: Word
     for word in words:
         toReturn.append(word.image)
@@ -162,7 +166,7 @@ def takeOutImagesfromOneCell(cellOfWords):
 def makeStringFromOneCell(model, cellOfWords):
     images = takeOutImagesfromOneCell(cellOfWords)  # check if list of images is empty!!
     if len(images) == 0:
-        return ""
+        return ''
     toConcatinate = []
     for img in images:
         recognized = inferImage(model, img)
@@ -177,13 +181,14 @@ def makeStringsFromAllCells(model, listOfCellsOfWords):
     return toReturn
 
 def makeListOfLists(wordsFromAllCells, numberOfCols):
+    numberOfCols = numberOfCols +1;
     for i in range(0, len(wordsFromAllCells), numberOfCols):
         yield wordsFromAllCells[i:i + numberOfCols]  # this is a list of lists of lists of image
 
 def inferEverything(model, abi):
     listOfCells, rows, cols = abi
     l = makeStringsFromAllCells(model, listOfCells)
-    l = list(makeListOfLists(l, cols)) #split list into rows: each row has the length of the number of columns in the thing
+    l = list(makeListOfLists(l, rows)) #split list into rows: each row has the length of the number of columns in the thing
     return l;
 
 def main():

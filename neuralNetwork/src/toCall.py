@@ -22,8 +22,8 @@ from dataStructures.logbookScan import CellOfWords, Word
 
 class FilePaths:
     "filenames and paths to data"
-    fnCharList = '..neuralNetwork/model/charList.txt'
-    fnAccuracy = '..neuralNetwork/model/accuracy.txt'
+    fnCharList = '../model/charList.txt'
+    fnAccuracy = '../model/accuracy.txt'
 
 
 class TrainedModel:
@@ -44,7 +44,8 @@ def makeSomeAbiInput():
     cellOfWords1 = CellOfWords([cell1word0, cell1word1, cell1word2], 0, 1)
     cellOfWords2 = CellOfWords([cell1word0, cell1word1, cell1word2], 0, 1)
     cellOfWords3 = CellOfWords([cell0word0, cell0word1], 1, 1)
-    listOfCellsOfWords = [cellOfWords0, cellOfWords1, cellOfWords2, cellOfWords3]
+    cellOfWords4 = CellOfWords([], 1, 1)
+    listOfCellsOfWords = [cellOfWords0, cellOfWords1, cellOfWords2, cellOfWords3, cellOfWords4]
     return (listOfCellsOfWords, 2, 2)
 
 
@@ -71,7 +72,7 @@ def takeOutImagesfromOneCell(cellOfWords):
 def makeStringFromOneCell(model, cellOfWords):
     images = takeOutImagesfromOneCell(cellOfWords)  # check if list of images is empty!!
     if len(images) == 0:
-        return ""
+        return ''
     toConcatinate = []
     for img in images:
         recognized = inferImage(model, img)

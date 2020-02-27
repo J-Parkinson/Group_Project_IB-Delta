@@ -1,8 +1,8 @@
 from imagePreprocessing.imageScanningAndPreprocessing import splitCellsAndNormaliseFromArray
 from imagePreprocessing.CellsToWords import cellsToWords
-#from neuralNetwork.src.toCall import forFrontend
+from neuralNetwork.src.toCall import inferEverything
 from neuralNetwork.src.Model import Model, DecoderType
-from neuralNetwork.src.main import inferEverything
+#from neuralNetwork.src.main import inferEverything
 from pdf2image import convert_from_path as ReadPDF
 from numpy import array
 from scratchSpaces.jamesScratchSpace.matrix_to_csv import matrix_to_csv
@@ -14,8 +14,8 @@ from scratchSpaces.jamesScratchSpace.matrix_to_csv import matrix_to_csv
 
 class FilePaths:
     "filenames and paths to data"
-    fnCharList = '../neuralNetwork/model/charList.txt'
-    fnAccuracy = '../neuralNetwork/model/accuracy.txt'
+    fnCharList = '../resources/model/charList.txt'
+    fnAccuracy = '../resources/model/accuracy.txt'
 
 
 class Lala:
@@ -42,10 +42,10 @@ def createCSVFile(pdfLocation, columnLocations = [], noPageSpread=1):
         #Jack's code to find rows, split
         cellOfWordsList = splitCellsAndNormaliseFromArray(image, colLocs=columnLocations, perPageSpread=noPageSpread)
 
-        print("Cell of Words List:" , printListOfCellOfWords(cellOfWordsList))
+        #print("Cell of Words List:" , printListOfCellOfWords(cellOfWordsList))
 
         # Abi's CellsToWords
-        wordListEncoded, maxRow, maxCol = cellsToWords(cellOfWordsList)
+        #wordListEncoded, maxRow, maxCol = cellsToWords(cellOfWordsList)
         abi = cellsToWords(cellOfWordsList)
 
         # Francesca's neuralNetOutput

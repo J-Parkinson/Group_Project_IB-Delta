@@ -92,15 +92,16 @@ def createCSVFile(pdfLocation, columnLocations = [], widthOfPreviewImage=1, noPa
 
             print(wordsDecoded)
 
-            matrix_to_csv(wordsDecoded, "firsttest.csv")
+            matrix_to_csv(wordsDecoded, 'test3.csv')
 
 
 
+#createCSVFile("C:\\Users\Jack\Documents\Cambridge University\Year IB\Group_Project_IB-Delta\imagePreprocessing\images\scantest2.pdf", columnLocations=[400, 848, 1805, 2239, 2678], widthOfPreviewImage=3122)
 
-createCSVFile("C:\\Users\Jack\Documents\Cambridge University\Year IB\Group_Project_IB-Delta\imagePreprocessing\images\scantest2.pdf", columnLocations=[375, 790, 1690, 2100, 2520], widthOfPreviewImage=3122)
+createCSVFile("..\imagePreprocessing\images\scantest2.pdf", columnLocations=[400, 848, 1805, 2239, 2678], widthOfPreviewImage=3122)
 
 
-
+#matrix_to_csv(Lala.lala, "C:/Users/Francesca/Book1.csv")
 
 #matrix_to_csv(Lala.lala, "C:/Users/Francesca/Book1.csv")
 
