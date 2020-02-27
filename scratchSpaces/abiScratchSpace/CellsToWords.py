@@ -14,7 +14,7 @@ import cv2 as cv2
 
 #################################################################
 imgList = []
-paths = ["../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 51/cell-0-1.png","../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 16/cell-1-5.png","../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 25/cell-1-2.png", "../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 13/cell-1-2.png", "../../imagePreprocessing/Deprecated/OldImagePreprocessing/images/segmentedImagesOut/Page 13/cell-4-2.png"]
+paths = ["../../imagePreprocessing/segmentedcells/cell27.png"]
 for i in paths:
     row = i[-3]
     col = i[-1]
@@ -26,38 +26,46 @@ for i in paths:
     imgList.append(CellOfWords([Word(arr, row, col)], row, col))
 #################################################################
 
-def cellsToWords(cells):
+def cellsToWords(cells, width):
     newCells = []
+    maxRow = 0
+    maxCol = 0
     for x in cells:
-        newCells.append(cellToWords(x))
-    return newCells
+        newp, row, col = cellToWords(x, width)
+        #maxRow = max(row, maxRow)
+        #maxCol = max(col, maxCol)
+        newCells.append(newp)
 
-def cellToWords(cellOfWords): # takes one CellOfWords
+    return newCells, maxRow, maxCol
+
+def cellToWords(cellOfWords, width): # takes one CellOfWords
     newWords = []
     cell = cellOfWords.words[0].image
     row = cellOfWords.row
     col = cellOfWords.col
-    rows = cellToRows(cell) # LIST OF NP ARRAYS
-    for row in rows: # NP ARRAY
-        words = rowToWords(row)
+    rows = cellToRows(cell, width) # LIST OF NP ARRAYS
+    for rowArr in rows: # NP ARRAY
+        words = rowToWords(rowArr, width)
         count = 0
         for word in words:
             if word.shape[0]>0 and word.shape[1]>0:
                 newWord = removeWhiteSpaceFromWord(word,count)
-                if  newWord.shape[0]>2 and newWord.shape[1]>2:
+                if  newWord.shape[0]>4 and newWord.shape[1]>4:
                     newWords.append(newWord)
             count+=1
 
     newWordList = []
     for x in newWords:
         newWordList.append(Word(x, row, col))
-    return CellOfWords(newWordList, row, col)
+    return CellOfWords(newWordList, row, col), row, col
 
 
 
-def rowToWords(row):
+def rowToWords(row, width):
     colVals = np.sum(row, axis=0)
-    valCols = ndimage.convolve1d(colVals, np.array([1, 1, 1, 1, 1]), mode="nearest")
+    print(width // 100)
+    arrayToUse = np.ones(int(width // 100))
+    valCols = ndimage.convolve1d(colVals, arrayToUse, mode="nearest")
     maxValRow = np.amax(valCols)
     wordsHere = np.argwhere(valCols >= maxValRow).flatten()
     cols = np.array_split(row, wordsHere, axis=1)
@@ -66,9 +74,10 @@ def rowToWords(row):
 
 
 
-def cellToRows(cell):
+def cellToRows(cell, width):
     rowVals = np.sum(cell, axis=1)
-    valRows = ndimage.convolve1d(rowVals, np.array([1, 1, 1, 1, 1]), mode="nearest")
+    arrayToUse = np.ones(int(width // 100))
+    valRows = ndimage.convolve1d(rowVals, arrayToUse, mode="nearest")
     maxValRow = np.amax(valRows)
     wordsHere = np.argwhere(valRows>=maxValRow*0.97).flatten()
     rows = np.array_split(cell, wordsHere, axis=0)
@@ -85,13 +94,16 @@ def removeWhiteSpaceFromWord(word,i):
     currentArray = np.delete(word, whiteRows, axis=0)
     if currentArray.size != 0:
         colVals = np.sum(currentArray, axis=0)
+        #print("colVal: ", colVals)
         maxValCol = np.amax(colVals)
 
-        while colVals[0] >= maxValCol:
+
+
+        while (len(colVals) > 0) and (colVals[0] >= maxValCol):
             currentArray = np.delete(currentArray, 0, axis=1)
             colVals = np.delete(colVals, 0)
 
-        while colVals[-1] >= maxValCol:
+        while (len(colVals) > 0) and (colVals[-1] >= maxValCol):
             currentArray = np.delete(currentArray, -1, axis=1)
             colVals = np.delete(colVals, -1)
 
@@ -99,12 +111,13 @@ def removeWhiteSpaceFromWord(word,i):
 
 
 
-x = cellsToWords(imgList)
+x, row, col = cellsToWords(imgList, 1200)
 
 count = 0
 for y in x:
+    print(y)
     count2 = 0
-    print(count, x[count].words)
+    #print(count, x[count].words)
     for z in y.words:
         cv2.imwrite('test-'+str(count)+'-'+str(count2)+'.png', z.image)
         count2+=1

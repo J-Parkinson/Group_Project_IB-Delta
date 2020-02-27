@@ -198,7 +198,7 @@ class control(QWidget):
 
     def open_file_window(self):
         fileName, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "",
-                                                  "CSV (*.csv)", "")
+                                                  "PDF (*.pdf)", "")
         if fileName:
             self.edit.dic_path.setText(fileName)
             self.page.columnList[self.columns.currentRow()].dictionary = fileName
