@@ -39,6 +39,7 @@ class preview(QWidget):
         self.setMouseTracking(1)
         self.offset = 10
 
+        # Todo: remember to remove this!!
         b = QPushButton("Working atm\nClick me to reduce stress :-)", self)
         b.move(500, 350)
 
@@ -182,8 +183,25 @@ class control(QWidget):
         lines.title.textChanged.connect(self.update_text)
         layout.addWidget(lines.title, 2, 1, 1, 2)
 
+        layout.addWidget(QLabel("Spelling correction dictionary:"),3,0)
+
+        lines.dic_path = QLineEdit()
+        lines.dic_path.setReadOnly(1)
+
+        lines.dic_button = QPushButton("Add dictionary")
+        lines.dic_button.clicked.connect(self.open_file_window)
+        layout.addWidget(lines.dic_path,4,0,1,2)
+        layout.addWidget(lines.dic_button,4,2)
+
         lines.setLayout(layout)
         return lines
+
+    def open_file_window(self):
+        fileName, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "",
+                                                  "CSV (*.csv)", "")
+        if fileName:
+            print(fileName)
+            self.edit.dic_path.setText(fileName)
 
     def show_coords(self):
         row = self.columns.currentRow()
