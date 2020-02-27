@@ -183,15 +183,15 @@ class control(QWidget):
         lines.title.textChanged.connect(self.update_text)
         layout.addWidget(lines.title, 2, 1, 1, 2)
 
-        layout.addWidget(QLabel("Spelling correction dictionary:"),3,0)
+        layout.addWidget(QLabel("Spelling correction dictionary:"), 3, 0)
 
         lines.dic_path = QLineEdit()
         lines.dic_path.setReadOnly(1)
 
         lines.dic_button = QPushButton("Add dictionary")
         lines.dic_button.clicked.connect(self.open_file_window)
-        layout.addWidget(lines.dic_path,4,0,1,2)
-        layout.addWidget(lines.dic_button,4,2)
+        layout.addWidget(lines.dic_path, 4, 0, 1, 2)
+        layout.addWidget(lines.dic_button, 4, 2)
 
         lines.setLayout(layout)
         return lines
@@ -200,8 +200,8 @@ class control(QWidget):
         fileName, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "",
                                                   "CSV (*.csv)", "")
         if fileName:
-            print(fileName)
             self.edit.dic_path.setText(fileName)
+            self.page.columnList[self.columns.currentRow()].dictionary = fileName
 
     def show_coords(self):
         row = self.columns.currentRow()
@@ -214,6 +214,10 @@ class control(QWidget):
             if c.fieldName == "":
                 c.fieldName = self.columns.currentItem().text()
             self.edit.title.setText(c.fieldName)
+            if c.dictionary is not None:
+                self.edit.dic_path.setText(c.dictionary)
+            else:
+                self.edit.dic_path.setText("")
 
     def update_tlx_coords(self, i):
         row = self.columns.currentRow()

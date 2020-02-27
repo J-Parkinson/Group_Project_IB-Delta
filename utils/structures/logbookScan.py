@@ -15,6 +15,7 @@ class Column:
         self.pageNo = 0
         #self.contents = {"Upper": True, "Lower": True, "Symbol": True, "Digit": True, "Ditto": True}
         self.fieldName = fieldName
+        self.dictionary = None
 
     '''def getContents(self, contentValue):
         return self.contents[contentValue.value]
