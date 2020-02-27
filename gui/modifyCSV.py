@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGridLayout, QLabel, QSizePolicy, \
-    QStackedWidget, QBoxLayout, QHBoxLayout, QFileDialog, QCheckBox, QComboBox, QLineEdit, QScrollArea, QStyle
+    QStackedWidget, QBoxLayout, QHBoxLayout, QFileDialog, QCheckBox, QComboBox, QLineEdit, QScrollArea, QStyle, \
+    QMessageBox
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixmap
 
@@ -10,6 +11,16 @@ from gui.subpages import Mappings
 # TODO: make page for uploading CSV pretty
 # done: pg1 for adding rules
 # TODO: pg2 for creating mappings
+
+def warning(title, text, description):
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Warning)
+
+    msg.setWindowTitle(title)
+    msg.setText(text)
+    msg.setInformativeText(description)
+
+    return msg.exec_()
 
 class ModifyMainWindow(QWidget):
     def __init__(self):
@@ -26,6 +37,7 @@ class UploadCSV(QWidget):
     def __init__(self, stack):
         super().__init__()
         self.setStyleSheet('color: black')
+        self.table = None
         self.stack_wid = stack
         layout = QGridLayout()
         title = QLabel("Rules and Mappings")
@@ -48,19 +60,18 @@ class UploadCSV(QWidget):
 
     def open_file_window(self):
         # noinspection PyCallByClass
-        fileName, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "", "CSV (*.csv)", "")
-        if fileName:
-
-            self.table = matrix_to_csv.read_csv(fileName)
-            name_lab = QLabel(fileName)
-            #todo: find a way to show the file path selected on the page
-            print(fileName)
+        # taken from __main__ in yulong's scratch space
+        file_name, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "", "", "")
+        if file_name:
+            self.table = matrix_to_csv.read_csv(file_name)
 
     def goto_rules(self):
-        print("something")
-        self.stack_wid.addWidget(RulesWindow(self.stack_wid, self.table))
+        if self.table is not None:
+            self.stack_wid.addWidget(RulesWindow(self.stack_wid, self.table))
 
-        self.stack_wid.setCurrentIndex(1)
+            self.stack_wid.setCurrentIndex(1)
+        else:
+            warning('Error', 'No CSV selected!', 'Please select a CSV file to import')
 
 
 class RulesWindow(QWidget):
@@ -172,11 +183,17 @@ class RulesWindow(QWidget):
 
     def next(self):
         print("confirmed, moving to mappings page")
-        for i in self.rule_list:
-            col_index, new_names, advanced, res_index, splitter, joiner = i.getAttributes()
-            matrix_to_csv.split_col(self.table, col_index, new_names, which_words=advanced,
-                                    resolution_type=matrix_to_csv.ResolutionType(res_index),
-                                    separator=splitter, joiner=joiner)
+        table_before = self.table
+        try:
+            for i in self.rule_list:
+                col_index, new_names, advanced, res_index, splitter, joiner = i.getAttributes()
+                matrix_to_csv.split_col(self.table, col_index, new_names, which_words=advanced,
+                                        resolution_type=matrix_to_csv.ResolutionType(res_index),
+                                        separator=splitter, joiner=joiner)
+        except Exception as e:
+            self.table = table_before
+            warning('Error', 'Failed to apply the rules!', str(e))
+            return
         self.stack_wid.addWidget(Mappings.MapWindow(self.stack_wid, self.table))
         self.stack_wid.setCurrentIndex(2)
 

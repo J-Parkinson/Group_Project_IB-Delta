@@ -12,7 +12,7 @@ def cellsToWords(cells, width):
         maxCol = max(col, maxCol)
         newCells.append(newp)
 
-    return newCells, maxRow, maxCol
+    return newCells, maxRow+1, maxCol+1
 
 def cellToWords(cellOfWords, width): # takes one CellOfWords
     newWords = []
@@ -39,6 +39,7 @@ def cellToWords(cellOfWords, width): # takes one CellOfWords
 
 def rowToWords(row, width):
     colVals = np.sum(row, axis=0)
+    print(width // 100)
     arrayToUse = np.ones(int(width // 100))
     valCols = ndimage.convolve1d(colVals, arrayToUse, mode="nearest")
     maxValRow = np.amax(valCols)
@@ -69,7 +70,6 @@ def removeWhiteSpaceFromWord(word,i):
     currentArray = np.delete(word, whiteRows, axis=0)
     if currentArray.size != 0:
         colVals = np.sum(currentArray, axis=0)
-        print("colVal: ", colVals)
         maxValCol = np.amax(colVals)
 
 
