@@ -55,6 +55,6 @@ class saveCSVWindow(QWidget):
                 else:
                     subprocess.call(('xdg-open', save_path))
 
-        self.parent.state = states.uploadState.Unloaded
-        self.parent.setCurrentIndex(0)
-        self.parent.parent.state = 0  # Normal
+            self.parent.state = states.uploadState.Unloaded
+            self.parent.setCurrentIndex(0)
+            self.parent.parent.state = 0  # Normal

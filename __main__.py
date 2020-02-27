@@ -105,7 +105,7 @@ class Window(QWidget):
         data_page = modifyCSV.ModifyMainWindow()
 
         # Tutorial page, working atm
-        # Todo: design a tutorial page, but not now, no hurry
+        # Todo: design a tutorial page, we've finally got our hands on it
         tutorial_page = QWidget()
         QPushButton("tutorial", tutorial_page)
 
@@ -152,6 +152,7 @@ class Window(QWidget):
                 bottom_right.setCurrentIndex(0)
                 upload_page.state = 0  # Unloaded
                 upload_page.setCurrentIndex(0)
+                self.state = State.Normal
 
         buttons[0].setText("Upload PDF")
         buttons[0].clicked.connect(upload_signal)
@@ -230,6 +231,8 @@ class Window(QWidget):
         self.show()
         application.exec_()
 
+
+
     def closeEvent(self, e):
         if self.state == State.Loading:
             if self.load_warning():
@@ -238,6 +241,7 @@ class Window(QWidget):
                 e.ignore()
         else:
             e.accept()
+
 
 if __name__ == "__main__":
     app = Window()
