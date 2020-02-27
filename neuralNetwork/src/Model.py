@@ -122,8 +122,8 @@ class Model:
 
 			# prepare information about language (dictionary, characters in dataset, characters forming words) 
 			chars = str().join(self.charList)
-			wordChars = open('../neuralNetwork/model/wordCharList.txt').read().splitlines()[0]
-			corpus = open('../neuralNetwork/data/corpus.txt').read()
+			wordChars = open('../model/wordCharList.txt').read().splitlines()[0]
+			corpus = open('../data/corpus.txt').read()
 
 			# decode using the "Words" mode of word beam search
 			self.decoder = word_beam_search_module.word_beam_search(tf.nn.softmax(self.ctcIn3dTBC, dim=2), 50, 'Words', 0.0, corpus.encode('utf8'), chars.encode('utf8'), wordChars.encode('utf8'))
@@ -137,6 +137,7 @@ class Model:
 		sess=tf.Session() # TF session
 
 		saver = tf.train.Saver(max_to_keep=1) # saver saves model to file
+		#modelDir = '../model/'
 		modelDir = '../neuralNetwork/model/'
 		latestSnapshot = tf.train.latest_checkpoint(modelDir) # is there a saved model?
 

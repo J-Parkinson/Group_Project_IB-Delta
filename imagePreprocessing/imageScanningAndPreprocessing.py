@@ -539,6 +539,8 @@ def handleColumnGUI(source, noPages):#, progressBar=None):
 
     width, height = singleImage.size
 
+    singleImage.show()
+
     imageOutput = BytesIO(singleImage.tobytes())
 
     '''if progressBar:
