@@ -169,7 +169,7 @@ class file_select(QWidget):
         '''
         Commented out for easy testing
         '''
-        noPages = noPageSpread = max(self.askForPages(), 1)
+        noPages = max(self.askForPages(), 1)
 
         '''progressBar = ProgressBar()
         progressBar.start()'''
