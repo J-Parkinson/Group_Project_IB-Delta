@@ -156,9 +156,9 @@ def matrix_to_standard(table, field_map, field_consts, header=STANDARD_HEADER):
 #   matrix_to_standard_csv:     No return value             Outputs to a file specified by path
 #   table:                      list list String            expected to contain field headers in first row
 #   path:                       String                      specifies the output path for the generated CSV
-#   field_map:                  dict<int, (list int,  maps a standard field header to a list of our field headers
+#   field_map:                  dict<int, (list int,        maps a standard field header to a list of our field headers
 #                                             String)>
-#   field_consts                dict<int, String>        maps a standard field header to a constant string
+#   field_consts                dict<int, String>           maps a standard field header to a constant string
 #   header                      list list String            (optional atm) may consist of multiple rows
 
 def matrix_to_standard_csv(table, path, field_map, field_consts={}, header=STANDARD_HEADER):
