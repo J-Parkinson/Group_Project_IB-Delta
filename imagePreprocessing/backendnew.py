@@ -1,7 +1,7 @@
 from imagePreprocessing.imageScanningAndPreprocessing import splitCellsAndNormaliseFromArray, concatenateImages
 from imagePreprocessing.CellsToWords import cellsToWords
 from neuralNetwork.src.Model import Model, DecoderType
-from neuralNetwork.src.main import inferEverything
+from neuralNetwork.src.main import inferEverything, makeStringFromOneCell
 from pdf2image import convert_from_path as ReadPDF
 from numpy import array
 import numpy as np
@@ -81,7 +81,14 @@ def createCSVFile(pdfLocation, columnLocations = [], widthOfPreviewImage=1, noPa
             # Abi's CellsToWords
             print("width:", resultingImage.shape[1]/noPageSpread)
             inputs = cellsToWords(cellOfWordsList, resultingImage.shape[1]/noPageSpread)
-
+            listOfCells, cols, rows = inputs
+            print(f"THE NUMBER OF COLS IS \n", cols)
+            print(f"THE NUMBER OF ROWS IS %d\n", rows)
+            print("FIRST CELL")
+            print(makeStringFromOneCell(model, listOfCells[6]))
+            print(makeStringFromOneCell(model, listOfCells[12]))
+            print(makeStringFromOneCell(model, listOfCells[18]))
+            print(makeStringFromOneCell(model, listOfCells[24]))
 
             '''for cellno, cell in enumerate(inputs[0]):
                 for wordno, word in enumerate(cell.words):
@@ -89,19 +96,17 @@ def createCSVFile(pdfLocation, columnLocations = [], widthOfPreviewImage=1, noPa
                     image.save("segmentedwords/word " + str(word.row) + " - " + str(word.col) + " - " + str(wordno) + ".png")'''
 
             # Francesca's neuralNetOutput
-            wordsDecoded = inferEverything(model, inputs)
+            #wordsDecoded = inferEverything(model, inputs)
 
-            print(wordsDecoded)
+            #print(wordsDecoded)
 
-            matrix_to_csv(wordsDecoded, "test9.csv")
+            #matrix_to_csv(wordsDecoded, "test9.csv")
 
 
 
 
 #createCSVFile("C:\\Users\Jack\Documents\Cambridge University\Year IB\Group_Project_IB-Delta\imagePreprocessing\images\scantest2.pdf", columnLocations=[375, 790, 1690, 2100, 2520], widthOfPreviewImage=3122)
 createCSVFile('../imagePreprocessing/images/scantest2.pdf', columnLocations=[400, 848, 1805, 2239, 2678])
-
-
 
 #matrix_to_csv(Lala.lala, "C:/Users/Francesca/Book1.csv")
 
