@@ -67,6 +67,7 @@ def removeWhiteSpaceFromWord(word,i):
     currentArray = np.delete(word, whiteRows, axis=0)
     if currentArray.size != 0:
         colVals = np.sum(currentArray, axis=0)
+        print("colVal: ", colVals)
         maxValCol = np.amax(colVals)
 
         while colVals[0] >= maxValCol:

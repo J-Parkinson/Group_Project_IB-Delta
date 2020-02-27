@@ -10,6 +10,8 @@ import dataStructures.logbookScan as Scan
 import imagePreprocessing.imageScanningAndPreprocessing as ImageProcess
 from PIL import Image
 
+from concurrent.futures import ThreadPoolExecutor
+
 import time
 
 from scratchSpaces.suzieScratchSpace import saveCSV
@@ -167,14 +169,16 @@ class file_select(QWidget):
         '''
         Commented out for easy testing
         '''
-        noPages = self.askForPages()
+        noPages = noPageSpread = max(self.askForPages(), 1)
 
         '''progressBar = ProgressBar()
         progressBar.start()'''
-
+        '''with ThreadPoolExecutor() as executor:
+            thread = executor.submit(ImageProcess.handleColumnGUI(self.parent.filename, noPages), 'columnMerge')
+            (columnImage, width, height) = thread.result()'''
 
         columnImage, width, height = ImageProcess.handleColumnGUI(self.parent.filename, noPages)#, progressBar)
-        Image.frombytes("RGB", (width, height), columnImage.read()).show()
+        #Image.frombytes("RGB", (width, height), columnImage.read()).show()
         self.state = State.Running
         self.parent.parent.state = 1  # Loading
         self.parent.setCurrentIndex(1)
