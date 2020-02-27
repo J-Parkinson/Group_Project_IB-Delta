@@ -102,6 +102,8 @@ def correct_table(table, column_dicts):
     for col_index in column_dicts:
         dictionary = get_dictionary(column_dicts[col_index])
         for row_index in range(1, len(table)):
-            result = correct_words(table[row_index][col_index], dictionary)
-            if result is not None:
-                table[row_index][col_index] = result
+            # filter out the 'ditto' marks for correction to save time
+            if '"' not in table[row_index][col_index]:
+                result = correct_words(table[row_index][col_index], dictionary)
+                if result is not None:
+                    table[row_index][col_index] = result

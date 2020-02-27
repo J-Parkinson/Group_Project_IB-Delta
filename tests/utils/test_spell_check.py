@@ -1,14 +1,14 @@
 from unittest import TestCase
 import pathlib
-from utils.csv import spell_check
+from utils.spelling import spell_check
 
 
 class TestSpellCheck(TestCase):
     def setUp(self):
-        test_dir = pathlib.Path(__file__).parent
-        self.test_dict1 = spell_check.get_dictionary(test_dir / 'dict.txt')
-        self.test_dict2 = spell_check.get_dictionary(test_dir / 'dict2.txt')
-        self.test_full_dict = spell_check.get_dictionary(test_dir / 'NHM_butterfly_dict.txt')
+        self.test_dir = pathlib.Path(__file__).parent
+        self.test_dict1 = spell_check.get_dictionary(self.test_dir / 'dict.txt')
+        self.test_dict2 = spell_check.get_dictionary(self.test_dir / 'dict2.txt')
+        self.test_full_dict = spell_check.get_dictionary(self.test_dir / 'NHM_butterfly_dict.txt')
 
     def test_correct_words_sub(self):
         # Assume
@@ -59,4 +59,20 @@ class TestSpellCheck(TestCase):
 
         # Assert
         self.assertEqual(corrected, 'euclidia glyphica')
+
+    def test_correct_table_filters_ditto(self):
+        # Assume
+        test = [['Field'],
+                ['uclidie gliphic'],
+                ['" "']]
+        dict_map = {0: self.test_dir / 'NHM_butterfly_dict.txt'}
+
+        # Action
+        spell_check.correct_table(test, dict_map)
+
+        # Assert
+        self.assertEqual(test, [['Field'],
+                                 ['euclidia glyphica'],
+                                 ['" "']])
+
 
