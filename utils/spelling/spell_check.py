@@ -40,11 +40,14 @@ def correct_words(s, dictionary):
     corrected = ''
     words = s.lower().split()
     for word in words:
-        guess = best_guess(word, dictionary)
-        if guess is not None:
-            corrected += guess + ' '
+        if '"' not in word:
+            guess = best_guess(word, dictionary)
+            if guess is not None:
+                corrected += guess + ' '
+            else:
+                corrected += word + ' '
         else:
-            corrected += word + ' '
+            return None
     return corrected[0:len(corrected) - 1]
 
 
@@ -102,8 +105,6 @@ def correct_table(table, column_dicts):
     for col_index in column_dicts:
         dictionary = get_dictionary(column_dicts[col_index])
         for row_index in range(1, len(table)):
-            # filter out the 'ditto' marks for correction to save time
-            if '"' not in table[row_index][col_index]:
-                result = correct_words(table[row_index][col_index], dictionary)
-                if result is not None:
-                    table[row_index][col_index] = result
+            result = correct_words(table[row_index][col_index], dictionary)
+            if result is not None:
+                table[row_index][col_index] = result
