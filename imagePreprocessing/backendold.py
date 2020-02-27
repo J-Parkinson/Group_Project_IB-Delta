@@ -1,6 +1,7 @@
 from imagePreprocessing.imageScanningAndPreprocessing import splitCellsAndNormaliseFromArray, concatenateImages
 from imagePreprocessing.CellsToWords import cellsToWords
-from neuralNetwork.NeuralNetworkCode.src.toCall import forFrontend
+from neuralNetwork.src.Model import Model, DecoderType
+from neuralNetwork.src.main import inferEverything
 from pdf2image import convert_from_path as ReadPDF
 from numpy import array
 import numpy as np
@@ -10,6 +11,11 @@ from scratchSpaces.jamesScratchSpace.matrix_to_csv import matrix_to_csv
 # Abi's code to convert cells to words ([CellOfWords], numberOfRows, numberOfCols)
 # Francesca [[String]] for James
 # Jame
+
+class FilePaths:
+    "filenames and paths to data"
+    fnCharList = '../neuralNetwork/model/charList.txt'
+    fnAccuracy = '../neuralNetwork/model/accuracy.txt'
 
 class Lala:
     lala = [['Argyresthia 09352', '" " "'],
@@ -25,6 +31,10 @@ def codeToMergeImages(imageList):
     return array(mergedImage)
 
 def createCSVFile(pdfLocation, columnLocations = [], widthOfPreviewImage=1, noPageSpread=1):
+    print(open(FilePaths.fnAccuracy).read())
+    model = Model(open(FilePaths.fnCharList).read(), DecoderType.BestPath, mustRestore=True,
+                  dump=None)  # change dump to
+
     # Jack's splitCellsAndNormalise returns [CellOfWords]
     allImages = ReadPDF(pdfLocation, dpi=400)
     percentageColLocations = array(columnLocations) / widthOfPreviewImage
@@ -48,10 +58,10 @@ def createCSVFile(pdfLocation, columnLocations = [], widthOfPreviewImage=1, noPa
                 print("Cell of Words List:", printListOfCellOfWords(cellOfWordsList))
 
                 # Abi's CellsToWords
-                wordListEncoded, maxRow, maxCol = cellsToWords(cellOfWordsList)
+                inputs = cellsToWords(cellOfWordsList)
 
                 # Francesca's neuralNetOutput
-                wordsDecoded = forFrontend(wordListEncoded)
+                wordsDecoded = inferEverything(model, inputs)
 
                 print(wordsDecoded)
         else:
@@ -63,10 +73,10 @@ def createCSVFile(pdfLocation, columnLocations = [], widthOfPreviewImage=1, noPa
             print("Cell of Words List:", printListOfCellOfWords(cellOfWordsList))
 
             # Abi's CellsToWords
-            wordListEncoded, maxRow, maxCol = cellsToWords(cellOfWordsList)
+            inputs = cellsToWords(cellOfWordsList)
 
             # Francesca's neuralNetOutput
-            wordsDecoded = forFrontend(wordListEncoded)
+            wordsDecoded = inferEverything(model, inputs)
 
             print(wordsDecoded)
 

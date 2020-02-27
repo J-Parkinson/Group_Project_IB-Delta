@@ -70,11 +70,13 @@ def removeWhiteSpaceFromWord(word,i):
         print("colVal: ", colVals)
         maxValCol = np.amax(colVals)
 
-        while colVals[0] >= maxValCol:
+
+
+        while (len(colVals) > 0) and (colVals[0] >= maxValCol):
             currentArray = np.delete(currentArray, 0, axis=1)
             colVals = np.delete(colVals, 0)
 
-        while colVals[-1] >= maxValCol:
+        while (len(colVals) > 0) and (colVals[-1] >= maxValCol):
             currentArray = np.delete(currentArray, -1, axis=1)
             colVals = np.delete(colVals, -1)
 
