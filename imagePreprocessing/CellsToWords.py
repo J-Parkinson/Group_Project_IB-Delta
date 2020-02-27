@@ -2,26 +2,26 @@ import numpy as np
 from dataStructures.logbookScan import Word, CellOfWords
 from scipy import ndimage
 
-def cellsToWords(cells):
+def cellsToWords(cells, width):
     newCells = []
     maxRow = 0
     maxCol = 0
     for x in cells:
-        newp, row, col = cellToWords(x)
+        newp, row, col = cellToWords(x, width)
         maxRow = max(row, maxRow)
         maxCol = max(col, maxCol)
         newCells.append(newp)
 
     return newCells, maxRow, maxCol
 
-def cellToWords(cellOfWords): # takes one CellOfWords
+def cellToWords(cellOfWords, width): # takes one CellOfWords
     newWords = []
     cell = cellOfWords.words[0].image
     row = cellOfWords.row
     col = cellOfWords.col
-    rows = cellToRows(cell) # LIST OF NP ARRAYS
+    rows = cellToRows(cell, width) # LIST OF NP ARRAYS
     for rowArr in rows: # NP ARRAY
-        words = rowToWords(rowArr)
+        words = rowToWords(rowArr, width)
         count = 0
         for word in words:
             if word.shape[0]>0 and word.shape[1]>0:
@@ -37,9 +37,10 @@ def cellToWords(cellOfWords): # takes one CellOfWords
 
 
 
-def rowToWords(row):
+def rowToWords(row, width):
     colVals = np.sum(row, axis=0)
-    valCols = ndimage.convolve1d(colVals, np.array([1, 1, 1, 1, 1]), mode="nearest")
+    arrayToUse = np.ones(width // 120)
+    valCols = ndimage.convolve1d(colVals, arrayToUse, mode="nearest")
     maxValRow = np.amax(valCols)
     wordsHere = np.argwhere(valCols >= maxValRow).flatten()
     cols = np.array_split(row, wordsHere, axis=1)
@@ -48,9 +49,10 @@ def rowToWords(row):
 
 
 
-def cellToRows(cell):
+def cellToRows(cell, width):
     rowVals = np.sum(cell, axis=1)
-    valRows = ndimage.convolve1d(rowVals, np.array([1, 1, 1, 1, 1]), mode="nearest")
+    arrayToUse = np.ones(width // 120)
+    valRows = ndimage.convolve1d(rowVals, arrayToUse, mode="nearest")
     maxValRow = np.amax(valRows)
     wordsHere = np.argwhere(valRows>=maxValRow*0.97).flatten()
     rows = np.array_split(cell, wordsHere, axis=0)

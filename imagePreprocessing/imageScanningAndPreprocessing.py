@@ -5,7 +5,7 @@ import numpy as np
 from cv2 import getStructuringElement, GaussianBlur, Canny, erode, cvtColor, arcLength, COLOR_BGR2GRAY, approxPolyDP, \
     CHAIN_APPROX_SIMPLE, dilate, imread, MORPH_RECT, contourArea, findContours, RETR_LIST, imwrite
 from imutils import resize, grab_contours
-from numpy import array, zeros, greater, hsplit, vsplit, greater_equal, diff, delete, insert, int32, asarray, uint8
+from numpy import array, zeros, greater, hsplit, vsplit, greater_equal, diff, delete, insert, int32, asarray, uint8, interp, linspace, arange
 from scipy.ndimage import convolve1d
 from scipy.signal import argrelextrema
 from skimage.filters import threshold_sauvola
@@ -479,12 +479,23 @@ def calculateRows(transformed):
     # Find the sum of each row - white = 255, black = 0
     transformedsumy = transformed.sum(axis=1)[1:-1].astype("int64")
 
+    #print(linspace(0.0, 10.0, num=int(len(transformedsumy)/746 * 11)))
+
+    arrayToUse = interp(linspace(0.0, 10.0, num=int(len(transformedsumy)/746 * 11)), array([0,1,2,3,4,5,6,7,8,9,10]), array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]))
+
+    print(arrayToUse)
+
     # convolve - smooth out response, remove small rows next to each other
-    tsy2 = convolve1d(convolve1d(transformedsumy, array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest"),
-                      array([1, 1, 1, 3, 5, 8, 4, 3, 1, 1, 1]), mode="nearest")
+    tsy2 = convolve1d(convolve1d(transformedsumy, arrayToUse, mode="nearest"),
+                      arrayToUse, mode="nearest")
+
+    from matplotlib import pyplot as plt
+    plt.plot(tsy2)
+    plt.show()
 
     # find max vals (i.e. most probable rows)
     rowsfiltered = argrelextrema(tsy2, greater_equal)[0]
+    print(len(rowsfiltered))
 
     # interpolate rows to remove anomalies
     rowsfiltered = refactorRows(rowsfiltered)

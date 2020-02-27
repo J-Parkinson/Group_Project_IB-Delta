@@ -70,20 +70,34 @@ def createCSVFile(pdfLocation, columnLocations = [], widthOfPreviewImage=1, noPa
             # Jack's code to find rows, split
             cellOfWordsList = splitCellsAndNormaliseFromArray(resultingImage, colLocs=normalisedColLocations)
 
+            '''for x, word in enumerate(cellOfWordsList):
+                image = Image.fromarray(word.words[0].image)
+                image.save("segmentedcells/cell" + str(x) + ".png")'''
+
+
+
             print("Cell of Words List:", printListOfCellOfWords(cellOfWordsList))
 
             # Abi's CellsToWords
-            inputs = cellsToWords(cellOfWordsList)
+            inputs = cellsToWords(cellOfWordsList, resultingImage.shape[1])
+
+
+            '''for cellno, cell in enumerate(inputs[0]):
+                for wordno, word in enumerate(cell.words):
+                    image = Image.fromarray(word.image)
+                    image.save("segmentedwords/word " + str(word.row) + " - " + str(word.col) + " - " + str(wordno) + ".png")'''
 
             # Francesca's neuralNetOutput
             wordsDecoded = inferEverything(model, inputs)
 
             print(wordsDecoded)
 
+            matrix_to_csv(wordsDecoded, "firsttest.csv")
 
 
 
-createCSVFile("C:\\Users\Jack\Documents\Cambridge University\Year IB\Group_Project_IB-Delta\imagePreprocessing\images\scantest2.pdf", columnLocations=[400, 848, 1805, 2239, 2678], widthOfPreviewImage=3122)
+
+createCSVFile("C:\\Users\Jack\Documents\Cambridge University\Year IB\Group_Project_IB-Delta\imagePreprocessing\images\scantest2.pdf", columnLocations=[375, 790, 1690, 2100, 2520], widthOfPreviewImage=3122)
 
 
 
