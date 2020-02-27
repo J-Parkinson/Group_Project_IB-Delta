@@ -294,7 +294,6 @@ class control(QWidget):
         return
 
     def confirm(self):
-        # todo: switch to sate 3 in upload page to make stack have the save page
         upload = self.parent.parent
 
         if upload.warning("Confirming the changes?", "WARNING:",
@@ -302,7 +301,11 @@ class control(QWidget):
                           "Click 'yes' to continue. ",
                           1) == QMessageBox.No:
             return
-
+        # Todo for James
+        # Todo: Connect to the backend here.
+        # Todo: The argument they need should be self.page
+        # Todo: About the correction dictionary, it needs more tweaks, which I will do later
+        # Todo: Just try whether the back end connection works or not now
         upload.state = states.uploadState.Saving
         upload.setCurrentIndex(2)
 
