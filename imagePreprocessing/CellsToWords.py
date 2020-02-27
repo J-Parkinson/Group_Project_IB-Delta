@@ -26,7 +26,7 @@ def cellToWords(cellOfWords, width): # takes one CellOfWords
         for word in words:
             if word.shape[0]>0 and word.shape[1]>0:
                 newWord = removeWhiteSpaceFromWord(word,count)
-                if  newWord.shape[0]>2 and newWord.shape[1]>2:
+                if  newWord.shape[0]>5 and newWord.shape[1]>5:
                     newWords.append(newWord)
             count+=1
 
