@@ -181,7 +181,7 @@ def makeStringsFromAllCells(model, listOfCellsOfWords):
     return toReturn
 
 def makeListOfLists(wordsFromAllCells, numberOfCols):
-    numberOfCols = numberOfCols +1;
+    #numberOfCols = numberOfCols +1;
     for i in range(0, len(wordsFromAllCells), numberOfCols):
         yield wordsFromAllCells[i:i + numberOfCols]  # this is a list of lists of lists of image
 
