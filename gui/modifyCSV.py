@@ -60,8 +60,8 @@ class UploadCSV(QWidget):
 
     def open_file_window(self):
         # noinspection PyCallByClass
-        # taken from __main__ in yulong's scratch space
-        file_name, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "", "", "")
+
+        file_name, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "", "CSV (*.csv)", "")
         if file_name:
             self.table = matrix_to_csv.read_csv(file_name)
 
