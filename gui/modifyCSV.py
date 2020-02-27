@@ -37,6 +37,7 @@ class UploadCSV(QWidget):
     def __init__(self, stack):
         super().__init__()
         self.setStyleSheet('color: black')
+        self.table = None
         self.stack_wid = stack
         layout = QGridLayout()
         title = QLabel("Rules and Mappings")
