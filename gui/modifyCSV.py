@@ -11,6 +11,7 @@ from gui.subpages import Mappings
 # TODO: make page for uploading CSV pretty
 # done: pg1 for adding rules
 # TODO: pg2 for creating mappings
+# TODO: remove all random print statements when done
 
 def warning(title, text, description):
     msg = QMessageBox()
@@ -25,12 +26,23 @@ def warning(title, text, description):
 class ModifyMainWindow(QWidget):
     def __init__(self):
         super().__init__()
-        layout = QGridLayout()
-        main = QStackedWidget()
-        main.addWidget(UploadCSV(main))  # index 0
-        main.setCurrentIndex(0)
-        layout.addWidget(main)
-        self.setLayout(layout)
+        self.setStyleSheet('color: black')
+        self.layout = QGridLayout()
+        self.main = QStackedWidget()
+        self.main.addWidget(UploadCSV(self.main))  # index 0
+        self.main.setCurrentIndex(0)
+
+        reset_btn = QPushButton("Start Again")
+        reset_btn.clicked.connect(self.reset)
+        self.layout.addWidget(reset_btn)
+        self.layout.addWidget(self.main)
+        self.setLayout(self.layout)
+
+    def reset(self):
+        self.main = QStackedWidget()
+        self.main.addWidget(UploadCSV(self.main))  # index 0
+        self.main.setCurrentIndex(0)
+        #self.layout.addWidget(self.main)
 
 
 class UploadCSV(QWidget):
@@ -94,12 +106,11 @@ class RulesWindow(QWidget):
         # where to start the rules within the grid
         self.col_index_y = 3
 
-        self.rules = 1
-
         self.grid.setHorizontalSpacing(10)
         self.setStyleSheet('color: black; background-color: rgb(248, 246, 238)')
 
         self.rule_list = []
+        self.rules = 0
 
         self.stack_wid = stack
 
@@ -161,6 +172,9 @@ class RulesWindow(QWidget):
         self.grid.addWidget(help_text, 1, 0, 1, 2, Qt.AlignTop)
 
         rule1 = NewRule(self.table)
+
+        self.rules += 1
+        rule1.rule_wind = self
         self.rule_list.append(rule1)
         self.grid.addWidget(rule1, self.rules + 2, 0, 1, 2)
 
@@ -174,11 +188,13 @@ class RulesWindow(QWidget):
         self.grid.addWidget(cont_btn, 2, 1, 1, 1)
 
     def new_rule(self):
+
         self.rules += 1
-        print(self.rules)
-        print(self.rule_list)
+        #print(self.rules)
+        #print(self.rule_list)
 
         rule = NewRule(self.table)
+        rule.rule_wind = self
         self.rule_list.append(rule)
 
         self.grid.addWidget(rule, self.rules + 2, 0, 1, 2)
@@ -187,19 +203,16 @@ class RulesWindow(QWidget):
         print("confirmed, moving to mappings page")
         table_before = self.table
 
-
-
         try:
-            if len(self.rule_list) == 1:
+            if self.rules <= 0:
                 self.stack_wid.addWidget(Mappings.MapWindow(self.stack_wid, self.table))
                 self.stack_wid.setCurrentIndex(2)
             else:
                 for i in self.rule_list:
-
                     col_index, new_names, advanced, res_index, splitter, joiner = i.getAttributes()
                     matrix_to_csv.split_col(self.table, col_index, new_names, which_words=advanced,
-                                                    resolution_type=matrix_to_csv.ResolutionType(res_index),
-                                                    separator=splitter, joiner=joiner)
+                                            resolution_type=matrix_to_csv.ResolutionType(res_index),
+                                            separator=splitter, joiner=joiner)
                 self.stack_wid.addWidget(Mappings.MapWindow(self.stack_wid, self.table))
                 self.stack_wid.setCurrentIndex(2)
         except Exception as e:
@@ -208,18 +221,18 @@ class RulesWindow(QWidget):
             return
 
 
-
-
 class NewRule(QWidget):
-    def __init__(self,table):
+    def __init__(self, table):
         super().__init__()
         rule_layout = QGridLayout()
         col_label = QLabel("Choose a column to split:")
+        self.rule_wind = None
         self.col_to_split = QComboBox()
         self.col_to_split.addItems(table[0])
 
         new_col_label = QLabel("Type name of new column:")
         self.new_col = NewCol(rule_layout)
+        self.new_col.rule = self
 
         res_lab = QLabel("Resolution:")
         self.res = QComboBox()
@@ -281,6 +294,7 @@ class NewRule(QWidget):
 class NewCol(QWidget):
     def __init__(self, grid_layout):
         super().__init__()
+        self.rule = None
 
         self.main_layout = QGridLayout()
 
@@ -322,12 +336,15 @@ class NewCol(QWidget):
 
     def del_col(self, layout):
         print("delete col")
-        if len(self.col_list) == 1:
+        if self.col_count == 1:
             for i in reversed(range(self.grid_layout.count())):
                 self.grid_layout.itemAt(i).widget().deleteLater()
+                self.rule.rule_wind.rules -= 1
 
-        for i in reversed(range(layout.count())):
-            layout.itemAt(i).widget().deleteLater()
+        else:
+            for i in reversed(range(layout.count())):
+                layout.itemAt(i).widget().deleteLater()
+                self.col_count -= 1
 
     def getCols(self):
         column_names = []
@@ -340,6 +357,3 @@ class NewCol(QWidget):
             advanced.append(adv)
 
         return column_names, advanced
-
-
-
