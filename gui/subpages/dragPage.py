@@ -347,11 +347,9 @@ class control(QWidget):
         rowLocations = [self.page.columnList[0].tlCoord[1],self.page.columnList[0].brCoord[1]]
 
         column_dicts = {}
-        i = 0
-        for c in self.page.columnList:
+        for i, c in enumerate(self.page.columnList):
             if c.dictionary is not None:
                 column_dicts[i] = c.dictionary
-            i += 1
 
         table = backendnew.createTable(self.parent.filename,
                                        columnLocations,
@@ -359,7 +357,7 @@ class control(QWidget):
                                        self.parent.imgWidth,
                                        self.parent.imgHeight,
                                        self.parent.noPages)
-        # correct_table(table, column_dicts)
+        correct_table(table, column_dicts)
         # transfer table to saveCSV
 
         upload.state = states.uploadState.Saving
