@@ -29,7 +29,9 @@ class preview(QWidget):
         OnH = 2
         ClickedV = 3
         ClickedH = 4
-        ClickedHUp = 5
+        OnVUp = 5
+        ClickedVUp = 6
+
 
     def __init__(self, parent):
         super().__init__()
@@ -79,6 +81,8 @@ class preview(QWidget):
             self.state = self.State.ClickedH
         elif self.state == self.State.OnV:
             self.state = self.State.ClickedV
+        elif self.state == self.State.OnVUp:
+            self.state = self.State.ClickedVUp
         self.update_cursor()
 
     def mouseMoveEvent(self, e):
@@ -90,6 +94,10 @@ class preview(QWidget):
         if self.state == self.State.ClickedH:
             self.control.columns.setCurrentRow(self.onColumn)
             self.control.edit.brx.setValue(x)
+            return
+
+        if self.state == self.State.ClickedVUp:
+            self.control.edit.tly.setValue(y)
             return
 
         if self.state == self.State.ClickedV:
@@ -109,10 +117,18 @@ class preview(QWidget):
                     else:
                         i += 1
 
-            # Row Dragging test
-            x1, y1 = self.page.columnList[len(self.page.columnList) - 1].brCoord
+            # Lower Row Dragging test
+            x1, y1 = self.page.columnList[-1].brCoord
             if x < x1 and abs(y - self.offset - y1) < 5:
                 self.state = self.State.OnV
+                self.update_cursor()
+                return
+
+            # Upper Row Dragging test
+            x1 = self.page.columnList[-1].brCoord[0]
+            y1 = self.page.columnList[-1].tlCoord[1]
+            if x < x1 and abs(y - self.offset - y1) < 5:
+                self.state = self.State.OnVUp
                 self.update_cursor()
                 return
 
@@ -126,9 +142,9 @@ class preview(QWidget):
     def update_cursor(self):
         if self.state == self.State.Normal:
             QApplication.setOverrideCursor(Qt.ArrowCursor)
-        elif self.state == self.State.OnV:
+        elif self.state == self.State.OnV or self.state == self.State.OnVUp:
             QApplication.setOverrideCursor(Qt.SplitVCursor)
-        elif self.state == self.State.OnH or self.state == self.State.ClickedHUp:
+        elif self.state == self.State.OnH:
             QApplication.setOverrideCursor(Qt.SplitHCursor)
         else:
             QApplication.setOverrideCursor(Qt.ClosedHandCursor)
