@@ -36,15 +36,32 @@ def get_dictionary(path):
     return dictionary
 
 
+def first_char_is_upper(word):
+    first_char = ord(word[0])
+    return 65 <= first_char <= 90
+
+
+def first_char_to_upper(word):
+    new_word = chr(ord(word[0]) - 32) + word[1:]
+    return new_word
+
+
 def correct_words(s, dictionary):
     corrected = ''
-    words = s.lower().split()
+    words = s.split()
     for word in words:
-        guess = best_guess(word, dictionary)
-        if guess is not None:
-            corrected += guess + ' '
+        if '"' not in word:
+            upper = first_char_is_upper(word)
+            guess = best_guess(word.lower(), dictionary)
+            if guess is not None:
+                if upper:
+                    corrected += first_char_to_upper(guess) + ' '
+                else:
+                    corrected += guess + ' '
+            else:
+                corrected += word + ' '
         else:
-            corrected += word + ' '
+            return None
     return corrected[0:len(corrected) - 1]
 
 
@@ -102,8 +119,6 @@ def correct_table(table, column_dicts):
     for col_index in column_dicts:
         dictionary = get_dictionary(column_dicts[col_index])
         for row_index in range(1, len(table)):
-            # filter out the 'ditto' marks for correction to save time
-            if '"' not in table[row_index][col_index]:
-                result = correct_words(table[row_index][col_index], dictionary)
-                if result is not None:
-                    table[row_index][col_index] = result
+            result = correct_words(table[row_index][col_index], dictionary)
+            if result is not None:
+                table[row_index][col_index] = result

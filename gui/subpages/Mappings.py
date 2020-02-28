@@ -33,7 +33,6 @@ class MapWindow(QWidget):
         # number of mappings
         self.total_maps = 0
 
-
         self.stack_wid = stack
 
         self.initUI()
@@ -67,7 +66,7 @@ class MapWindow(QWidget):
         new_map_btn.clicked.connect(self.new_map)
 
         new_const_btn = QPushButton("Add New Constant")
-        new_const_btn.clicked.connect(self.new_const_map)
+        new_const_btn.clicked.connect(self.new_const)
 
         cont_btn = QPushButton("Confirm all Mappings and Save")
         cont_btn.clicked.connect(self.next)
@@ -78,14 +77,14 @@ class MapWindow(QWidget):
 
     def new_map(self):
         self.total_maps += 1
-        map = NewMap(self.table)
-        self.grid.addWidget(map, self.total_maps + 2, 0, 1, 3)
-        self.maps_list.append(map)
+        new_map = NewMap(self.table)
+        self.grid.addWidget(new_map, (self.total_maps + 2), 0, 1, 3)
+        self.maps_list.append(new_map)
 
     def new_const(self):
         self.total_maps += 1
         const = NewConst(self.table)
-        self.grid.addWidget(const, self.total_maps+2,0,1,3)
+        self.grid.addWidget(const, self.total_maps+2, 0, 1, 3)
         self.const_list.append(const)
 
     def get_attributes(self):
@@ -120,19 +119,27 @@ class NewMap(QWidget):
         stand_lab = QLabel("Choose a column from\nthe standard format:")
         layout.addWidget(stand_lab, 0, 0)
         self.stand = QComboBox()
-        self.stand.addItems(["col1", "col2", "etc"])  # todo: replace with actual standard fields
-        layout.addWidget(stand, 1, 0)
+        self.stand.addItems(['', '', '', 'UI Number', 'Other Number', 'Other number type', 'Type status', 'Label Family',
+                    'Label Genus', 'Label species', 'Current Family', 'Current Genus', 'Current species', 'Subspecies',
+                    'Common Name', '', 'Variety', 'Preservation', 'Number of specimens', 'Description', 'Sex',
+                    'Stage/Phase', '', 'Condition Rating (Good, Fair, Poor, Unacceptable)',
+                    'Condition details (eg wing fallen off)', 'Level 1 eg.Country', 'Level 2 - eg.County',
+                    'Level 3 - eg.Town/City/Village', 'Level 4 (eg.Nearest named place)', 'Date (DD/MM/YYYY)',
+                    'Bred or not (B if bred/ blank if caught on wing)', 'Surname', 'First name', 'Middle Names',
+                    'Name', 'Verbatum label data', 'Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5 +6', ''])
+        layout.addWidget(self.stand, 1, 0)
         self.cols = []  # list to store all the columns to map from
         new_col_lbl = QLabel("Columns to map:")
         layout.addWidget(new_col_lbl, 0, 1)
         self.col_layout = QGridLayout()
-        layout.addLayout(col_layout, 1, 1)
-        add_col()
+        layout.addLayout(self.col_layout, 1, 1)
+        self.add_col()
         join_lbl = QLabel("Joiner:")
         self.join = QLineEdit()
         self.join.setPlaceholderText("Optional")
         layout.addWidget(join_lbl, 0, 2)
         layout.addWidget(self.join, 1, 2)
+        self.setLayout(layout)
 
     def add_col(self):
         fields = QComboBox()
@@ -141,7 +148,7 @@ class NewMap(QWidget):
         self.cols.append(fields)
 
         plus = QPushButton("+")
-        plus.clicked.connect(add_col)
+        plus.clicked.connect(self.add_col)
         self.col_layout.addWidget(plus)
 
     def get_standard(self):
@@ -159,20 +166,28 @@ class NewMap(QWidget):
 
 class NewConst(QWidget):
     def __init__(self,table):
-        super().__innit__()
+        super().__init__()
         self.table = table
         layout = QGridLayout()
         stand_lab = QLabel("Choose a column from\nthe standard format:")
         layout.addWidget(stand_lab, 0, 0)
         self.stand = QComboBox()
-        self.stand.addItems(["col1", "col2", "etc"])  # todo: replace with actual standard fields
-        layout.addWidget(stand, 1, 0)
+        self.stand.addItems(['', '', '', 'UI Number', 'Other Number', 'Other number type', 'Type status', 'Label Family',
+                    'Label Genus', 'Label species', 'Current Family', 'Current Genus', 'Current species', 'Subspecies',
+                    'Common Name', '', 'Variety', 'Preservation', 'Number of specimens', 'Description', 'Sex',
+                    'Stage/Phase', '', 'Condition Rating (Good, Fair, Poor, Unacceptable)',
+                    'Condition details (eg wing fallen off)', 'Level 1 eg.Country', 'Level 2 - eg.County',
+                    'Level 3 - eg.Town/City/Village', 'Level 4 (eg.Nearest named place)', 'Date (DD/MM/YYYY)',
+                    'Bred or not (B if bred/ blank if caught on wing)', 'Surname', 'First name', 'Middle Names',
+                    'Name', 'Verbatum label data', 'Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5 +6', ''])
+        layout.addWidget(self.stand, 1, 0)
 
         const_lbl = QLabel("Constant value:")
         self.const = QLineEdit()
         self.const.setPlaceholderText("e.g. Cambridge")
         layout.addWidget(const_lbl, 0, 1)
         layout.addWidget(self.const, 1, 1)
+        self.setLayout(layout)
 
     def get_standard(self):
         return self.stand.currentIndex()
