@@ -309,8 +309,21 @@ class control(QWidget):
         # Todo: The argument they need should be self.page
         # Todo: About the correction dictionary, it needs more tweaks, which I will do later
         # Todo: Just try whether the back end connection works or not now
+        columnLocations = []
+
+        for c in self.page.columnList:
+            columnLocations.append(c.tlCoord[0])
+        columnLocations.append(self.page.columnList[-1].brCoord[0])
+
+        rowLocations = [self.page.columnList[0].tlCoord[1],self.page.columnList[0].brCoord[1]]
+
+
         table = backendnew.createTable(self.parent.filename,
-                                       columnLocations=[],)
+                                       columnLocations,
+                                       rowLocations,
+                                       self.parent.imgWidth,
+                                       self.parent.imgHeight,
+                                       self.parent.noPages)
         # correct_table(table, column_dicts)
         # transfer table to saveCSV
 
