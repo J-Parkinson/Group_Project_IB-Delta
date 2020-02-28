@@ -5,9 +5,9 @@ import sys
 import argparse
 import cv2
 import editdistance
-from DataLoader import DataLoader, Batch
-from Model import Model, DecoderType
-from SamplePreprocessor import preprocess
+from neuralNetwork.src.DataLoader import DataLoader, Batch
+from neuralNetwork.src.Model import Model, DecoderType
+from neuralNetwork.src.SamplePreprocessor import preprocess
 from dataStructures import logbookScan
 import os  # mine
 import numpy as np
