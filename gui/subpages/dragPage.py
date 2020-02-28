@@ -362,6 +362,7 @@ class control(QWidget):
         # correct_table(table, column_dicts)
         # transfer table to saveCSV
 
+        upload.save_page.table = table
         upload.state = states.uploadState.Saving
         upload.setCurrentIndex(2)
 
