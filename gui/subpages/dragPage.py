@@ -12,7 +12,7 @@ from utils.spelling.spell_check import correct_table
 from imagePreprocessing import backendnew
 
 
-# Todo: remove this later
+# Todo: remove this later... maybe not?
 def newTest():
     page = Scan.PageLayout(1)
     page.addColumn(Scan.Column((0, 0), (50, 200), 1, ""))
@@ -340,13 +340,18 @@ class control(QWidget):
         # Todo: About the correction dictionary, it needs more tweaks, which I will do later
         # Todo: Just try whether the back end connection works or not now
         columnLocations = []
-
         for c in self.page.columnList:
             columnLocations.append(c.tlCoord[0])
         columnLocations.append(self.page.columnList[-1].brCoord[0])
 
         rowLocations = [self.page.columnList[0].tlCoord[1],self.page.columnList[0].brCoord[1]]
 
+        column_dicts = {}
+        i = 0
+        for c in self.page.columnList:
+            if c.dictionary is not None:
+                column_dicts[i] = c.dictionary
+            i += 1
 
         table = backendnew.createTable(self.parent.filename,
                                        columnLocations,
