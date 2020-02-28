@@ -31,6 +31,8 @@ class preview(QWidget):
         ClickedH = 4
         OnVUp = 5
         ClickedVUp = 6
+        OnLeftMost = 7
+        ClickedLeftMost = 8
 
 
     def __init__(self, parent):
@@ -83,6 +85,8 @@ class preview(QWidget):
             self.state = self.State.ClickedV
         elif self.state == self.State.OnVUp:
             self.state = self.State.ClickedVUp
+        elif self.state == self.State.OnLeftMost:
+            self.state = self.State.ClickedLeftMost
         self.update_cursor()
 
     def mouseMoveEvent(self, e):
@@ -90,6 +94,11 @@ class preview(QWidget):
         y = e.y()
 
         # Todo: some bad behaviors here, fix it !!!!!!
+
+        if self.state == self.State.ClickedLeftMost:
+            self.control.columns.setCurrentRow(self.onColumn)
+            self.control.edit.tlx.setValue(x)
+            return
 
         if self.state == self.State.ClickedH:
             self.control.columns.setCurrentRow(self.onColumn)
@@ -116,6 +125,11 @@ class preview(QWidget):
                         return
                     else:
                         i += 1
+                if abs(x - self.page.columnList[0].tlCoord[0]) < 10:
+                    self.state = self.State.OnLeftMost
+                    self.update_cursor()
+                    self.onColumn = 0
+                    return
 
             # Lower Row Dragging test
             x1, y1 = self.page.columnList[-1].brCoord
@@ -144,7 +158,7 @@ class preview(QWidget):
             QApplication.setOverrideCursor(Qt.ArrowCursor)
         elif self.state == self.State.OnV or self.state == self.State.OnVUp:
             QApplication.setOverrideCursor(Qt.SplitVCursor)
-        elif self.state == self.State.OnH:
+        elif self.state == self.State.OnH or self.state == self.State.OnLeftMost:
             QApplication.setOverrideCursor(Qt.SplitHCursor)
         else:
             QApplication.setOverrideCursor(Qt.ClosedHandCursor)
