@@ -28,6 +28,7 @@ class preview(QWidget):
         OnH = 2
         ClickedV = 3
         ClickedH = 4
+        ClickedHUp = 5
 
     def __init__(self, parent):
         super().__init__()
@@ -126,7 +127,7 @@ class preview(QWidget):
             QApplication.setOverrideCursor(Qt.ArrowCursor)
         elif self.state == self.State.OnV:
             QApplication.setOverrideCursor(Qt.SplitVCursor)
-        elif self.state == self.State.OnH:
+        elif self.state == self.State.OnH or self.state == self.State.ClickedHUp:
             QApplication.setOverrideCursor(Qt.SplitHCursor)
         else:
             QApplication.setOverrideCursor(Qt.ClosedHandCursor)
