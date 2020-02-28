@@ -19,16 +19,15 @@ def cellToWords(cellOfWords, width): # takes one CellOfWords
     cell = cellOfWords.words[0].image
     row = cellOfWords.row
     col = cellOfWords.col
-    rows = cellToRows(cell, width) # LIST OF NP ARRAYS
+
+    rows = cellToRows(stripCell(cell), width) # LIST OF NP ARRAYS
     for rowArr in rows: # NP ARRAY
         words = rowToWords(rowArr, width)
-        count = 0
         for word in words:
             if word.shape[0]>0 and word.shape[1]>0:
-                newWord = removeWhiteSpaceFromWord(word,count)
+                newWord = removeWhiteSpaceFromWord(word)
                 if newWord.shape[0]>2 and newWord.shape[1]>2:
                     newWords.append(newWord)
-            count+=1
 
     newWordList = []
     for x in newWords:
@@ -36,10 +35,17 @@ def cellToWords(cellOfWords, width): # takes one CellOfWords
     return CellOfWords(newWordList, row, col), row, col
 
 
+def stripCell(image):
+    toRemove = [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
+    newImage = image
+    if newImage.shape[0] > 8:
+        newImage = np.delete(newImage, toRemove, 0)
+    if newImage.shape[1] > 8:
+        newImage = np.delete(newImage, toRemove, 1)
+    return newImage
 
 def rowToWords(row, width):
     colVals = np.sum(row, axis=0)
-    print(width // 100)
     arrayToUse = np.ones(int(width // 100))
     valCols = ndimage.convolve1d(colVals, arrayToUse, mode="nearest")
     maxValRow = np.amax(valCols)
@@ -62,7 +68,7 @@ def cellToRows(cell, width):
 
 
 
-def removeWhiteSpaceFromWord(word,i):
+def removeWhiteSpaceFromWord(word):
     rowVals = np.sum(word, axis=1)
     maxValRow = np.amax(rowVals)
 

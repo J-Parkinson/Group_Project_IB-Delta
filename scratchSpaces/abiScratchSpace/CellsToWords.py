@@ -14,7 +14,7 @@ import cv2 as cv2
 
 #################################################################
 imgList = []
-paths = ["../../imagePreprocessing/segmentedcells/cell27.png"]
+paths = ["../../imagePreprocessing/segmentedcells/cell27.png", "../../imagePreprocessing/segmentedcells/cell28.png", "../../imagePreprocessing/segmentedcells/cell30.png", "../../imagePreprocessing/segmentedcells/cell31.png"]
 for i in paths:
     row = i[-3]
     col = i[-1]
@@ -46,13 +46,11 @@ def cellToWords(cellOfWords, width): # takes one CellOfWords
     rows = cellToRows(cell, width) # LIST OF NP ARRAYS
     for rowArr in rows: # NP ARRAY
         words = rowToWords(rowArr, width)
-        count = 0
         for word in words:
             if word.shape[0]>0 and word.shape[1]>0:
-                newWord = removeWhiteSpaceFromWord(word,count)
+                newWord = removeWhiteSpaceFromWord(word)
                 if  newWord.shape[0]>4 and newWord.shape[1]>4:
                     newWords.append(newWord)
-            count+=1
 
     newWordList = []
     for x in newWords:
@@ -63,7 +61,7 @@ def cellToWords(cellOfWords, width): # takes one CellOfWords
 
 def rowToWords(row, width):
     colVals = np.sum(row, axis=0)
-    print(width // 100)
+    #print(width // 100)
     arrayToUse = np.ones(int(width // 100))
     valCols = ndimage.convolve1d(colVals, arrayToUse, mode="nearest")
     maxValRow = np.amax(valCols)
@@ -86,7 +84,7 @@ def cellToRows(cell, width):
 
 
 
-def removeWhiteSpaceFromWord(word,i):
+def removeWhiteSpaceFromWord(word):
     rowVals = np.sum(word, axis=1)
     maxValRow = np.amax(rowVals)
 
@@ -113,12 +111,13 @@ def removeWhiteSpaceFromWord(word,i):
 
 x, row, col = cellsToWords(imgList, 1200)
 
+print(x)
 count = 0
 for y in x:
-    print(y)
-    count2 = 0
+    print(len(y.words))
+    #count2 = 0
     #print(count, x[count].words)
-    for z in y.words:
-        cv2.imwrite('test-'+str(count)+'-'+str(count2)+'.png', z.image)
-        count2+=1
-    count+=1
+    #for z in y.words:
+    #    cv2.imwrite('test-'+str(count)+'-'+str(count2)+'.png', z.image)
+    #    count2+=1
+    #count+=1
