@@ -141,15 +141,16 @@ class file_select(QWidget):
         '''
         noPages = self.askForPages()
 
-        if noPages < 0:
+        if noPages <= 0:
             return
-
+        self.parent.noPages = noPages
         # progressBar = ProgressBar(noPages * 2 + 2)
         # columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
         #         # print(columnImage)
 
-        columnImage, width, height = ImageProcess.handleColumnGUI(self.parent.filename, noPages)  # , progressBar)
-        Image.frombytes("RGB", (width, height), columnImage.read()).show()
+        self.parent.previewImg, self.parent.imgWidth, self.parent.imgHeight\
+            = ImageProcess.handleColumnGUI(self.parent.filename, noPages)  # , progressBar)
+        Image.frombytes("RGB", (self.parent.imgWidth, self.parent.imgHeight), self.parent.previewImg.read()).show()
         self.state = states.uploadState.Running
         self.parent.parent.state = 1  # Loading
         self.parent.setCurrentIndex(1)
