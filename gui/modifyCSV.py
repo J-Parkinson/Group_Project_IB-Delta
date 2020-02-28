@@ -13,13 +13,16 @@ from gui.subpages import Mappings
 # TODO: pg2 for creating mappings
 # TODO: remove all random print statements when done
 
-def warning(title, text, description):
+def warning(title, text, description, two_buttons):
     msg = QMessageBox()
     msg.setIcon(QMessageBox.Warning)
 
     msg.setWindowTitle(title)
     msg.setText(text)
     msg.setInformativeText(description)
+
+    if two_buttons:
+        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
 
     return msg.exec_()
 
@@ -29,26 +32,39 @@ class ModifyMainWindow(QWidget):
         self.setStyleSheet('color: black')
         self.layout = QGridLayout()
         self.main = QStackedWidget()
-        self.main.addWidget(UploadCSV(self.main))  # index 0
+        upload = UploadCSV(self.main)
+        upload.parent = self
+        self.main.addWidget(upload)  # index 0
         self.main.setCurrentIndex(0)
 
         reset_btn = QPushButton("Start Again")
-        reset_btn.clicked.connect(self.reset)
-        self.layout.addWidget(reset_btn)
-        self.layout.addWidget(self.main)
+        reset_btn.clicked.connect(lambda : self.reset(True))
+        self.layout.addWidget(reset_btn, 0,0)
+        self.layout.addWidget(self.main, 1,0)
         self.setLayout(self.layout)
 
-    def reset(self):
-        self.main = QStackedWidget()
-        self.main.addWidget(UploadCSV(self.main))  # index 0
-        self.main.setCurrentIndex(0)
-        #self.layout.addWidget(self.main)
+    def reset(self, interrupt):
+        if interrupt:
+            if warning("Leave Now?", "WARNING:",
+                            "Are you sure you want to leave this page?\n"
+                            "Your progress will not be saved.\n\n"
+                            "Click 'yes' to continue. ",
+                            1) == QMessageBox.No:
+                return
+        self.layout.removeWidget(self.main)
+        self.main.deleteLater()
+        new_main = QStackedWidget()
+        new_main.addWidget(UploadCSV(new_main))  # index 0
+        new_main.setCurrentIndex(0)
+        self.layout.addWidget(new_main,1,0)
+        self.main = new_main
 
 
 class UploadCSV(QWidget):
     def __init__(self, stack):
         super().__init__()
         self.setStyleSheet('color: black')
+        self.parent = None
         self.table = None
         self.stack_wid = stack
         layout = QGridLayout()
@@ -79,17 +95,20 @@ class UploadCSV(QWidget):
 
     def goto_rules(self):
         if self.table is not None:
-            self.stack_wid.addWidget(RulesWindow(self.stack_wid, self.table))
+            rules_window = RulesWindow(self.stack_wid, self.table)
+            rules_window.parent = self.parent
+            self.stack_wid.addWidget(rules_window)
 
             self.stack_wid.setCurrentIndex(1)
         else:
-            warning('Error', 'No CSV selected!', 'Please select a CSV file to import')
+            warning('Error', 'No CSV selected!', 'Please select a CSV file to import', False)
 
 
 class RulesWindow(QWidget):
 
     def __init__(self, stack, table):
         super().__init__()
+        self.parent = None
         self.table = table
         main_layout = QVBoxLayout(self)
         self.setLayout(main_layout)
@@ -190,8 +209,6 @@ class RulesWindow(QWidget):
     def new_rule(self):
 
         self.rules += 1
-        #print(self.rules)
-        #print(self.rule_list)
 
         rule = NewRule(self.table)
         rule.rule_wind = self
@@ -204,20 +221,19 @@ class RulesWindow(QWidget):
         table_before = self.table
 
         try:
-            if self.rules <= 0:
-                self.stack_wid.addWidget(Mappings.MapWindow(self.stack_wid, self.table))
-                self.stack_wid.setCurrentIndex(2)
-            else:
+            if self.rules > 0:
                 for i in self.rule_list:
                     col_index, new_names, advanced, res_index, splitter, joiner = i.getAttributes()
                     matrix_to_csv.split_col(self.table, col_index, new_names, which_words=advanced,
                                             resolution_type=matrix_to_csv.ResolutionType(res_index),
                                             separator=splitter, joiner=joiner)
-                self.stack_wid.addWidget(Mappings.MapWindow(self.stack_wid, self.table))
-                self.stack_wid.setCurrentIndex(2)
+            map_window = Mappings.MapWindow(self.stack_wid, self.table)
+            map_window.parent = self.parent
+            self.stack_wid.addWidget(map_window)
+            self.stack_wid.setCurrentIndex(2)
         except Exception as e:
             self.table = table_before
-            warning('Error', 'Failed to apply the rules!', str(e))
+            warning('Error', 'Failed to apply the rules!', str(e), False)
             return
 
 
@@ -307,7 +323,7 @@ class NewCol(QWidget):
         self.grid_layout = grid_layout
 
     def new_col(self):
-
+        self.col_count += 1
         layout = QGridLayout()
 
         new_col1 = QLineEdit()
@@ -330,12 +346,13 @@ class NewCol(QWidget):
         layout.addWidget(del_col_btn, 3, 1, 1, 1)
 
         self.main_layout.addLayout(layout, self.col_count, 0)
-        self.col_count += 1
+
         # add this layout to the list
         self.col_list.append(layout)
 
     def del_col(self, layout):
         print("delete col")
+
         if self.col_count == 1:
             for i in reversed(range(self.grid_layout.count())):
                 self.grid_layout.itemAt(i).widget().deleteLater()
@@ -344,7 +361,8 @@ class NewCol(QWidget):
         else:
             for i in reversed(range(layout.count())):
                 layout.itemAt(i).widget().deleteLater()
-                self.col_count -= 1
+            self.col_count -= 1
+
 
     def getCols(self):
         column_names = []

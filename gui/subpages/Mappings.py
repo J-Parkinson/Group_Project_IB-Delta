@@ -5,13 +5,14 @@ from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixma
 import os, platform, subprocess
 
 from utils.csv import matrix_to_csv
+from .. import modifyCSV
 
 
 class MapWindow(QWidget):
     def __init__(self, stack, table):
         super().__init__()
         self.setStyleSheet('color: black; background-color: rgb(248, 246, 238)')
-
+        self.parent = None
         self.table = table
         main_layout = QVBoxLayout(self)
         self.setLayout(main_layout)
@@ -60,8 +61,6 @@ class MapWindow(QWidget):
         self.grid.addWidget(title, 0, 0, 1, 3, Qt.AlignCenter)
         self.grid.addWidget(help_text, 1, 0, 1, 3, Qt.AlignTop)
 
-        # todo: add some space at the bottom of the page to be able to see the buttons around the scroll bar
-
         new_map_btn = QPushButton("Add New Mapping")
         new_map_btn.clicked.connect(self.new_map)
 
@@ -70,21 +69,23 @@ class MapWindow(QWidget):
 
         cont_btn = QPushButton("Confirm all Mappings and Save")
         cont_btn.clicked.connect(self.next)
+        padding = QLabel("       ")
 
         self.grid.addWidget(new_map_btn, 2, 0, 1, 1)
         self.grid.addWidget(new_const_btn, 2, 1, 1, 1)
         self.grid.addWidget(cont_btn, 2, 2, 1, 1)
+        self.grid.addWidget(padding,3,0,1,3)
 
     def new_map(self):
         self.total_maps += 1
         new_map = NewMap(self.table)
-        self.grid.addWidget(new_map, (self.total_maps + 2), 0, 1, 3)
+        self.grid.addWidget(new_map, (self.total_maps + 3), 0, 1, 3)
         self.maps_list.append(new_map)
 
     def new_const(self):
         self.total_maps += 1
         const = NewConst(self.table)
-        self.grid.addWidget(const, self.total_maps+2, 0, 1, 3)
+        self.grid.addWidget(const, self.total_maps+3, 0, 1, 3)
         self.const_list.append(const)
 
     def get_attributes(self):
@@ -109,6 +110,9 @@ class MapWindow(QWidget):
                 os.startfile(save_path)
             else:
                 subprocess.call(('xdg-open', save_path))
+
+        self.parent.reset(False)
+
 
 
 class NewMap(QWidget):
