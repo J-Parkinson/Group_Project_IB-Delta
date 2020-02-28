@@ -7,6 +7,7 @@ from numpy import array
 import numpy as np
 from PIL import Image
 from scratchSpaces.jamesScratchSpace.matrix_to_csv import matrix_to_csv
+import pathlib
 # Jacks code to get pdfs/images from frontend
 # Abi's code to convert cells to words ([CellOfWords], numberOfRows, numberOfCols)
 # Francesca [[String]] for James
@@ -14,8 +15,9 @@ from scratchSpaces.jamesScratchSpace.matrix_to_csv import matrix_to_csv
 
 class FilePaths:
     "filenames and paths to data"
-    fnCharList = '../neuralNetwork/model/charList.txt'
-    fnAccuracy = '../neuralNetwork/model/accuracy.txt'
+    path = pathlib.Path(__file__).parent
+    fnCharList = path / '..'/ 'neuralNetwork' / 'model' / 'charList.txt'
+    fnAccuracy = path / '..'/ 'neuralNetwork' / 'model' / 'accuracy.txt'# '../neuralNetwork/model/accuracy.txt'
 
 class Lala:
     lala = [['Argyresthia 09352', '" " "'],
@@ -64,6 +66,7 @@ def createCSVFile(pdfLocation, columnLocations = [], widthOfPreviewImage=1, noPa
                 # Francesca's neuralNetOutput
                 wordsDecoded += inferEverything(model, inputs)
 
+                print("PLS WORK")
                 print(wordsDecoded)
         else:
             normalisedColLocations = list((percentageColLocations * (resultingImage.shape[1])).astype(int))
@@ -98,12 +101,12 @@ def createCSVFile(pdfLocation, columnLocations = [], widthOfPreviewImage=1, noPa
 
             # Francesca's neuralNetOutput
             wordsDecoded += inferEverything(model, inputs)
+            print("LAST PAGE")
+            print(wordsDecoded)
 
-            #print(wordsDecoded)
+            matrix_to_csv(wordsDecoded, "test10.csv")
 
-            #matrix_to_csv(wordsDecoded, "test9.csv")
-
-    matrix_to_csv(wordsDecoded, "test9.csv")
+    matrix_to_csv(wordsDecoded, "test10.csv")
     return
 
 
@@ -145,7 +148,7 @@ def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPrevi
 
                 # Francesca's neuralNetOutput
                 wordsDecoded += inferEverything(model, inputs)
-
+                print("PLS WORK")
                 print(wordsDecoded)
         else:
             '''scaleFactorX = resultingImage.shape[0] / widthOfPreviewImage
@@ -172,30 +175,37 @@ def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPrevi
             print("FIRST CELL")
             print(makeStringFromOneCell(model, listOfCells[6]))
             print(makeStringFromOneCell(model, listOfCells[12]))
+            print(makeStringFromOneCell(model, listOfCells[13]))
+            print(makeStringFromOneCell(model, listOfCells[14]))
+            print(makeStringFromOneCell(model, listOfCells[15]))
+            print(makeStringFromOneCell(model, listOfCells[16]))
             print(makeStringFromOneCell(model, listOfCells[18]))
             print(makeStringFromOneCell(model, listOfCells[24]))
 
             for cellno, cell in enumerate(inputs[0]):
                 for wordno, word in enumerate(cell.words):
                     image = Image.fromarray(word.image)
-                    image.save("segmentedwords/word " + str(word.row) + " - " + str(word.col) + " - " + str(wordno) + ".png")
+                    image.save("segmentedwords/word1 " + str(word.row) + " - " + str(word.col) + " - " + str(wordno) + ".png")
+                    image.show()
 
             # Francesca's neuralNetOutput
-            wordsDecoded += inferEverything(model, inputs)
+            #wordsDecoded += inferEverything(model, inputs)
+            #print("PLS WORK")
+            #print(wordsDecoded)
 
-            # print(wordsDecoded)
-
-            # matrix_to_csv(wordsDecoded, "test9.csv")
+            #matrix_to_csv(wordsDecoded, "test10.csv")
 
     return wordsDecoded
 
 
 
 #createCSVFile("C:\\Users\Jack\Documents\Cambridge University\Year IB\Group_Project_IB-Delta\imagePreprocessing\images\scantest2.pdf", columnLocations=[375, 790, 1690, 2100, 2520], widthOfPreviewImage=3122)
-#createCSVFile('../imagePreprocessing/images/scantest2.pdf', columnLocations=[400, 848, 1805, 2239, 2678])
+#createCSVFile('../imagePreprocessing/images/scantest2.pdf', columnLocations=[375, 790, 1690, 2100, 2520], widthOfPreviewImage=3122)
 
-createTable("C:\\Users\Jack\Documents\Cambridge University\Year IB\Group_Project_IB-Delta\imagePreprocessing\images\scantest2.pdf", columnLocations=[375, 790, 1690, 2100, 2520], widthOfPreviewImage=3122)
-#createTable('../imagePreprocessing/images/scantest2.pdf', columnLocations=[400, 848, 1805, 2239, 2678])
+
+
+#createTable("C:\\Users\Jack\Documents\Cambridge University\Year IB\Group_Project_IB-Delta\imagePreprocessing\images\scantest2.pdf", columnLocations=[375, 790, 1690, 2100, 2520], widthOfPreviewImage=3122)
+#createTable('../imagePreprocessing/images/scantest2.pdf', columnLocations=[375, 790, 1690, 2100, 2520], widthOfPreviewImage=3122)
 
 #matrix_to_csv(Lala.lala, "C:/Users/Francesca/Book1.csv")
 
