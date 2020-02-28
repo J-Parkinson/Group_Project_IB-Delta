@@ -175,6 +175,8 @@ class RulesWindow(QWidget):
 
     def new_rule(self):
         self.rules += 1
+        print(self.rules)
+        print(self.rule_list)
 
         rule = NewRule(self.table)
         self.rule_list.append(rule)
@@ -184,18 +186,27 @@ class RulesWindow(QWidget):
     def next(self):
         print("confirmed, moving to mappings page")
         table_before = self.table
+
+
+
         try:
-            for i in self.rule_list:
-                col_index, new_names, advanced, res_index, splitter, joiner = i.getAttributes()
-                matrix_to_csv.split_col(self.table, col_index, new_names, which_words=advanced,
-                                        resolution_type=matrix_to_csv.ResolutionType(res_index),
-                                        separator=splitter, joiner=joiner)
+            if len(self.rule_list) == 1:
+                self.stack_wid.addWidget(Mappings.MapWindow(self.stack_wid, self.table))
+                self.stack_wid.setCurrentIndex(2)
+            else:
+                for i in self.rule_list:
+
+                    col_index, new_names, advanced, res_index, splitter, joiner = i.getAttributes()
+                    matrix_to_csv.split_col(self.table, col_index, new_names, which_words=advanced,
+                                                    resolution_type=matrix_to_csv.ResolutionType(res_index),
+                                                    separator=splitter, joiner=joiner)
+                self.stack_wid.addWidget(Mappings.MapWindow(self.stack_wid, self.table))
+                self.stack_wid.setCurrentIndex(2)
         except Exception as e:
             self.table = table_before
             warning('Error', 'Failed to apply the rules!', str(e))
             return
-        self.stack_wid.addWidget(Mappings.MapWindow(self.stack_wid, self.table))
-        self.stack_wid.setCurrentIndex(2)
+
 
 
 
@@ -311,6 +322,10 @@ class NewCol(QWidget):
 
     def del_col(self, layout):
         print("delete col")
+        if len(self.col_list) == 1:
+            for i in reversed(range(self.grid_layout.count())):
+                self.grid_layout.itemAt(i).widget().deleteLater()
+
         for i in reversed(range(layout.count())):
             layout.itemAt(i).widget().deleteLater()
 

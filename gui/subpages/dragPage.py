@@ -9,6 +9,7 @@ import time
 
 from utils.structures import logbookScan as Scan, states
 from utils.spelling.spell_check import correct_table
+from imagePreprocessing import backendnew
 
 
 # Todo: remove this later
@@ -28,6 +29,7 @@ class preview(QWidget):
         OnH = 2
         ClickedV = 3
         ClickedH = 4
+        ClickedHUp = 5
 
     def __init__(self, parent):
         super().__init__()
@@ -126,7 +128,7 @@ class preview(QWidget):
             QApplication.setOverrideCursor(Qt.ArrowCursor)
         elif self.state == self.State.OnV:
             QApplication.setOverrideCursor(Qt.SplitVCursor)
-        elif self.state == self.State.OnH:
+        elif self.state == self.State.OnH or self.state == self.State.ClickedHUp:
             QApplication.setOverrideCursor(Qt.SplitHCursor)
         else:
             QApplication.setOverrideCursor(Qt.ClosedHandCursor)
@@ -307,7 +309,21 @@ class control(QWidget):
         # Todo: The argument they need should be self.page
         # Todo: About the correction dictionary, it needs more tweaks, which I will do later
         # Todo: Just try whether the back end connection works or not now
-        # table = someBackEndCall(self.page)
+        columnLocations = []
+
+        for c in self.page.columnList:
+            columnLocations.append(c.tlCoord[0])
+        columnLocations.append(self.page.columnList[-1].brCoord[0])
+
+        rowLocations = [self.page.columnList[0].tlCoord[1],self.page.columnList[0].brCoord[1]]
+
+
+        table = backendnew.createTable(self.parent.filename,
+                                       columnLocations,
+                                       rowLocations,
+                                       self.parent.imgWidth,
+                                       self.parent.imgHeight,
+                                       self.parent.noPages)
         # correct_table(table, column_dicts)
         # transfer table to saveCSV
 

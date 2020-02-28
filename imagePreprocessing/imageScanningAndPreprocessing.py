@@ -512,7 +512,7 @@ def handleColumnGUI(source, noPages):#, progressBar=None):
         progressBar.update("Load images")'''
 
     imagesToMerge = []
-    allImages = ReadPDF(source, dpi=400, first_page=1, last_page=noPages)
+    allImages = ReadPDF(source, dpi=100, first_page=1, last_page=noPages)
     for page in allImages:
         imagesToMerge.append(array(page))
 

@@ -48,21 +48,18 @@ def first_char_to_upper(word):
 
 def correct_words(s, dictionary):
     corrected = ''
-    words = s.lower().split()
+    words = s.split()
     for word in words:
         if '"' not in word:
             upper = first_char_is_upper(word)
-            guess = best_guess(word, dictionary)
+            guess = best_guess(word.lower(), dictionary)
             if guess is not None:
                 if upper:
                     corrected += first_char_to_upper(guess) + ' '
                 else:
                     corrected += guess + ' '
             else:
-                if upper:
-                    corrected += first_char_to_upper(word) + ' '
-                else:
-                    corrected += word + ' '
+                corrected += word + ' '
         else:
             return None
     return corrected[0:len(corrected) - 1]

@@ -74,5 +74,14 @@ class TestSpellCheck(TestCase):
         self.assertEqual(test, [['Field'],
                                  ['euclidia glyphica'],
                                  ['" "']])
+    def test_correct_words_keeps_capitals(self):
+        # Assume
+        test = 'Evclidie gliphic'
+
+        # Action
+        corrected = spell_check.correct_words(test, self.test_full_dict)
+
+        # Assert
+        self.assertEqual(corrected, 'Euclidia glyphica')
 
 
