@@ -110,14 +110,14 @@ class RulesWindow(QWidget):
     def initUI(self):
 
         title = QLabel("Create Rules to Split Columns")
-
+        help_text = QLabel()
         try:
             path = pathlib.Path(__file__).parent
             with open(path / 'resources' / 'Splitting_rules.txt', mode='r') as reader:
                 desc = ''
                 for line in reader:
                     desc += reader.readline()
-                help_text = QLabel(desc)
+                help_text.setText(desc)
         except IOError:
             print('Failed to find file')
 
