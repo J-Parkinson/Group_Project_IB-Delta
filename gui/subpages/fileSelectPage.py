@@ -1,7 +1,9 @@
 from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QPainter, QColor
 from PyQt5.QtWidgets import QLabel, QWidget, QVBoxLayout, QStackedWidget, QHBoxLayout, QPushButton, QApplication, \
     QStyle, QInputDialog, QFileDialog, QMessageBox
 
+import imagePreprocessing.imageScanningAndPreprocessing as ImageProcess
 from utils.structures import states
 
 
@@ -29,6 +31,12 @@ class dnd_widget(QLabel):
         self.parent.parent.filename = filename[8:]
         print(filename[8:])
 
+    def paintEvent(self, e):
+        qp = QPainter()
+        qp.begin(self)
+        qp.setBrush(QColor(150, 150, 150))
+
+        qp.drawRect(0,0,650,250)
 
 class file_select(QWidget):
 
@@ -53,7 +61,7 @@ class file_select(QWidget):
         #################################################
         drag_n_drop = dnd_widget(self)
         drag_n_drop.setFixedSize(650, 250)
-        drag_n_drop.setStyleSheet('background-color:grey')
+        #drag_n_drop.setStyleSheet('background-color:grey')
 
         d_n_p = QStackedWidget()
         d_n_p.addWidget(drag_n_drop)
@@ -138,7 +146,10 @@ class file_select(QWidget):
 
         # progressBar = ProgressBar(noPages * 2 + 2)
         # columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
-        # print(columnImage)
+        #         # print(columnImage)
+
+        columnImage, width, height = ImageProcess.handleColumnGUI(self.parent.filename, noPages)  # , progressBar)
+        Image.frombytes("RGB", (width, height), columnImage.read()).show()
         self.state = states.uploadState.Running
         self.parent.parent.state = 1  # Loading
         self.parent.setCurrentIndex(1)

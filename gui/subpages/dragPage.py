@@ -8,6 +8,7 @@ from PyQt5.QtCore import Qt, QSize
 import time
 
 from utils.structures import logbookScan as Scan, states
+from utils.spelling.spell_check import correct_table
 
 
 # Todo: remove this later
@@ -27,6 +28,7 @@ class preview(QWidget):
         OnH = 2
         ClickedV = 3
         ClickedH = 4
+        ClickedHUp = 5
 
     def __init__(self, parent):
         super().__init__()
@@ -125,7 +127,7 @@ class preview(QWidget):
             QApplication.setOverrideCursor(Qt.ArrowCursor)
         elif self.state == self.State.OnV:
             QApplication.setOverrideCursor(Qt.SplitVCursor)
-        elif self.state == self.State.OnH:
+        elif self.state == self.State.OnH or self.state == self.State.ClickedHUp:
             QApplication.setOverrideCursor(Qt.SplitHCursor)
         else:
             QApplication.setOverrideCursor(Qt.ClosedHandCursor)
@@ -183,15 +185,15 @@ class control(QWidget):
         lines.title.textChanged.connect(self.update_text)
         layout.addWidget(lines.title, 2, 1, 1, 2)
 
-        layout.addWidget(QLabel("Spelling correction dictionary:"),3,0)
+        layout.addWidget(QLabel("Spelling correction dictionary:"), 3, 0)
 
         lines.dic_path = QLineEdit()
         lines.dic_path.setReadOnly(1)
 
         lines.dic_button = QPushButton("Add dictionary")
         lines.dic_button.clicked.connect(self.open_file_window)
-        layout.addWidget(lines.dic_path,4,0,1,2)
-        layout.addWidget(lines.dic_button,4,2)
+        layout.addWidget(lines.dic_path, 4, 0, 1, 2)
+        layout.addWidget(lines.dic_button, 4, 2)
 
         lines.setLayout(layout)
         return lines
@@ -200,8 +202,8 @@ class control(QWidget):
         fileName, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "",
                                                   "PDF (*.pdf)", "")
         if fileName:
-            print(fileName)
             self.edit.dic_path.setText(fileName)
+            self.page.columnList[self.columns.currentRow()].dictionary = fileName
 
     def show_coords(self):
         row = self.columns.currentRow()
@@ -214,6 +216,10 @@ class control(QWidget):
             if c.fieldName == "":
                 c.fieldName = self.columns.currentItem().text()
             self.edit.title.setText(c.fieldName)
+            if c.dictionary is not None:
+                self.edit.dic_path.setText(c.dictionary)
+            else:
+                self.edit.dic_path.setText("")
 
     def update_tlx_coords(self, i):
         row = self.columns.currentRow()
@@ -290,7 +296,6 @@ class control(QWidget):
         return
 
     def confirm(self):
-        # todo: switch to sate 3 in upload page to make stack have the save page
         upload = self.parent.parent
 
         if upload.warning("Confirming the changes?", "WARNING:",
@@ -298,6 +303,14 @@ class control(QWidget):
                           "Click 'yes' to continue. ",
                           1) == QMessageBox.No:
             return
+        # Todo for James
+        # Todo: Connect to the backend here.
+        # Todo: The argument they need should be self.page
+        # Todo: About the correction dictionary, it needs more tweaks, which I will do later
+        # Todo: Just try whether the back end connection works or not now
+        table = createTable(pdfLocation, columnLocations=[], widthOfPreviewImage=1, noPageSpread=1)
+        # correct_table(table, column_dicts)
+        # transfer table to saveCSV
 
         upload.state = states.uploadState.Saving
         upload.setCurrentIndex(2)

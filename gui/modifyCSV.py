@@ -259,8 +259,7 @@ class NewRule(QWidget):
         if '' in advanced:
             for option in advanced:
                 if option != '':
-                    # TODO: this is an ERROR, please create an error pop-up to alert user to fix
-                    ()
+                    raise Exception('Advanced parameters are required for all columns if used')
             advanced = None
 
         # res

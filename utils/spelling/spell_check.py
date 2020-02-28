@@ -36,14 +36,28 @@ def get_dictionary(path):
     return dictionary
 
 
+def first_char_is_upper(word):
+    first_char = ord(word[0])
+    return 65 <= first_char <= 90
+
+
+def first_char_to_upper(word):
+    new_word = chr(ord(word[0]) - 32) + word[1:]
+    return new_word
+
+
 def correct_words(s, dictionary):
     corrected = ''
-    words = s.lower().split()
+    words = s.split()
     for word in words:
         if '"' not in word:
-            guess = best_guess(word, dictionary)
+            upper = first_char_is_upper(word)
+            guess = best_guess(word.lower(), dictionary)
             if guess is not None:
-                corrected += guess + ' '
+                if upper:
+                    corrected += first_char_to_upper(guess) + ' '
+                else:
+                    corrected += guess + ' '
             else:
                 corrected += word + ' '
         else:

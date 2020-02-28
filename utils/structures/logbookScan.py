@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class ColumnContents(Enum):
     UPPER = "Upper"
     LOWER = "Lower"
@@ -7,14 +8,16 @@ class ColumnContents(Enum):
     DIGIT = "Digit"
     DITTO = "Ditto"
 
+
 class Column:
 
     def __init__(self, tl, br, pageNo, fieldName):
         self.tlCoord = tl
         self.brCoord = br
         self.pageNo = 0
-        #self.contents = {"Upper": True, "Lower": True, "Symbol": True, "Digit": True, "Ditto": True}
+        # self.contents = {"Upper": True, "Lower": True, "Symbol": True, "Digit": True, "Ditto": True}
         self.fieldName = fieldName
+        self.dictionary = None
 
     '''def getContents(self, contentValue):
         return self.contents[contentValue.value]
@@ -59,6 +62,7 @@ class Word:
         self.row = row
         self.col = col
 
+
 class CellOfWords:
 
     def __init__(self, words, row=None, col=None):
@@ -71,5 +75,3 @@ class CellOfWords:
         self.words = words
         self.row = row
         self.col = col
-
-
