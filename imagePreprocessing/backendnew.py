@@ -119,6 +119,7 @@ def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPrevi
 
     buffer = []
     wordsDecoded = []
+    print("yes")
 
     for x, page in enumerate(allImages):
         image = array(page)
@@ -127,6 +128,9 @@ def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPrevi
             buffer.append(image)
             if (len(buffer) == noPageSpread):
                 resultingImage = codeToMergeImages(buffer)
+                scaleFactorX = resultingImage.shape[0] / widthOfPreviewImage
+                scaleFactorY = resultingImage.shape[1] / heightOfPreviewImage
+                resultingImage = resultingImage[(columnLocations[0] * scaleFactorX):(columnLocations[-1] * scaleFactorX), (rowLocations[0] * scaleFactorY):(rowLocations[1] * scaleFactorY)]
                 buffer = []
 
                 normalisedColLocations = list((percentageColLocations * (resultingImage.shape[1])).astype(int))
@@ -144,14 +148,18 @@ def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPrevi
 
                 print(wordsDecoded)
         else:
+            '''scaleFactorX = resultingImage.shape[0] / widthOfPreviewImage
+            scaleFactorY = resultingImage.shape[1] / heightOfPreviewImage
+            resultingImage = resultingImage[(columnLocations[0] * scaleFactorX):(columnLocations[-1] * scaleFactorX),
+                             (rowLocations[0] * scaleFactorY):(rowLocations[1] * scaleFactorY)]'''
             normalisedColLocations = list((percentageColLocations * (resultingImage.shape[1])).astype(int))
             print(columnLocations, normalisedColLocations)
             # Jack's code to find rows, split
             cellOfWordsList = splitCellsAndNormaliseFromArray(resultingImage, colLocs=normalisedColLocations)
 
-            '''for x, word in enumerate(cellOfWordsList):
+            for x, word in enumerate(cellOfWordsList):
                 image = Image.fromarray(word.words[0].image)
-                image.save("segmentedcells/cell" + str(x) + ".png")'''
+                image.save("segmentedcells/cell" + str(x) + ".png")
 
             print("Cell of Words List:", printListOfCellOfWords(cellOfWordsList))
 
@@ -167,10 +175,10 @@ def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPrevi
             print(makeStringFromOneCell(model, listOfCells[18]))
             print(makeStringFromOneCell(model, listOfCells[24]))
 
-            '''for cellno, cell in enumerate(inputs[0]):
+            for cellno, cell in enumerate(inputs[0]):
                 for wordno, word in enumerate(cell.words):
                     image = Image.fromarray(word.image)
-                    image.save("segmentedwords/word " + str(word.row) + " - " + str(word.col) + " - " + str(wordno) + ".png")'''
+                    image.save("segmentedwords/word " + str(word.row) + " - " + str(word.col) + " - " + str(wordno) + ".png")
 
             # Francesca's neuralNetOutput
             wordsDecoded += inferEverything(model, inputs)
@@ -184,7 +192,10 @@ def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPrevi
 
 
 #createCSVFile("C:\\Users\Jack\Documents\Cambridge University\Year IB\Group_Project_IB-Delta\imagePreprocessing\images\scantest2.pdf", columnLocations=[375, 790, 1690, 2100, 2520], widthOfPreviewImage=3122)
-createCSVFile('../imagePreprocessing/images/scantest2.pdf', columnLocations=[400, 848, 1805, 2239, 2678])
+#createCSVFile('../imagePreprocessing/images/scantest2.pdf', columnLocations=[400, 848, 1805, 2239, 2678])
+
+createTable("C:\\Users\Jack\Documents\Cambridge University\Year IB\Group_Project_IB-Delta\imagePreprocessing\images\scantest2.pdf", columnLocations=[375, 790, 1690, 2100, 2520], widthOfPreviewImage=3122)
+#createTable('../imagePreprocessing/images/scantest2.pdf', columnLocations=[400, 848, 1805, 2239, 2678])
 
 #matrix_to_csv(Lala.lala, "C:/Users/Francesca/Book1.csv")
 
