@@ -307,7 +307,7 @@ class control(QWidget):
         # Todo: The argument they need should be self.page
         # Todo: About the correction dictionary, it needs more tweaks, which I will do later
         # Todo: Just try whether the back end connection works or not now
-        # table = someBackEndCall(self.page)
+        table = createTable(pdfLocation, columnLocations=[], widthOfPreviewImage=1, noPageSpread=1)
         # correct_table(table, column_dicts)
         # transfer table to saveCSV
 
