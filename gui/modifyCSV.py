@@ -116,7 +116,7 @@ class RulesWindow(QWidget):
             with open(path / 'resources' / 'Splitting_rules.txt', mode='r') as reader:
                 desc = ''
                 for line in reader:
-                    desc += reader.readline()
+                    desc += line
                 help_text.setText(desc)
         except IOError:
             print('Failed to find file')
