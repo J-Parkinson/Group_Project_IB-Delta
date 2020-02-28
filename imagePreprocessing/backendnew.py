@@ -107,7 +107,8 @@ def createCSVFile(pdfLocation, columnLocations = [], widthOfPreviewImage=1, noPa
     return
 
 
-def createTable(pdfLocation, columnLocations=[], widthOfPreviewImage=1, noPageSpread=1):
+def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPreviewImage=1,
+                heightOfPreviewImage =1, noPageSpread=1):
     print(open(FilePaths.fnAccuracy).read())
     model = Model(open(FilePaths.fnCharList).read(), DecoderType.BestPath, mustRestore=True,
                   dump=None)  # change dump to
