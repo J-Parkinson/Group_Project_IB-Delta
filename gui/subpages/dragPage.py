@@ -9,9 +9,10 @@ import time
 
 from utils.structures import logbookScan as Scan, states
 from utils.spelling.spell_check import correct_table
+from imagePreprocessing import backendnew
 
 
-# Todo: remove this later
+# Todo: remove this later... maybe not?
 def newTest():
     page = Scan.PageLayout(1)
     page.addColumn(Scan.Column((0, 0), (50, 200), 1, ""))
@@ -28,7 +29,11 @@ class preview(QWidget):
         OnH = 2
         ClickedV = 3
         ClickedH = 4
-        ClickedHUp = 5
+        OnVUp = 5
+        ClickedVUp = 6
+        OnLeftMost = 7
+        ClickedLeftMost = 8
+
 
     def __init__(self, parent):
         super().__init__()
@@ -78,6 +83,10 @@ class preview(QWidget):
             self.state = self.State.ClickedH
         elif self.state == self.State.OnV:
             self.state = self.State.ClickedV
+        elif self.state == self.State.OnVUp:
+            self.state = self.State.ClickedVUp
+        elif self.state == self.State.OnLeftMost:
+            self.state = self.State.ClickedLeftMost
         self.update_cursor()
 
     def mouseMoveEvent(self, e):
@@ -86,9 +95,18 @@ class preview(QWidget):
 
         # Todo: some bad behaviors here, fix it !!!!!!
 
+        if self.state == self.State.ClickedLeftMost:
+            self.control.columns.setCurrentRow(self.onColumn)
+            self.control.edit.tlx.setValue(x)
+            return
+
         if self.state == self.State.ClickedH:
             self.control.columns.setCurrentRow(self.onColumn)
             self.control.edit.brx.setValue(x)
+            return
+
+        if self.state == self.State.ClickedVUp:
+            self.control.edit.tly.setValue(y)
             return
 
         if self.state == self.State.ClickedV:
@@ -107,11 +125,24 @@ class preview(QWidget):
                         return
                     else:
                         i += 1
+                if abs(x - self.page.columnList[0].tlCoord[0]) < 10:
+                    self.state = self.State.OnLeftMost
+                    self.update_cursor()
+                    self.onColumn = 0
+                    return
 
-            # Row Dragging test
-            x1, y1 = self.page.columnList[len(self.page.columnList) - 1].brCoord
+            # Lower Row Dragging test
+            x1, y1 = self.page.columnList[-1].brCoord
             if x < x1 and abs(y - self.offset - y1) < 5:
                 self.state = self.State.OnV
+                self.update_cursor()
+                return
+
+            # Upper Row Dragging test
+            x1 = self.page.columnList[-1].brCoord[0]
+            y1 = self.page.columnList[-1].tlCoord[1]
+            if x < x1 and abs(y - self.offset - y1) < 5:
+                self.state = self.State.OnVUp
                 self.update_cursor()
                 return
 
@@ -125,9 +156,9 @@ class preview(QWidget):
     def update_cursor(self):
         if self.state == self.State.Normal:
             QApplication.setOverrideCursor(Qt.ArrowCursor)
-        elif self.state == self.State.OnV:
+        elif self.state == self.State.OnV or self.state == self.State.OnVUp:
             QApplication.setOverrideCursor(Qt.SplitVCursor)
-        elif self.state == self.State.OnH or self.state == self.State.ClickedHUp:
+        elif self.state == self.State.OnH or self.state == self.State.OnLeftMost:
             QApplication.setOverrideCursor(Qt.SplitHCursor)
         else:
             QApplication.setOverrideCursor(Qt.ClosedHandCursor)
@@ -308,10 +339,28 @@ class control(QWidget):
         # Todo: The argument they need should be self.page
         # Todo: About the correction dictionary, it needs more tweaks, which I will do later
         # Todo: Just try whether the back end connection works or not now
-        table = createTable(pdfLocation, columnLocations=[], widthOfPreviewImage=1, noPageSpread=1)
-        # correct_table(table, column_dicts)
+        columnLocations = []
+        for c in self.page.columnList:
+            columnLocations.append(c.tlCoord[0])
+        columnLocations.append(self.page.columnList[-1].brCoord[0])
+
+        rowLocations = [self.page.columnList[0].tlCoord[1],self.page.columnList[0].brCoord[1]]
+
+        column_dicts = {}
+        for i, c in enumerate(self.page.columnList):
+            if c.dictionary is not None:
+                column_dicts[i] = c.dictionary
+
+        table = backendnew.createTable(self.parent.filename,
+                                       columnLocations,
+                                       rowLocations,
+                                       self.parent.imgWidth,
+                                       self.parent.imgHeight,
+                                       self.parent.noPages)
+        correct_table(table, column_dicts)
         # transfer table to saveCSV
 
+        upload.save_page.table = table
         upload.state = states.uploadState.Saving
         upload.setCurrentIndex(2)
 

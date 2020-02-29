@@ -5,6 +5,7 @@ import sys
 import numpy as np
 import tensorflow as tf
 import os
+import pathlib
 
 
 class DecoderType:
@@ -137,8 +138,10 @@ class Model:
 		sess=tf.Session() # TF session
 
 		saver = tf.train.Saver(max_to_keep=1) # saver saves model to file
+		path = pathlib.Path(__file__).parent
+		modelDir = str(path / '..' / 'model')
 		#modelDir = '../model/'
-		modelDir = '../neuralNetwork/model/'
+		#modelDir = '../neuralNetwork/model/'
 		latestSnapshot = tf.train.latest_checkpoint(modelDir) # is there a saved model?
 
 		# if model must be restored (for inference), there must be a snapshot

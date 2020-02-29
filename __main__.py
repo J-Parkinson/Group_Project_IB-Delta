@@ -166,6 +166,7 @@ class Window(QWidget):
                 buttons[1].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
                 self.state = State.Normal
 
+
         buttons[1].setText("Convert CSV to Standard Format")
         buttons[1].clicked.connect(data_signal)
 

@@ -166,7 +166,6 @@ def splitCellsAndNormalise(source):
 def splitCellsAndNormaliseFromArray(image, colLocs=None):
     # load the image and compute the ratio of the old height
     # to the new height, clone it, and resize it
-    #TODO : ADD CODE FOR PER PAGE SPREAD
 
     '''Step 1 - load image'''
     image = resize(image)

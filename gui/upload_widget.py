@@ -64,6 +64,10 @@ class upload_page(QStackedWidget):
         self.filename = ""
         self.state = states.uploadState.Unloaded
         self.setStyleSheet('color: black')
+        self.previewImg = None
+        self.imgHeight = None
+        self.imgWidth = None
+        self.noPages = 0
 
         self.file_select_page = fileSelectPage.file_select(self)
         self.drag = dragPage.drag_page(self)
