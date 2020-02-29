@@ -12,21 +12,21 @@ def cellsToWords(cells, width):
         maxCol = max(col, maxCol)
         newCells.append(newp)
 
-    return newCells, maxRow+1, maxCol+1
+    return newCells, maxRow, maxCol
 
 def cellToWords(cellOfWords, width): # takes one CellOfWords
     newWords = []
     cell = cellOfWords.words[0].image
     row = cellOfWords.row
     col = cellOfWords.col
-
     rows = cellToRows(stripCell(cell), width) # LIST OF NP ARRAYS
     for rowArr in rows: # NP ARRAY
         words = rowToWords(rowArr, width)
         for word in words:
             if word.shape[0]>0 and word.shape[1]>0:
                 newWord = removeWhiteSpaceFromWord(word)
-                newWords.append(newWord)
+                if  (newWord.shape[1]*3> newWord.shape[0]) and  (newWord.shape[0]>6 and newWord.shape[1]>6):
+                    newWords.append(newWord)
 
     newWordList = []
     for x in newWords:
@@ -34,18 +34,10 @@ def cellToWords(cellOfWords, width): # takes one CellOfWords
     return CellOfWords(newWordList, row, col), row, col
 
 
-def stripCell(image):
-    toRemove = [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
-    newImage = image
-    if newImage.shape[0] > 8:
-        newImage = np.delete(newImage, toRemove, 0)
-    if newImage.shape[1] > 8:
-        newImage = np.delete(newImage, toRemove, 1)
-    return newImage
 
 def rowToWords(row, width):
     colVals = np.sum(row, axis=0)
-    arrayToUse = np.ones(int(width // 75))
+    arrayToUse = np.ones(int(width // 100))
     valCols = ndimage.convolve1d(colVals, arrayToUse, mode="nearest")
     maxValRow = np.amax(valCols)
     wordsHere = np.argwhere(valCols >= maxValRow).flatten()
@@ -54,10 +46,19 @@ def rowToWords(row, width):
     return cols
 
 
+def stripCell(image):
+    toRemove = [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
+    newImage = image
+    if newImage.shape[0] > 8:
+        newImage = np.delete(newImage, toRemove[4::11], 0)
+    if newImage.shape[1] > 4:
+        newImage = np.delete(newImage, toRemove, 1)
+    return newImage
+
 
 def cellToRows(cell, width):
     rowVals = np.sum(cell, axis=1)
-    arrayToUse = np.ones(int(width // 75))
+    arrayToUse = np.ones(4)
     valRows = ndimage.convolve1d(rowVals, arrayToUse, mode="nearest")
     maxValRow = np.amax(valRows)
     wordsHere = np.argwhere(valRows>=maxValRow*0.97).flatten()
