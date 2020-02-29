@@ -1,3 +1,6 @@
+# ----------------------------------------------------------------------------------------------------------------
+#   Computes all possible words formed by deleting a character from the given word
+
 def get_deletions(word):
     result = []
     for i, c in enumerate(word):
@@ -5,6 +8,8 @@ def get_deletions(word):
             result.append((word[0:i] + word[i + 1:len(word)], 'del'))
     return result
 
+# ----------------------------------------------------------------------------------------------------------------
+#   Computes all possible words formed by substituting a character from the given word
 
 def get_substitutions(word):
     result = []
@@ -14,6 +19,8 @@ def get_substitutions(word):
                 result.append((word[0:i] + chr(j + 97) + word[i + 1:len(word)], 'sub'))
     return result
 
+# ----------------------------------------------------------------------------------------------------------------
+#   Computes all possible words formed by inserting a new character into the given word
 
 def get_insertions(word):
     result = []
@@ -22,10 +29,14 @@ def get_insertions(word):
             result.append((word[0:i] + chr(j + 97) + word[i:len(word)], 'ins'))
     return result
 
+# ----------------------------------------------------------------------------------------------------------------
+#   returns all words at a Levenshtein distance of 1 from the given word
 
 def one_different(word):
     return get_deletions(word) + get_substitutions(word) + get_insertions(word)
 
+# ----------------------------------------------------------------------------------------------------------------
+#   reads in a dictionary of words from the given file path and stores them in a hashset
 
 def get_dictionary(path):
     dictionary = set()
@@ -35,16 +46,23 @@ def get_dictionary(path):
             dictionary.add(word)
     return dictionary
 
+# ----------------------------------------------------------------------------------------------------------------
+#   checks whether the first character of a word is upper case
 
 def first_char_is_upper(word):
     first_char = ord(word[0])
     return 65 <= first_char <= 90
 
+# ----------------------------------------------------------------------------------------------------------------
+#   converts the first character of a word to upper case
 
 def first_char_to_upper(word):
     new_word = chr(ord(word[0]) - 32) + word[1:]
     return new_word
 
+# ----------------------------------------------------------------------------------------------------------------
+#   Splits a string into multiple words and tries to correct each word using the dictionary, preserving
+#   capitalisation of the first letter of the word
 
 def correct_words(s, dictionary):
     corrected = ''
@@ -64,6 +82,8 @@ def correct_words(s, dictionary):
             return None
     return corrected[0:len(corrected) - 1]
 
+# ----------------------------------------------------------------------------------------------------------------
+#   Attempts to match a given word to a closest match in the given dictionary
 
 def best_guess(word, dictionary):
     if word in dictionary:
@@ -95,6 +115,8 @@ def best_guess(word, dictionary):
     print('failed')
     return None
 
+# ----------------------------------------------------------------------------------------------------------------
+#   selects which of the given corrections is best (favouring substitutions)
 
 def pick_guess(guesses):
     best_tags = None
@@ -106,6 +128,8 @@ def pick_guess(guesses):
 
     return best_word
 
+# ----------------------------------------------------------------------------------------------------------------
+#   A comparator to prioritise substitutions over insertions and deletions
 
 def is_better(tags1, tags2):
     return tags1.count('sub') > tags2.count('sub')

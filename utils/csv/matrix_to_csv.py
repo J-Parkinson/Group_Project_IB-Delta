@@ -30,13 +30,22 @@ STANDARD_HEADER = [['', '', '', 'Summary Data', '', '', '', 'Taxonomy', '', '', 
                     'LocCurrentLocationRef.LocLevel2', 'LocCurrentLocationRef.LocLevel3',
                     'LocCurrentLocationRef.LocLevel4', 'LocMovementNotes', 'NotNotes']]
 
-
+# -----------------------------------------------------------------------------------------------------------------
+#   Enum used to specify how to cope with collisions of word indices in the split_col method:
+#   no_clash   - will give an error if there are any such collisions
+#   just_first - will only add the word to the first column that references it
+#   just last  - will only add the word to the last column that references it
+#   all        - will add the word to all columns that reference it
 class ResolutionType(Enum):
     no_clash = 1
     just_first = 2
     just_last = 3
     all = 4
 
+
+# ---------------------------------------------------------------------------------------------------------------
+#   This serves as a helper method to split_col
+#   It changes the indices column based on the given word and column indices, as well as the resolution type
 
 def add_to_indices(word_index, col_index, indices, resolution_type, num_words):
     if word_index >= num_words or word_index < 0:
@@ -127,12 +136,16 @@ def split_col(table, field_index, new_cols, which_words=None, separator=' ', res
             row += new_cols
 
 
+# ----------------------------------------------------------------------------------------------------------------
+#   Saves the table in its current format as a csv in the specified path
+
 def matrix_to_csv(table, path):
     with open(path, mode='w') as outfile:
         out = csv.writer(outfile, delimiter=',', quotechar="'", quoting=csv.QUOTE_ALL)
         out.writerows(table)
 
-
+# ----------------------------------------------------------------------------------------------------------------
+#   Applies the mappings given by the user to create a new table in the standard format
 def matrix_to_standard(table, field_map, field_consts, header=STANDARD_HEADER):
     # the field map will map the standard field headers to table's field headers
     result = [["" for _ in range(len(header[0]))] for _ in range(len(table) - 1)]
@@ -167,7 +180,8 @@ def matrix_to_standard_csv(table, path, field_map, field_consts={}, header=STAND
         out.writerows(STANDARD_HEADER)
         out.writerows(matrix_to_standard(table, field_map, field_consts, header))
 
-
+# ----------------------------------------------------------------------------------------------------------------
+#   Simply reads in the csv at the given file path
 def read_csv(path):
     with open(path, mode='r') as infile:
         reader = csv.reader(infile, delimiter=',')

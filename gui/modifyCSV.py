@@ -159,6 +159,7 @@ class RulesWindow(QWidget):
 
         title = QLabel("Create Rules to Split Columns")
         help_text = QLabel()
+        help_text.setFont(QFont('Courier', 12))
         try:
             path = pathlib.Path(__file__).parent
             with open(path / 'resources' / 'Splitting_rules.txt', mode='r') as reader:

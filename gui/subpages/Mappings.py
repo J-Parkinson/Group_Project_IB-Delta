@@ -1,3 +1,5 @@
+import pathlib
+
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGridLayout, QLabel, QSizePolicy, \
     QStackedWidget, QBoxLayout, QHBoxLayout, QFileDialog, QCheckBox, QComboBox, QLineEdit, QScrollArea
 from PyQt5.QtCore import Qt
@@ -44,22 +46,17 @@ class MapWindow(QWidget):
     def initUI(self):
         title = QLabel("Create Mappings to Split Columns")
 
-        help_text = QLabel("This page allows you to map existing columns from the notebook and splitting into columns "
-                           "in your standard CSV format.\n\n"
-                           "Each column in the standard format can be mapped to either a constant text value, or 1 or "
-                           "more existing columns.\n"
-                           "When joining multiple existing columns, they are joined in the order they are selected "
-                           "in.\n"
-                           "Unmapped columns are left blank in the output CSV.\n\n"
-                           "A joiner can also be specified, which is used to join together multiple existing columns "
-                           "into a single column in the standard CSV format.\n\n"
-                           "Usage example:\n\n"
-                           "Standard column:        From column:		Joiner:\n"
-                           "Scientific Name         Genus                   (default)\n"
-                           "                            From column:\n"
-                           "                            Species\n\n"
-                           "This will map the text from the columns ‘Genus’ and ‘Species’ in the existing table to the"
-                           " ‘Scientific Name’ column in the standard format, joining them with a space.")
+        help_text = QLabel()
+        help_text.setFont(QFont('Courier', 12))
+        try:
+            path = pathlib.Path(__file__).parent
+            with open(path / '..' / 'resources' / 'Mappings.txt', mode='r') as reader:
+                desc = ''
+                for line in reader:
+                    desc += line
+                help_text.setText(desc)
+        except IOError:
+            print('Failed to find file')
 
         self.grid.addWidget(title, 0, 0, 1, 3, Qt.AlignCenter)
         self.grid.addWidget(help_text, 1, 0, 1, 3, Qt.AlignTop)
