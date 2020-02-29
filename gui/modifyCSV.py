@@ -10,11 +10,6 @@ from utils.csv import matrix_to_csv
 from gui.subpages import Mappings
 
 
-# TODO: make page for uploading CSV pretty
-# done: pg1 for adding rules
-# TODO: pg2 for creating mappings
-# TODO: remove all random print statements when done
-
 def warning(title, text, description, two_buttons):
     msg = QMessageBox()
     msg.setIcon(QMessageBox.Warning)
@@ -28,6 +23,11 @@ def warning(title, text, description, two_buttons):
 
     return msg.exec_()
 
+
+# ----------------------------------------------------------------------------------------------------------------
+# Class for the widget containing everything for the modifying CSV structure feature. Uses a stacked widget to move
+# between pages and has a Start Again button to allow user to restart the process.
+
 class ModifyMainWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -40,28 +40,34 @@ class ModifyMainWindow(QWidget):
         self.main.setCurrentIndex(0)
 
         reset_btn = QPushButton("Start Again")
-        reset_btn.clicked.connect(lambda : self.reset(True))
-        self.layout.addWidget(reset_btn, 0,0)
-        self.layout.addWidget(self.main, 1,0)
+        reset_btn.clicked.connect(lambda: self.reset(True))
+        self.layout.addWidget(reset_btn, 0, 0)
+        self.layout.addWidget(self.main, 1, 0)
         self.setLayout(self.layout)
 
+    # ----------------------------------------------------------------------------------------------------------------
+    # interrupt: boolean, true if pressing the Start Again button during the process of filling in the mappings, gives
+    # the user a pop-up warning that their progress will not be saved and then returns to the upload CSV page; false
+    # when the resulting CSV has been saved so no warning is given and user is returned to the upload CSV page again
     def reset(self, interrupt):
         if interrupt:
             if warning("Leave Now?", "WARNING:",
-                            "Are you sure you want to leave this page?\n"
-                            "Your progress will not be saved.\n\n"
-                            "Click 'yes' to continue. ",
-                            1) == QMessageBox.No:
+                       "Are you sure you want to leave this page?\n"
+                       "Your progress will not be saved.\n\n"
+                       "Click 'yes' to continue. ",
+                       1) == QMessageBox.No:
                 return
         self.layout.removeWidget(self.main)
         self.main.deleteLater()
         new_main = QStackedWidget()
         new_main.addWidget(UploadCSV(new_main))  # index 0
         new_main.setCurrentIndex(0)
-        self.layout.addWidget(new_main,1,0)
+        self.layout.addWidget(new_main, 1, 0)
         self.main = new_main
 
 
+# ----------------------------------------------------------------------------------------------------------------
+# Class for the widget to upload a CSV file, contains a pointer to the ModifyMainWindow object (parent) that created it
 class UploadCSV(QWidget):
     def __init__(self, stack):
         super().__init__()
@@ -88,13 +94,20 @@ class UploadCSV(QWidget):
 
         self.setLayout(layout)
 
+    # ----------------------------------------------------------------------------------------------------------------
+    # Function to provide pop-up window for user to choose a CSV file which is then converted to a matrix representation
+    # and stored as internal state 'self.table'
+
     def open_file_window(self):
-        # noinspection PyCallByClass
 
         file_name, _ = QFileDialog.getOpenFileName(self, "Choose a file to open", "", "CSV (*.csv)", "")
         if file_name:
             self.table = matrix_to_csv.read_csv(file_name)
 
+    # ----------------------------------------------------------------------------------------------------------------
+    # Function to link to button to move on to the Rules window, first checks that a valid CSV has been selected and
+    # provides a pop up warning if not. Creates instance of RulesWindow and assigns it's parent to the same parent of
+    # this object
     def goto_rules(self):
         if self.table is not None:
             rules_window = RulesWindow(self.stack_wid, self.table)
@@ -106,6 +119,9 @@ class UploadCSV(QWidget):
             warning('Error', 'No CSV selected!', 'Please select a CSV file to import', False)
 
 
+# ----------------------------------------------------------------------------------------------------------------
+# Class for the RulesWindow widget. Has a scrollable area so that when lots of rules are added the user can scroll
+# through whole page rather than all widgets adjusting their size and getting smaller.
 class RulesWindow(QWidget):
 
     def __init__(self, stack, table):
@@ -137,6 +153,8 @@ class RulesWindow(QWidget):
 
         self.initUI()
 
+    # ----------------------------------------------------------------------------------------------------------------
+    # Initialises the main components of the rule window. Includes help text to provide user with guidance.
     def initUI(self):
 
         title = QLabel("Create Rules to Split Columns")
@@ -150,7 +168,6 @@ class RulesWindow(QWidget):
                 help_text.setText(desc)
         except IOError:
             print('Failed to find file')
-
 
         self.grid.addWidget(title, 0, 0, 1, 2, Qt.AlignCenter)
         self.grid.addWidget(help_text, 1, 0, 1, 2, Qt.AlignTop)
@@ -171,18 +188,23 @@ class RulesWindow(QWidget):
         self.grid.addWidget(new_rule_btn, 2, 0, 1, 1)
         self.grid.addWidget(cont_btn, 2, 1, 1, 1)
 
+    # ----------------------------------------------------------------------------------------------------------------
+    # Adds a rule to the window, increments the count of the current rules and appends a pointer to this new rule to
+    # the list of pointers to all current rules
     def new_rule(self):
 
         self.rules += 1
-
         rule = NewRule(self.table)
         rule.rule_wind = self
         self.rule_list.append(rule)
 
         self.grid.addWidget(rule, self.rules + 2, 0, 1, 2)
 
+    # ----------------------------------------------------------------------------------------------------------------
+    # Function for applying the rules and moving to the Mappings page. Provides error messge to the user if they have
+    # incorrectly filled in the rules.
     def next(self):
-        print("confirmed, moving to mappings page")
+
         table_before = self.table
 
         try:
@@ -202,6 +224,9 @@ class RulesWindow(QWidget):
             return
 
 
+# ----------------------------------------------------------------------------------------------------------------
+# Class for the UI of a rule. Has drop down boxes and fields for user to fill in to provide information for the
+# splitting rules they wish to create
 class NewRule(QWidget):
     def __init__(self, table):
         super().__init__()
@@ -242,8 +267,10 @@ class NewRule(QWidget):
 
         self.setLayout(rule_layout)
 
+    # ----------------------------------------------------------------------------------------------------------------
+    # Function for collecting all the user filled in information and returning it in the format needed for backend
+    # function calls
     def getAttributes(self):
-        print("get att")
 
         # column to split
         col_index = self.col_to_split.currentIndex()
@@ -256,7 +283,7 @@ class NewRule(QWidget):
                     raise Exception('Advanced parameters are required for all columns if used')
             advanced = None
 
-        # res
+        # resolution type
         res_index = self.res.currentIndex() + 1
 
         # split char
@@ -272,6 +299,8 @@ class NewRule(QWidget):
         return col_index, new_names, advanced, res_index, split, join
 
 
+# ----------------------------------------------------------------------------------------------------------------
+# The NewCol class provides the UI for dynamically adding or deleting new columns within a rule
 class NewCol(QWidget):
     def __init__(self, grid_layout):
         super().__init__()
@@ -287,6 +316,8 @@ class NewCol(QWidget):
         self.setLayout(self.main_layout)
         self.grid_layout = grid_layout
 
+    # ----------------------------------------------------------------------------------------------------------------
+    # Adds widgets for user to input a new column name and buttons to delete this input or add a new column
     def new_col(self):
         self.col_count += 1
         layout = QGridLayout()
@@ -315,8 +346,10 @@ class NewCol(QWidget):
         # add this layout to the list
         self.col_list.append(layout)
 
+    # ----------------------------------------------------------------------------------------------------------------
+    # Deletes this current column input layout, if it is the only new column in the rule then the whole rule will be
+    # deleted.
     def del_col(self, layout):
-        print("delete col")
 
         if self.col_count == 1:
             for i in reversed(range(self.grid_layout.count())):
@@ -328,7 +361,8 @@ class NewCol(QWidget):
                 layout.itemAt(i).widget().deleteLater()
             self.col_count -= 1
 
-
+    # ----------------------------------------------------------------------------------------------------------------
+    # Returns list of column names and list of advanced options, one for each new column that has been created
     def getCols(self):
         column_names = []
         advanced = []
