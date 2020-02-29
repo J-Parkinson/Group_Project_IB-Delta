@@ -180,7 +180,7 @@ class Window(QWidget):
 
 
 
-        buttons[2].setText("How to Use?")
+        buttons[2].setText("View Help Guide")
         buttons[2].clicked.connect(tutorial_signal)
 
         # Dummies to make it looks good
