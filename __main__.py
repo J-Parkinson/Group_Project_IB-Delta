@@ -9,6 +9,7 @@ from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixma
 from pathlib import Path
 import platform
 import os
+import subprocess
 
 from gui import upload_widget, modifyCSV
 
@@ -106,8 +107,8 @@ class Window(QWidget):
 
         # Tutorial page, working atm
         # Todo: design a tutorial page, we've finally got our hands on it
-        tutorial_page = QWidget()
-        QPushButton("tutorial", tutorial_page)
+        tutorial_page = QLabel()
+        #QPushButton("tutorial", tutorial_page)
 
         # Finally, add all those pages to the stack
         bottom_right.addWidget(upload_page)
@@ -174,10 +175,10 @@ class Window(QWidget):
         def tutorial_signal():
             if self.load_warning():
                 print("button 2 pressed")
-                bottom_right.setCurrentIndex(2)
-                reset_buttons_color()
-                buttons[2].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
-                self.state = State.Normal
+                filepath = os.getcwd() + "\gui\\resources\loadThisFile.docx"
+                os.startfile(filepath)
+
+
 
         buttons[2].setText("How to Use?")
         buttons[2].clicked.connect(tutorial_signal)
@@ -203,11 +204,10 @@ class Window(QWidget):
         if p == "Windows":
             print(1)
             application.setStyle("Windows")
+        elif p == "Darwin":
+            application.setStyle("Macintosh")
         else:
-            if p == "Darwin":
-                application.setStyle("Macintosh")
-            else:
-                application.setStyle("Plastique")
+            application.setStyle("Plastique")
 
     def preference(self):
         return 0
