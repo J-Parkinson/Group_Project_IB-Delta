@@ -5,7 +5,7 @@ import os
 import random
 import numpy as np
 import cv2
-from SamplePreprocessor import preprocess
+from neuralNetwork.src.SamplePreprocessor import preprocess
 
 
 class Sample:
