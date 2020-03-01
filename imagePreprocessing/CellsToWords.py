@@ -3,16 +3,103 @@ from dataStructures.logbookScan import Word, CellOfWords
 from scipy import ndimage
 
 def cellsToWords(cells, width):
+    '''
+    PRECONDITIONS:
+        - Each CellOfWords must have a list of Words (words) of length 1, where the Word's image is the image is the
+    :param cells: [CellOfWords]
+    :param width: Convolution width, proportional to the page width
+    :return: [CellOfWords], with words attribute a list of Word objects where each Word corresponds to a word detected in the cell
+    '''
     newCells = []
     maxRow = 0
     maxCol = 0
     for x in cells:
+        # goes through each cell in the list and splits into words
         newp, row, col = cellToWords(x, width)
+
+        # calculates number of rows and columns in the entire list of cells
         maxRow = max(row, maxRow)
         maxCol = max(col, maxCol)
         newCells.append(newp)
 
     return newCells, maxRow, maxCol
+
+def cellToWords(cellOfWords, width):
+    '''
+    :param cellOfWords: A single CellOfWords object, where the first Word's image attribute is the image of the entire cell
+    :param width: Convolution width, proportional to the page width
+    :return: A single CellOfWords object, where the list of Word objects corresponds to the words found in the cell
+    '''
+    newWords = []
+
+    # Takes the image of the cell from the CellOfWord object
+    cell = cellOfWords.words[0].image
+    row = cellOfWords.row
+    col = cellOfWords.col
+
+    # Strips cell of edges and then converts to a list of row images
+    rows = cellToRows(stripCell(cell), width)
+
+    for rowArr in rows:
+        # Goes through each row of words in the cell and splits into an array of words
+        words = rowToWords(rowArr, width)
+        for word in words:
+            # Goes through each word in the list of words, removes whitespace, and eliminates small marks
+            if word.shape[0]>0 and word.shape[1]>0:
+                newWord = removeWhiteSpaceFromWord(word)
+                if newWord.shape[0]>5 and newWord.shape[1]>5:
+                    newWords.append(newWord)
+
+    newWordList = []
+    for x in newWords:
+        # Turns images of words into Word objects
+        newWordList.append(Word(x, row, col))
+
+    # Returns a new cell with a list of words found in the cell
+    return CellOfWords(newWordList, row, col), row, col
+
+
+
+def rowToWords(row, width):
+    '''
+    :param row: One npArray (image), which represents a row of words within a cell
+    :param width: Convolution width, proportional to the page width
+    :return: List of npArrays (images) corresponding to the words found within the row
+    '''
+    # Flattens the array into a vertical sum
+    colVals = np.sum(row, axis=0)
+
+    # Convolves the summation array (performs a moving average to smooth out peaks and troughs
+    arrayToUse = np.ones(int(width // 100))
+    valCols = ndimage.convolve1d(colVals, arrayToUse, mode="nearest")
+
+    # Determines where white gaps are in the image, and uses these to split the image into words
+    maxValRow = np.amax(valCols)
+    gapsHere = np.argwhere(valCols >= maxValRow).flatten()
+    cols = np.array_split(row, gapsHere, axis=1)
+
+    # Filters out the small marks/empty columns
+    cols = [x for x in cols if (x.shape[1] > 1 and x.shape[0]>1)]
+    return cols
+
+
+
+def cellToRows(cell, width):
+    '''
+    :param cell: NpArray (image) of cell
+    :return: List of npArrays (images) of rows of words within cells
+    '''
+    # Flattens the array into a horizontal sum
+    rowVals = np.sum(cell, axis=1)
+
+    # Convolves the summation array (performs a moving average to smooth out peaks and troughs
+    arrayToUse = np.ones(int(width // 100))
+    valRows = ndimage.convolve1d(rowVals, arrayToUse, mode="nearest")
+    maxValRow = np.amax(valRows)
+    wordsHere = np.argwhere(valRows>=maxValRow*0.97).flatten()
+    rows = np.array_split(cell, wordsHere, axis=0)
+    rows = [row for row in rows if (row.shape[0] > 1 and row.shape[1]>1)]
+    return rows
 
 def stripCell(image):
     '''
@@ -34,55 +121,12 @@ def stripCell(image):
         newImage = np.delete(newImage, toRemove, 1)
     return newImage
 
-def cellToWords(cellOfWords, width): # takes one CellOfWords
-    newWords = []
-    cell = cellOfWords.words[0].image
-    row = cellOfWords.row
-    col = cellOfWords.col
-    rows = cellToRows(stripCell(cell), width) # LIST OF NP ARRAYS
-    for rowArr in rows: # NP ARRAY
-        words = rowToWords(rowArr, width)
-        count = 0
-        for word in words:
-            if word.shape[0]>0 and word.shape[1]>0:
-                newWord = removeWhiteSpaceFromWord(word,count)
-                if  newWord.shape[0]>5 and newWord.shape[1]>5:
-                    newWords.append(newWord)
-            count+=1
 
-    newWordList = []
-    for x in newWords:
-        newWordList.append(Word(x, row, col))
-    return CellOfWords(newWordList, row, col), row, col
-
-
-
-def rowToWords(row, width):
-    colVals = np.sum(row, axis=0)
-    #print(width // 100)
-    arrayToUse = np.ones(int(width // 75))
-    valCols = ndimage.convolve1d(colVals, arrayToUse, mode="nearest")
-    maxValRow = np.amax(valCols)
-    wordsHere = np.argwhere(valCols >= maxValRow).flatten()
-    cols = np.array_split(row, wordsHere, axis=1)
-    cols = [x for x in cols if (x.shape[1] > 1 and x.shape[0]>1)]
-    return cols
-
-
-
-def cellToRows(cell, width):
-    rowVals = np.sum(cell, axis=1)
-    arrayToUse = np.ones(int(width // 75))
-    valRows = ndimage.convolve1d(rowVals, arrayToUse, mode="nearest")
-    maxValRow = np.amax(valRows)
-    wordsHere = np.argwhere(valRows>=maxValRow*0.97).flatten()
-    rows = np.array_split(cell, wordsHere, axis=0)
-    rows = [row for row in rows if (row.shape[0] > 1 and row.shape[1]>1)]
-    return rows
-
-
-
-def removeWhiteSpaceFromWord(word,i):
+def removeWhiteSpaceFromWord(word):
+    '''
+    :param word: NpArray (image) of word
+    :return: NpArray (image) of word with whitespace stripped from edges
+    '''
     rowVals = np.sum(word, axis=1)
     maxValRow = np.amax(rowVals)
 
@@ -103,3 +147,4 @@ def removeWhiteSpaceFromWord(word,i):
             colVals = np.delete(colVals, -1)
 
     return currentArray
+
