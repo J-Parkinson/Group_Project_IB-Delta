@@ -6,7 +6,7 @@ from pdf2image import convert_from_path as ReadPDF
 from numpy import array
 import numpy as np
 from PIL import Image
-from scratchSpaces.jamesScratchSpace.matrix_to_csv import matrix_to_csv
+from utils.csv.matrix_to_csv import matrix_to_csv
 import pathlib
 # Jacks code to get pdfs/images from frontend
 # Abi's code to convert cells to words ([CellOfWords], numberOfRows, numberOfCols)
@@ -199,7 +199,7 @@ def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPrevi
             print("PLS WORK")
             print(wordsDecoded)
 
-            matrix_to_csv(wordsDecoded, "test11.csv")
+            matrix_to_csv(wordsDecoded, "test15.csv")
 
     return wordsDecoded
 
