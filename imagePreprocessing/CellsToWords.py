@@ -60,7 +60,7 @@ def rowToWords(row, width):
     :return: List of npArrays (images) corresponding to the words found within the row
     '''
     colVals = np.sum(row, axis=0)
-    arrayToUse = np.ones(int(width)//100)
+    arrayToUse = np.ones(int(width)//75)
     valCols = ndimage.convolve1d(colVals, arrayToUse, mode="nearest")
     maxValRow = np.amax(valCols)
     wordsHere = np.argwhere(valCols >= maxValRow).flatten()
