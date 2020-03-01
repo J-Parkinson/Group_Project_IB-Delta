@@ -37,7 +37,7 @@ def cellToWords(cellOfWords, width): # takes one CellOfWords
 
 def rowToWords(row, width):
     colVals = np.sum(row, axis=0)
-    arrayToUse = np.ones(int(width // 100))
+    arrayToUse = np.ones(int(width // 75))
     valCols = ndimage.convolve1d(colVals, arrayToUse, mode="nearest")
     maxValRow = np.amax(valCols)
     wordsHere = np.argwhere(valCols >= maxValRow).flatten()
@@ -46,12 +46,28 @@ def rowToWords(row, width):
     return cols
 
 
+#def stripCell(image):
+    #toRemove = [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
+    #newImage = image
+    #if newImage.shape[0] > 8:
+    #    newImage = np.delete(newImage, toRemove[4::11], 0)
+    #if newImage.shape[1] > 4:
+    #    newImage = np.delete(newImage, toRemove, 1)
+    #return newImage
+
 def stripCell(image):
-    toRemove = [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
+    toRemove = []
     newImage = image
+    for x in range(newImage.shape[0]):
+        if x-1 < min(4, newImage.shape[0]) or x-1 > max(newImage.shape[0]-5, 0):
+            toRemove.append(x)
     if newImage.shape[0] > 8:
-        newImage = np.delete(newImage, toRemove[4::11], 0)
-    if newImage.shape[1] > 4:
+        newImage = np.delete(newImage, toRemove, 0)
+    toRemove = []
+    for x in range(newImage.shape[1]):
+        if x-1 < min(8, newImage.shape[1]) or x-1 > max(newImage.shape[1]-9, 0):
+            toRemove.append(x)
+    if newImage.shape[1] > 8:
         newImage = np.delete(newImage, toRemove, 1)
     return newImage
 

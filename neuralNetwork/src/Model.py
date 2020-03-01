@@ -256,20 +256,21 @@ class Model:
 		texts = self.decoderOutputToText(decoded, numBatchElements)
 		
 		# feed RNN output and recognized text into CTC loss to compute labeling probability
-		probs = None
-		if calcProbability:
-			sparse = self.toSparse(batch.gtTexts) if probabilityOfGT else self.toSparse(texts)
-			ctcInput = evalRes[1]
-			evalList = self.lossPerElement
-			feedDict = {self.savedCtcInput : ctcInput, self.gtTexts : sparse, self.seqLen : [Model.maxTextLen] * numBatchElements, self.is_train: False}
-			lossVals = self.sess.run(evalList, feedDict)
-			probs = np.exp(-lossVals)
+		#probs = None
+		#if calcProbability:
+		#	sparse = self.toSparse(batch.gtTexts) if probabilityOfGT else self.toSparse(texts)
+		#	ctcInput = evalRes[1]
+		#	evalList = self.lossPerElement
+		#	feedDict = {self.savedCtcInput : ctcInput, self.gtTexts : sparse, self.seqLen : [Model.maxTextLen] * numBatchElements, self.is_train: False}
+		#	lossVals = self.sess.run(evalList, feedDict)
+		#	probs = np.exp(-lossVals)
 
 		# dump the output of the NN to CSV file(s)
 		if self.dump:
 			self.dumpNNOutput(evalRes[1])
 
-		return (texts, probs)
+		return texts
+		#return (texts, probs)
 	
 
 	def save(self):

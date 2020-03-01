@@ -17,6 +17,8 @@ from dataStructures.logbookScan import CellOfWords, Word
 
 class FilePaths:
     "filenames and paths to data"
+    fnDitto1 = '../data/ditto1.png'
+    fnDitto2 = '../data/ditto2.png'
     fnCharList = '../model/charList.txt'
     fnAccuracy = '../model/accuracy.txt'
     fnTrain = '../data/'
@@ -78,6 +80,7 @@ def train(model, loader):
             print('No more improvement since %d epochs. Training stopped.' % earlyStopping)
             break
 
+
 def validate(model, loader):
     "validate NN"
     print('Validate NN')
@@ -108,6 +111,7 @@ def validate(model, loader):
     print('Character error rate: %f%%. Word accuracy: %f%%.' % (charErrorRate * 100.0, wordAccuracy * 100.0))
     return charErrorRate
 
+
 def makeSomeAbiInput():
     cell0word0 = Word(convertFromFilenameToImage('../data/latinTest.png'), 0, 0)
     cell0word1 = Word(convertFromFilenameToImage('../data/09352.PNG'), 0, 0)
@@ -120,8 +124,9 @@ def makeSomeAbiInput():
     cellOfWords3 = CellOfWords([cell0word0, cell0word1], 1, 1)
     cellOfWords4 = CellOfWords([], 1, 1)
     listOfCellsOfWords = [cellOfWords0, cellOfWords1, cellOfWords2, cellOfWords3, cellOfWords4, cellOfWords4]
-    #listOfCellsOfWords = [cellOfWords0, cellOfWords1, cellOfWords2, cellOfWords3]
+    # listOfCellsOfWords = [cellOfWords0, cellOfWords1, cellOfWords2, cellOfWords3]
     return (listOfCellsOfWords, 2, 3)
+
 
 def makeACellOfWords():
     cell0word0 = Word(convertFromFilenameToImage('../data/latinTest.png'), 0, 0)
@@ -129,8 +134,10 @@ def makeACellOfWords():
     cellOfWords0: CellOfWords = CellOfWords([cell0word0, cell0word1], 0, 0)
     return cellOfWords0
 
+
 def convertFromFilenameToImage(fnImg):
     return cv2.imread(fnImg, cv2.IMREAD_GRAYSCALE)
+
 
 def infer(model, fnImg):
     "recognize text in image provided by file path"
@@ -140,13 +147,21 @@ def infer(model, fnImg):
     print('Recognized:', '"' + recognized[0] + '"')
     print('Probability:', probability[0])
 
+
 # MINE
 
 def inferImage(model, img):  # TODO: CAN be optimzed to take in a list for batch to have size of the list
+    if len(img) < 25 or len(img[0]) < 25:
+        return ''
+    # print("L1")
+    # print(len(img))
+    # print("L2")
+    # print(len(img[0]))
     img = preprocess(img, Model.imgSize)
     batch = Batch(None, [img])
-    (recognized, probability) = model.inferBatch(batch, True)
+    recognized = model.inferBatch(batch, True)
     return recognized[0]
+
 
 def takeOutImagesfromOneCell(cellOfWords):
     """
@@ -170,8 +185,10 @@ def makeStringFromOneCell(model, cellOfWords):
     toConcatinate = []
     for img in images:
         recognized = inferImage(model, img)
-        toConcatinate.append(recognized)
+        if recognized!='':
+            toConcatinate.append(recognized)
     return ' '.join(toConcatinate)
+
 
 def makeStringsFromAllCells(model, listOfCellsOfWords):
     toReturn = []
@@ -180,16 +197,20 @@ def makeStringsFromAllCells(model, listOfCellsOfWords):
         toReturn.append(string)
     return toReturn
 
+
 def makeListOfLists(wordsFromAllCells, numberOfCols):
-    #numberOfCols = numberOfCols +1;
+    numberOfCols = numberOfCols +1;
     for i in range(0, len(wordsFromAllCells), numberOfCols):
         yield wordsFromAllCells[i:i + numberOfCols]  # this is a list of lists of lists of image
+
 
 def inferEverything(model, abi):
     listOfCells, rows, cols = abi
     l = makeStringsFromAllCells(model, listOfCells)
-    l = list(makeListOfLists(l, rows)) #split list into rows: each row has the length of the number of columns in the thing
+    l = list(
+        makeListOfLists(l, rows))  # split list into rows: each row has the length of the number of columns in the thing
     return l;
+
 
 def main():
     "main function"
@@ -242,7 +263,8 @@ def main():
 
         # infer1(model, FilePaths.fnFile)
         # infer(model, FilePaths.fnInfer)
-        # print(inferImage(model, FilePaths.fnInfer)
+        print(inferImage(model, convertFromFilenameToImage(FilePaths.fnDitto1)))
+        print(inferImage(model, convertFromFilenameToImage(FilePaths.fnDitto2)))
         # print(inferCell(model, FilePaths.fnInferCell))
         # print(inferRow(model, FilePaths.fnInferRow))
         # print(inferPages(model, FilePaths.fnInferTotal))
@@ -255,26 +277,25 @@ def main():
         # return inferPages(model, preferredInput)
         # print(makeSomeInput())
         #
-        #cell = makeACellOfWords()
-        #string = makeStringFromOneCell(model, cell)
-        #print(string)
-        abi = makeSomeAbiInput()
-        #l = list(makeListOfLists(list1, cols)) #this is a void call
-        l = inferEverything(model, abi)
-        print(l)
+        # cell = makeACellOfWords()
+        # string = makeStringFromOneCell(model, cell)
+        # print(string)
+        # abi = makeSomeAbiInput()
+        # l = list(makeListOfLists(list1, cols)) #this is a void call
+        # l = inferEverything(model, abi)
+        # print(l)
 
-        #l = [1,2,3,4,5,6]
-        #l = list(makeListOfLists(l,2))
-        #print(l)
+        # l = [1,2,3,4,5,6]
+        # l = list(makeListOfLists(l,2))
+        # print(l)
         # abi = makeSomeAbiInput()
         # print(takeOutWordsfromAllCells(abi[0]))
         # in1 = takeOutWordsfromAllCells(abi[0])
         # in2 = makeListOfListsOfLists(in1, 2)
         # print(in1)
         # print(inferPages(model, in1))
-        #print(takeOutImagesfromOneCell(makeACellOfWords()))
-        #print(convertFromFilenameToImage('../data/latinTest.png'))
-
+        # print(takeOutImagesfromOneCell(makeACellOfWords()))
+        # print(convertFromFilenameToImage('../data/latinTest.png'))
 
 
 if __name__ == '__main__':
