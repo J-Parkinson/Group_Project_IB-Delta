@@ -1,6 +1,6 @@
 from enum import Enum
 
-from PyQt5.QtGui import QIntValidator, QPainter, QColor, QImage
+from PyQt5.QtGui import QIntValidator, QPainter, QColor, QImage, QPixmap
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxLayout, QPushButton, QFileDialog, \
     QMessageBox, QProgressBar, QDialog, QListWidget, QLineEdit, QGridLayout, QSpinBox, QApplication, QStyle, \
     QMainWindow, QInputDialog, QProgressBar
@@ -9,11 +9,12 @@ import time
 
 from utils.structures import logbookScan as Scan, states
 from utils.spelling.spell_check import correct_table
-#from imagePreprocessing import backendnew
 
 
-# Todo: remove this later... maybe not?
-def newTest():
+from imagePreprocessing import backendnew
+
+
+def newPreset():
     page = Scan.PageLayout(1)
     page.addColumn(Scan.Column((0, 0), (50, 200), 1, ""))
     page.addColumn(Scan.Column((50, 0), (100, 200), 1, ""))
@@ -34,7 +35,6 @@ class preview(QWidget):
         OnLeftMost = 7
         ClickedLeftMost = 8
 
-
     def __init__(self, parent):
         super().__init__()
 
@@ -45,10 +45,12 @@ class preview(QWidget):
         self.onColumn = 0
         self.setMouseTracking(1)
         self.offset = 10
+        self.pixMap = QPixmap("gui/resources/tempBg.png")
+        self.pixSize = self.pixMap.size()
 
-        # Todo: remember to remove this!!
-        b = QPushButton("Working atm\nClick me to reduce stress :-)", self)
-        b.move(500, 350)
+        # In memory of the lovely stress-reducing button.
+        # b = QPushButton("Working atm\nClick me to reduce stress :-)", self)
+        # b.move(500, 350)
 
     def reset(self, page):
         # draw the boxes
@@ -57,11 +59,13 @@ class preview(QWidget):
         return
 
     def paintEvent(self, e):
-        upload = self.parent.parent
         qp = QPainter()
         qp.begin(self)
 
-        qp.drawImage(10,10,QImage(upload.previewImg.read(),upload.imgWidth,upload.imgHeight,QImage.Format_RGB32))
+        pixMap = self.pixMap.scaled(QSize(self.width(),self.height()-self.offset), Qt.KeepAspectRatio)
+        self.pixSize = pixMap.size()
+
+        qp.drawPixmap(0, self.offset, pixMap)
 
         qp.setBrush(QColor(93, 173, 226))  # Light blue, ideally
         qp.setOpacity(0.6)  # Some lovely opaque, ideally
@@ -95,8 +99,6 @@ class preview(QWidget):
     def mouseMoveEvent(self, e):
         x = e.x()
         y = e.y()
-
-        # Todo: some bad behaviors here, fix it !!!!!!
 
         if self.state == self.State.ClickedLeftMost:
             self.control.columns.setCurrentRow(self.onColumn)
@@ -166,6 +168,35 @@ class preview(QWidget):
         else:
             QApplication.setOverrideCursor(Qt.ClosedHandCursor)
 
+    def sanCheck(self):
+        errors = 0
+
+        # check for y coords
+        if self.page.columnList[0].brCoord[1] < self.page.columnList[0].tlCoord[1]:
+            errors += 1
+
+        # check for x coords
+        n = len(self.page.columnList)
+        i = 0
+        for c in self.page.columnList:
+            if i == n-1:
+                if c.brCoord[0] >= self.pixSize.width():
+                    errors += 1
+            else:
+                next = self.page.columnList[i+1]
+                if next.tlCoord[0] <= c.tlCoord[0]:
+                    errors += 1
+                i += 1
+
+        return errors
+
+    def scaleBack(self):
+        w_factor = self.pixMap.width() / self.pixSize.width()
+        h_factor = self.pixMap.height() / self.pixSize.height()
+        for c in self.page.columnList:
+            c.tlCoord = (c.tlCoord[0]*w_factor, c.tlCoord[1]*h_factor)
+            c.brCoord = (c.brCoord[0] * w_factor, c.brCoord[1] * h_factor)
+
 
 class control(QWidget):
     def __init__(self, parent):
@@ -179,6 +210,7 @@ class control(QWidget):
         self.name_index = 0
         self.edit = self.init_lines()
         self.buttons = self.init_buttons()
+        self.warn_count = 0
 
         self.columns.currentItemChanged.connect(self.show_coords)
         layout.addWidget(self.buttons)
@@ -332,22 +364,30 @@ class control(QWidget):
     def confirm(self):
         upload = self.parent.parent
 
-        if upload.warning("Confirming the changes?", "WARNING:",
-                          "The program's output DEPENDS ALMOST ENTIRELY on your indication.\n\n"
-                          "Click 'yes' to continue. ",
-                          1) == QMessageBox.No:
+        if self.warn_count < 2:
+            self.warn_count += 1
+            if upload.warning("Confirming the changes?", "WARNING:",
+                            "The program's output DEPENDS ALMOST ENTIRELY on your indication.\n\n"
+                            "Click 'yes' to continue. ",
+                            1) == QMessageBox.No:
+                return
+
+        errors = self.preview.sanCheck()
+        if errors > 0:
+            upload.warning("Column san-check failed!", "ERROR:",
+                           "You have " + str(errors)  + " misplaced columns.\n"
+                           "Please remove overlapped or out-of-bound columns to continue.\n",
+                            0)
             return
-        # Todo for James
-        # Todo: Connect to the backend here.
-        # Todo: The argument they need should be self.page
-        # Todo: About the correction dictionary, it needs more tweaks, which I will do later
-        # Todo: Just try whether the back end connection works or not now
+
+        self.preview.scaleBack()
+
         columnLocations = []
         for c in self.page.columnList:
             columnLocations.append(c.tlCoord[0])
         columnLocations.append(self.page.columnList[-1].brCoord[0])
 
-        rowLocations = [self.page.columnList[0].tlCoord[1],self.page.columnList[0].brCoord[1]]
+        rowLocations = [self.page.columnList[0].tlCoord[1], self.page.columnList[0].brCoord[1]]
 
         column_dicts = {}
         for i, c in enumerate(self.page.columnList):
@@ -405,6 +445,6 @@ class drag_page(QWidget):
 
     def reset(self):
         # To backend function: filename -> page layout
-        self.page = newTest()
+        self.page = newPreset()
         self.preview.reset(self.page)
         self.control.reset(self.page)
