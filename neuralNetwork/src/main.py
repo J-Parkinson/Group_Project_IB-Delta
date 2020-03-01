@@ -8,10 +8,6 @@ import editdistance
 from neuralNetwork.src.DataLoader import DataLoader, Batch
 from neuralNetwork.src.Model import Model, DecoderType
 from neuralNetwork.src.SamplePreprocessor import preprocess
-from dataStructures import logbookScan
-import os  # mine
-import numpy as np
-from collections import Iterable
 from dataStructures.logbookScan import CellOfWords, Word
 
 
@@ -23,23 +19,6 @@ class FilePaths:
     fnAccuracy = '../model/accuracy.txt'
     fnTrain = '../data/'
     fnInfer = '../data/latinTest.png'
-    # fnInfer = '../data/quote.png'
-    # fnInfer = '../data/miller.PNG'
-    # fnInfer = '../data/fuckup1.PNG'
-    # fnInfer = '../data/09352.PNG'
-    fnCorpus = '../data/corpus.txt'
-    # mine
-    fnFile = '../data/a01/a01-000u/'
-    fnInferCell = ['../data/latinTest.png', '../data/09352.PNG', '../data/quote.png']
-    fnInferCell1 = ['../data/latinTest.png', '../data/09352.PNG', '../data/quote.png']
-    fnInferCell2 = ['../data/latinTest.png', '../data/quote.png', '../data/09352.PNG', ]
-    fnInferRow = [['../data/latinTest.png', '../data/09352.PNG'], ['../data/quote.png', '../data/quote.png']]
-    fnInferTotal = [
-        [['../data/latinTest.png', '../data/09352.PNG'], ['../data/quote.png', '../data/quote.png']],
-        [['../data/latinTest.png', '../data/09352.PNG'], ['../data/quote.png', '../data/quote.png']]
-    ]
-    ### NOT IN FILE PATHS
-
 
 def train(model, loader):
     "train NN"
@@ -213,6 +192,9 @@ def inferEverything(model, abi):
 
 
 def main():
+    '''
+    :return: whatever you want
+    '''
     "main function"
     # optional command line args
     parser = argparse.ArgumentParser()
@@ -254,49 +236,7 @@ def main():
         print(open(FilePaths.fnAccuracy).read())
         model = Model(open(FilePaths.fnCharList).read(), DecoderType.BestPath, mustRestore=True,
                       dump=None)  # change dump to
-        # arg.dump if needed
-        # TODO: call Abi's function
-        # TODO: Get rid of all this main stuff, have function ready for frontend
-
-        # the combined notebook has latin names and numbers
-        # maybe try to use word beam search for the
-
-        # infer1(model, FilePaths.fnFile)
-        # infer(model, FilePaths.fnInfer)
-        print(inferImage(model, convertFromFilenameToImage(FilePaths.fnDitto1)))
-        print(inferImage(model, convertFromFilenameToImage(FilePaths.fnDitto2)))
-        # print(inferCell(model, FilePaths.fnInferCell))
-        # print(inferRow(model, FilePaths.fnInferRow))
-        # print(inferPages(model, FilePaths.fnInferTotal))
-        # print(convertFromFilenameToImage(FilePaths.fnInfer))
-        # print(FilePaths.fnInfer)
-
-        # abi = makeSomeAbiInput()
-        # input = makePreferredInput(abi)
-        # preferredInput = makePreferredInput(input)  # make list of lists of lists
-        # return inferPages(model, preferredInput)
-        # print(makeSomeInput())
-        #
-        # cell = makeACellOfWords()
-        # string = makeStringFromOneCell(model, cell)
-        # print(string)
-        # abi = makeSomeAbiInput()
-        # l = list(makeListOfLists(list1, cols)) #this is a void call
-        # l = inferEverything(model, abi)
-        # print(l)
-
-        # l = [1,2,3,4,5,6]
-        # l = list(makeListOfLists(l,2))
-        # print(l)
-        # abi = makeSomeAbiInput()
-        # print(takeOutWordsfromAllCells(abi[0]))
-        # in1 = takeOutWordsfromAllCells(abi[0])
-        # in2 = makeListOfListsOfLists(in1, 2)
-        # print(in1)
-        # print(inferPages(model, in1))
-        # print(takeOutImagesfromOneCell(makeACellOfWords()))
-        # print(convertFromFilenameToImage('../data/latinTest.png'))
-
+        infer(model, FilePaths.fnInfer)
 
 if __name__ == '__main__':
     main()
