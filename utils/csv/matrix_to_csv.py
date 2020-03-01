@@ -140,9 +140,9 @@ def split_col(table, field_index, new_cols, which_words=None, separator=' ', res
 #   Saves the table in its current format as a csv in the specified path
 
 def matrix_to_csv(table, path):
-    with open(path, mode='w') as outfile:
-        out = csv.writer(outfile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL, newline='')
-        out.writerows(table)
+    with open(path, 'w', newline='') as outfile:
+        writer = csv.writer(outfile)
+        writer.writerows(table)
 
 # ----------------------------------------------------------------------------------------------------------------
 #   Applies the mappings given by the user to create a new table in the standard format
