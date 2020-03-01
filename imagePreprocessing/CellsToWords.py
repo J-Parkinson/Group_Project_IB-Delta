@@ -96,7 +96,7 @@ def cellToRows(cell):
     :return: List of npArrays (images) of rows of words within cells
     '''
     rowVals = np.sum(cell, axis=1)
-    arrayToUse = np.ones(4)
+    arrayToUse = np.ones(10)
     valRows = ndimage.convolve1d(rowVals, arrayToUse, mode="nearest")
     maxValRow = np.amax(valRows)
     wordsHere = np.argwhere(valRows>=maxValRow*0.97).flatten()
