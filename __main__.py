@@ -1,6 +1,8 @@
 #################################################
 # Modules import
 #################################################
+import pathlib
+import subprocess
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QGridLayout, QLabel, QSizePolicy, \
     QStackedWidget, QBoxLayout, QHBoxLayout, QFileDialog, QMainWindow, QMessageBox
@@ -65,7 +67,7 @@ class Window(QWidget):
         pic = QLabel(top_left)
 
         # use full ABSOLUTE path to the image, not relative
-        bPM = QPixmap(os.getcwd() + "/gui/resources/butterfly.png")
+        bPM = QPixmap(str(pathlib.Path(__file__).parent / 'gui' / 'resources' / 'butterfly.png'))
         bPM = bPM.scaledToWidth(150)
         pic.setPixmap(bPM)
         pic.setGeometry(0, 0, 10, 10)
@@ -178,8 +180,13 @@ class Window(QWidget):
         def tutorial_signal():
             if self.load_warning():
                 print("button 2 pressed")
-                filepath = os.getcwd() + "\gui\\resources\loadThisFile.docx"
-                os.startfile(filepath)
+                filepath = pathlib.Path(__file__).parent  / 'gui' / 'resources' / 'loadThisFile.docx'
+                if platform.system() == 'Darwin':
+                    subprocess.call(('open', filepath))
+                elif platform.system() == 'Windows':
+                    os.startfile(filepath)
+                else:
+                    subprocess.call(('xdg-open', filepath))
 
 
 
