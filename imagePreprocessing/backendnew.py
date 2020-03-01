@@ -187,7 +187,7 @@ def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPrevi
                     print("L2")
                     print(len(img[0]))
                     image = Image.fromarray(word.image)
-                    image.save("segmentedwords/word5 " + str(word.row) + " - " + str(word.col) + " - " + str(wordno) + ".png")
+                    image.save("segmentedwords/word8 " + str(word.row) + " - " + str(word.col) + " - " + str(wordno) + ".png")
                     #image.show()
 
             # Francesca's neuralNetOutput
@@ -195,7 +195,7 @@ def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPrevi
             print("PLS WORK")
             print(wordsDecoded)
 
-            matrix_to_csv(wordsDecoded, "test15.csv")
+            matrix_to_csv(wordsDecoded, "test16.csv")
 
     return wordsDecoded
 
