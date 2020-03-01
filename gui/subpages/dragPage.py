@@ -57,10 +57,11 @@ class preview(QWidget):
         return
 
     def paintEvent(self, e):
+        upload = self.parent.parent
         qp = QPainter()
         qp.begin(self)
 
-        qp.drawImage(10,10,QImage(self.parent.previewImg))
+        qp.drawImage(10,10,QImage(upload.previewImg.read(),upload.imgWidth,upload.imgHeight,QImage.Format_RGB32))
 
         qp.setBrush(QColor(93, 173, 226))  # Light blue, ideally
         qp.setOpacity(0.6)  # Some lovely opaque, ideally

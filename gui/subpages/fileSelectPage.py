@@ -152,7 +152,7 @@ class file_select(QWidget):
 
         self.parent.previewImg, self.parent.imgWidth, self.parent.imgHeight\
             = ImageProcess.handleColumnGUI(self.parent.filename, noPages)  # , progressBar)
-        Image.frombytes("RGB", (self.parent.imgWidth, self.parent.imgHeight), self.parent.previewImg.read()).show()
+        #self.parent.previewImg = Image.frombytes("RGB", (self.parent.imgWidth, self.parent.imgHeight), img.read())
         self.state = states.uploadState.Running
         self.parent.parent.state = 1  # Loading
         self.parent.setCurrentIndex(1)
