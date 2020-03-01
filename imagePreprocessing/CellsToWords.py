@@ -3,23 +3,41 @@ from dataStructures.logbookScan import Word, CellOfWords
 from scipy import ndimage
 
 def cellsToWords(cells, width):
+    '''
+    PRECONDITIONS:
+        - Each CellOfWords must have a list of Words (words) of length 1, where the Word's image is the image is the
+    :param cells: [CellOfWords]
+    :param width: Convolution width, proportional to the page width
+    :return: [CellOfWords], with words attribute a list of Word objects where each Word corresponds to a word detected in the cell
+    '''
     newCells = []
     maxRow = 0
     maxCol = 0
+
     for x in cells:
+        # goes through each cell in the list and splits into words
         newp, row, col = cellToWords(x, width)
+
+        # calculates number of rows and columns in the entire list of cells
         maxRow = max(row, maxRow)
         maxCol = max(col, maxCol)
         newCells.append(newp)
 
     return newCells, maxRow, maxCol
 
-def cellToWords(cellOfWords, width): # takes one CellOfWords
+def cellToWords(cellOfWords, width):
+    '''
+    :param cellOfWords: A single CellOfWords object, where the first Word's image attribute is the image of the entire cell
+    :param width: Convolution width, proportional to the page width
+    :return: A single CellOfWords object, where the list of Word objects corresponds to the words found in the cell
+    '''
     newWords = []
+
+    #
     cell = cellOfWords.words[0].image
     row = cellOfWords.row
     col = cellOfWords.col
-    rows = cellToRows(stripCell(cell), width) # LIST OF NP ARRAYS
+    rows = cellToRows(stripCell(cell)) # LIST OF NP ARRAYS
     for rowArr in rows: # NP ARRAY
         words = rowToWords(rowArr, width)
         for word in words:
@@ -36,8 +54,13 @@ def cellToWords(cellOfWords, width): # takes one CellOfWords
 
 
 def rowToWords(row, width):
+    '''
+    :param row: One npArray (image), which represents a row of words within a cell
+    :param width: Convolution width, proportional to the page width
+    :return: List of npArrays (images) corresponding to the words found within the row
+    '''
     colVals = np.sum(row, axis=0)
-    arrayToUse = np.ones(int(width // 100))
+    arrayToUse = np.ones(int(width)//100)
     valCols = ndimage.convolve1d(colVals, arrayToUse, mode="nearest")
     maxValRow = np.amax(valCols)
     wordsHere = np.argwhere(valCols >= maxValRow).flatten()
@@ -47,6 +70,10 @@ def rowToWords(row, width):
 
 
 def stripCell(image):
+    '''
+    :param image: Image to be stripped of top & bottom rows and left & right columns
+    :return: Image with edges stripped
+    '''
     toRemove = [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
     newImage = image
     if newImage.shape[0] > 8:
@@ -56,7 +83,11 @@ def stripCell(image):
     return newImage
 
 
-def cellToRows(cell, width):
+def cellToRows(cell):
+    '''
+    :param cell: NpArray (image) of cell
+    :return: List of npArrays (images) of rows of words within cells
+    '''
     rowVals = np.sum(cell, axis=1)
     arrayToUse = np.ones(4)
     valRows = ndimage.convolve1d(rowVals, arrayToUse, mode="nearest")
@@ -69,6 +100,10 @@ def cellToRows(cell, width):
 
 
 def removeWhiteSpaceFromWord(word):
+    '''
+    :param word: NpArray (image) of word
+    :return: NpArray (image) of word with whitespace stripped from edges
+    '''
     rowVals = np.sum(word, axis=1)
     maxValRow = np.amax(rowVals)
 
@@ -77,8 +112,6 @@ def removeWhiteSpaceFromWord(word):
     if currentArray.size != 0:
         colVals = np.sum(currentArray, axis=0)
         maxValCol = np.amax(colVals)
-
-
 
         while (len(colVals) > 0) and (colVals[0] >= maxValCol):
             currentArray = np.delete(currentArray, 0, axis=1)
