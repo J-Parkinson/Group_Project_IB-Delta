@@ -16,6 +16,7 @@ class FilePaths:
     fnAccuracy = path / '..'/ 'neuralNetwork' / 'model' / 'accuracy.txt'# '../neuralNetwork/model/accuracy.txt'
 
 class Lala:
+    '''Used for test output of table'''
     lala = [['Argyresthia 09352', '" " "'],
             ['" " "', 'Argyresthia 09352'],
             ['" " "', 'Argyresthia 09352']]
@@ -24,11 +25,23 @@ def printListOfCellOfWords(lst):
     return "[" + ", \n".join([str(x) for x in lst]) + "]"
 
 def codeToMergeImages(imageList):
+    """
+    codeToMergeImages
+    Converts all array cells to PIL images, then concatenates and creates new numpy array of image
+    :param imageList: list of numpy 2d array images
+    :type imageList: numpy.array(2d)[]
+    :return: new numpy 2d image
+    :rtype: numpy.array(2d)
+    """
     newImages = map(lambda x: Image.fromarray(x), imageList)
     mergedImage = concatenateImages(newImages)
     return array(mergedImage)
 
+@DeprecationWarning
 def createCSVFile(pdfLocation, columnLocations = [], widthOfPreviewImage=1, noPageSpread=1):
+    """
+    Created CSV file from start to finish - we now have frontend in between so this is not used.
+    """
     print(open(FilePaths.fnAccuracy).read())
     model = Model(open(FilePaths.fnCharList).read(), DecoderType.BestPath, mustRestore=True,
                   dump=None)  # change dump to
@@ -106,6 +119,23 @@ def createCSVFile(pdfLocation, columnLocations = [], widthOfPreviewImage=1, noPa
 
 def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPreviewImage=1,
                 heightOfPreviewImage =1, noPageSpread=1):
+    """
+    Takes in a pdf location string, column locations on where to split, row locations specifying top and bottom of page excluding headers
+    :param pdfLocation: String denoting path of file
+    :type pdfLocation: str
+    :param columnLocations: Locations in pixels of columns on the smaller preview image - we scale up here to size of each merged image.
+    :type columnLocations: int[]
+    :param rowLocations: List of [top of records, bottom of records]
+    :type rowLocations: int[]
+    :param widthOfPreviewImage: Used for scaling of col/row locs,  integer in terms of pixels
+    :type widthOfPreviewImage: int
+    :param heightOfPreviewImage: Used for scaling of col/row locs,  integer in terms of pixels - aspect ratio may not be same
+    :type heightOfPreviewImage: int
+    :param noPageSpread: no of pages that are required next to each other to complete a record
+    :type noPageSpread: int
+    :return: table of guessed words ready for PDF conversion
+    :rtype: str[][][]
+    """
     print(open(FilePaths.fnAccuracy).read())
     model = Model(open(FilePaths.fnCharList).read(), DecoderType.BestPath, mustRestore=True,
                   dump=None)  # change dump to
