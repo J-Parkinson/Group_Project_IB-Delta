@@ -9,9 +9,10 @@ from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixma
 from pathlib import Path
 import platform
 import os
-import subprocess
+from utils.structures import states
 
-from gui import upload_widget, modifyCSV
+
+from gui import upload_widget, modifyCSV, initialPage
 
 application = QApplication([])
 
@@ -92,10 +93,12 @@ class Window(QWidget):
         # Todo: design an initial page
 
         # Initial page
-        ini_label = QLabel("Initial Page")
-        ini_label.setStyleSheet('color:#6D214F')
-        ini_label.move(100, 100)
-        ini_label.resize(500, 500)
+        #ini_label = QLabel("Initial Page")
+        #ini_label.setStyleSheet('color:#6D214F')
+        #ini_label.move(100, 100)
+        #ini_label.resize(500, 500)
+
+        ini_label = initialPage.initial_page(self)
 
         # Upload page
         upload_page = upload_widget.upload_page(self)
@@ -243,6 +246,44 @@ class Window(QWidget):
         else:
             e.accept()
 
+
+class initial_page(QWidget):
+
+    def __init__(self, parent):
+        super().__init__()
+        layout = QVBoxLayout()
+        self.parent = parent
+
+        #################################################
+        # Welcome text (start page)
+        #################################################
+        top_text = QLabel("Welcome to the Butterfly Logbook Scanner!")
+        top_text.setStyleSheet('color: black; font-size: large')
+        layout.addWidget(top_text, alignment=Qt.AlignCenter)
+
+        #################################################
+        # Instructions text (start page)
+        #################################################
+
+        inst_text = QLabel("Please choose either to upload a PDF or convert a CSV to a standardised format, or view our help guides for more information on how to use our app.")
+        inst_text.setStyleSheet('color: black')
+        layout.addWidget(inst_text, alignment=Qt.AlignCenter)
+
+        #################################################
+        # Acknowledgement text (start page)
+        #################################################
+        inst_text = QLabel(
+            "Made by Group Delta as part of the University of Cambridge Part IB Group Project, on behalf of the Zoology Museum, Cambridge.\n"
+            "Coded by Francesca Iovu, Abigail Wilkinson, Jack Parkinson, Yulong Huang, Suzie Welby, and James Alner")
+        inst_text.setStyleSheet('color: black')
+        layout.addWidget(inst_text, alignment=Qt.AlignCenter)
+
+        #################################################
+        # Some dummy label (upload page)
+        #################################################
+        #layout.addWidget(QLabel())
+
+        self.setLayout(layout)
 
 if __name__ == "__main__":
     app = Window()
