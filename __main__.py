@@ -9,8 +9,10 @@ from PyQt5.QtGui import QColor, QLinearGradient, QBrush, QPalette, QFont, QPixma
 from pathlib import Path
 import platform
 import os
+from utils.structures import states
 
-from gui import upload_widget, modifyCSV
+
+from gui import upload_widget, modifyCSV, initialPage
 
 application = QApplication([])
 
@@ -91,10 +93,12 @@ class Window(QWidget):
         # Todo: design an initial page
 
         # Initial page
-        ini_label = QLabel("Initial Page")
-        ini_label.setStyleSheet('color:#6D214F')
-        ini_label.move(100, 100)
-        ini_label.resize(500, 500)
+        #ini_label = QLabel("Initial Page")
+        #ini_label.setStyleSheet('color:#6D214F')
+        #ini_label.move(100, 100)
+        #ini_label.resize(500, 500)
+
+        ini_label = initialPage.initial_page(self)
 
         # Upload page
         upload_page = upload_widget.upload_page(self)
@@ -106,8 +110,8 @@ class Window(QWidget):
 
         # Tutorial page, working atm
         # Todo: design a tutorial page, we've finally got our hands on it
-        tutorial_page = QWidget()
-        QPushButton("tutorial", tutorial_page)
+        tutorial_page = QLabel()
+        #QPushButton("tutorial", tutorial_page)
 
         # Finally, add all those pages to the stack
         bottom_right.addWidget(upload_page)
@@ -174,12 +178,12 @@ class Window(QWidget):
         def tutorial_signal():
             if self.load_warning():
                 print("button 2 pressed")
-                bottom_right.setCurrentIndex(2)
-                reset_buttons_color()
-                buttons[2].setStyleSheet("background-color: rgb(248,246,238); color:#6D214F")
-                self.state = State.Normal
+                filepath = os.getcwd() + "\gui\\resources\loadThisFile.docx"
+                os.startfile(filepath)
 
-        buttons[2].setText("How to Use?")
+
+
+        buttons[2].setText("View Help Guide")
         buttons[2].clicked.connect(tutorial_signal)
 
         # Dummies to make it looks good
@@ -203,11 +207,10 @@ class Window(QWidget):
         if p == "Windows":
             print(1)
             application.setStyle("Windows")
+        elif p == "Darwin":
+            application.setStyle("Macintosh")
         else:
-            if p == "Darwin":
-                application.setStyle("Macintosh")
-            else:
-                application.setStyle("Plastique")
+            application.setStyle("Plastique")
 
     def preference(self):
         return 0
@@ -243,6 +246,44 @@ class Window(QWidget):
         else:
             e.accept()
 
+
+class initial_page(QWidget):
+
+    def __init__(self, parent):
+        super().__init__()
+        layout = QVBoxLayout()
+        self.parent = parent
+
+        #################################################
+        # Welcome text (start page)
+        #################################################
+        top_text = QLabel("Welcome to the Butterfly Logbook Scanner!")
+        top_text.setStyleSheet('color: black; font-size: large')
+        layout.addWidget(top_text, alignment=Qt.AlignCenter)
+
+        #################################################
+        # Instructions text (start page)
+        #################################################
+
+        inst_text = QLabel("Please choose either to upload a PDF or convert a CSV to a standardised format, or view our help guides for more information on how to use our app.")
+        inst_text.setStyleSheet('color: black')
+        layout.addWidget(inst_text, alignment=Qt.AlignCenter)
+
+        #################################################
+        # Acknowledgement text (start page)
+        #################################################
+        inst_text = QLabel(
+            "Made by Group Delta as part of the University of Cambridge Part IB Group Project, on behalf of the Zoology Museum, Cambridge.\n"
+            "Coded by Francesca Iovu, Abigail Wilkinson, Jack Parkinson, Yulong Huang, Suzie Welby, and James Alner")
+        inst_text.setStyleSheet('color: black')
+        layout.addWidget(inst_text, alignment=Qt.AlignCenter)
+
+        #################################################
+        # Some dummy label (upload page)
+        #################################################
+        #layout.addWidget(QLabel())
+
+        self.setLayout(layout)
 
 if __name__ == "__main__":
     app = Window()

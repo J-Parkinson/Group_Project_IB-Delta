@@ -3,6 +3,8 @@ from PyQt5.QtGui import QPainter, QColor
 from PyQt5.QtWidgets import QLabel, QWidget, QVBoxLayout, QStackedWidget, QHBoxLayout, QPushButton, QApplication, \
     QStyle, QInputDialog, QFileDialog, QMessageBox
 
+from PIL import Image
+
 import imagePreprocessing.imageScanningAndPreprocessing as ImageProcess
 from utils.structures import states
 
