@@ -57,7 +57,7 @@ def createCSVFile(pdfLocation, columnLocations = [], widthOfPreviewImage=1, noPa
                 print("Cell of Words List:", printListOfCellOfWords(cellOfWordsList))
 
                 # Abi's CellsToWords
-                inputs = cellsToWords(cellOfWordsList, int((resultingImage.shape[1]/noPageSpread)//100))
+                inputs = cellsToWords(cellOfWordsList, int(resultingImage.shape[1]/noPageSpread))
 
                 # Francesca's neuralNetOutput
                 wordsDecoded += inferEverything(model, inputs)
