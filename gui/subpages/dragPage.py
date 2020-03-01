@@ -1,6 +1,6 @@
 from enum import Enum
 
-from PyQt5.QtGui import QIntValidator, QPainter, QColor
+from PyQt5.QtGui import QIntValidator, QPainter, QColor, QImage
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedWidget, QHBoxLayout, QPushButton, QFileDialog, \
     QMessageBox, QProgressBar, QDialog, QListWidget, QLineEdit, QGridLayout, QSpinBox, QApplication, QStyle, \
     QMainWindow, QInputDialog, QProgressBar
@@ -9,7 +9,7 @@ import time
 
 from utils.structures import logbookScan as Scan, states
 from utils.spelling.spell_check import correct_table
-from imagePreprocessing import backendnew
+#from imagePreprocessing import backendnew
 
 
 # Todo: remove this later... maybe not?
@@ -59,6 +59,8 @@ class preview(QWidget):
     def paintEvent(self, e):
         qp = QPainter()
         qp.begin(self)
+
+        qp.drawImage(10,10,QImage(self.parent.previewImg))
 
         qp.setBrush(QColor(93, 173, 226))  # Light blue, ideally
         qp.setOpacity(0.6)  # Some lovely opaque, ideally

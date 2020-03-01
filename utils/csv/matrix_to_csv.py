@@ -141,11 +141,13 @@ def split_col(table, field_index, new_cols, which_words=None, separator=' ', res
 
 def matrix_to_csv(table, path):
     with open(path, mode='w') as outfile:
-        out = csv.writer(outfile, delimiter=',', quotechar="'", quoting=csv.QUOTE_ALL)
-        out.writerows(table)
+        out = csv.writer(outfile, delimiter=',', quotechar="'", quoting=csv.QUOTE_MINIMAL)
+        for row in table:
+            out.writerow(row)
 
 # ----------------------------------------------------------------------------------------------------------------
 #   Applies the mappings given by the user to create a new table in the standard format
+
 def matrix_to_standard(table, field_map, field_consts, header=STANDARD_HEADER):
     # the field map will map the standard field headers to table's field headers
     result = [["" for _ in range(len(header[0]))] for _ in range(len(table) - 1)]
@@ -182,6 +184,7 @@ def matrix_to_standard_csv(table, path, field_map, field_consts={}, header=STAND
 
 # ----------------------------------------------------------------------------------------------------------------
 #   Simply reads in the csv at the given file path
+
 def read_csv(path):
     with open(path, mode='r') as infile:
         reader = csv.reader(infile, delimiter=',')
