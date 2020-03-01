@@ -88,49 +88,47 @@ pdfToImages("images/scantest.pdf", "images/pdftest/", "image", ".png")
 #directoryMixedToDirectoryImages("images/New Scans Small/", "images/segmentedImagesOut/", "image", ".png")
 '''
 
-''' splitCellsAndNormalise
-    Normalises the image, splits into cells, performs word detection, deslants words, and resizes ready for our NN.
-    Returns a directory for the images to be word-detected.
-'''
-
-'''def safeMakeDir(dir):
-    if not path.exists(dir):
-        makedirs(dir)
-    else:
-        stderr.write("Path " + dir + " already exists.\n")
-        stderr.flush()'''
-
-'''def pdfToImages(source, destFolder, filename, suffix, offset=0):
-
-    safeMakeDir(destFolder[:-1])
-
-    allImages = fitz.open(source)
-    for x, page in enumerate(allImages):
-        with NamedTemporaryFile(suffix=suffix) as temp:
-            page.getPixmap().writePNG(temp.name)
-            #scanImage(temp.name, destFolder + filename + str(x + offset) + suffix)
-            safeMakeDir(destFolder + "Page " + str(x + offset))
-            findLinesandNormalise(temp.name, destFolder + "Page " + str(x + offset) + "/")
-    return len(allImages)'''
-
 def concatenateImages(images, resample=Image.BICUBIC):
+    """
+    concatenateImages
+    Takes multiple PIL images and merges into one for the backend
+    Returns merged PIL Image object
+
+    :param images: List of PIL images to join horizontally
+    :type images: PIL.Image[]
+    :param resample: PIL Image resizing function
+    :type resample:
+    :return: PIL image of concatenated image
+    :rtype: PIL.Image
+    """
     minHeight = min(image.height for image in images)
+    #Resize by shrinking larger images to the size of the smallest image (to avoid interpolation artefacts when increasing size)
     imageResize = [image.resize((int(image.width * minHeight / image.height), minHeight), resample=resample)
                       for image in images]
+    #Return new dimensions
     totalWidth = sum(image.width for image in imageResize)
     dest = Image.new('RGB', (totalWidth, minHeight))
+    #Join new photos
     xPosition = 0
     for image in imageResize:
         dest.paste(image, (xPosition, 0))
         xPosition += image.width
     return dest
 
-
+@DeprecationWarning
 def splitCellsAndNormalise(source):
+    '''
+    splitCellsAndNormalise
+    Takes source location for image, binarises image, performs perspective transform, gets column data and returns split cells for Abi
+
+    :param source: String location of image (relative or absolute)
+    :type source: str
+    :return: List of CellOfWords objects containing row, col and image itself as a 2D Numpy Array
+    :rtype: CellOfWords[]
+    '''
+
     # load the image and compute the ratio of the old height
     # to the new height, clone it, and resize it
-
-    '''Step 1 - load image'''
     image = imread(source)
     image = resize(image, width=image.shape[1] * 3)
     orig = image.copy()
@@ -151,23 +149,21 @@ def splitCellsAndNormalise(source):
     '''Step 5 - cell splitting'''
     cells = convertToCellOfWords(splitIntoCells(transformed, rowLocations, colLocations), len(rowLocations) + 1)
 
-    '''dir = storeFilesTemporarily(cells, len(colLocations))'''
-
-    ''' So at the moment we have it split into cells, and a flat 1d Python list of cells (1d list of 2d Numpy arrays of B/W cells)
-        Row number = x // len(colLocations)
-        Col number = x % len(colLocations)
-        Run your code on each element in that and yh should work :D
-    '''
-
-    return cells # will eventually return string representing the location of the dir Francesca is using to read in cells and
-
+    return cells
 
 
 def splitCellsAndNormaliseFromArray(image, colLocs=None):
     # load the image and compute the ratio of the old height
     # to the new height, clone it, and resize it
 
-    '''Step 1 - load image'''
+    '''Step 1 - load image
+    :param image: 3D Numpy Array of page (RGB 2D image)
+    :type image: numpy.array() of shape (_, _, _)
+    :param colLocs: List of int locations of where to split columns
+    :type colLocs: int[]
+    :return: List of CellOfWords objects containing row, col and image itself as a 2D Numpy Array
+    :rtype: CellOfWords[]
+    '''
     image = resize(image)
     orig = image.copy()
 
@@ -191,53 +187,18 @@ def splitCellsAndNormaliseFromArray(image, colLocs=None):
     '''Step 5 - cell splitting'''
     cells = convertToCellOfWords(splitIntoCells(transformed, rowLocations, colLocations), len(rowLocations) + 1)
 
-    '''dir = storeFilesTemporarily(cells, len(colLocations))'''
-
-    ''' So at the moment we have it split into cells, and a flat 1d Python list of cells (1d list of 2d Numpy arrays of B/W cells)
-        Row number = x // len(colLocations)
-        Col number = x % len(colLocations)
-        Run your code on each element in that and yh should work :D
-    '''
-
-    return cells # will eventually return string representing the location of the dir Francesca is using to read in cells and
-
-
-''' handleColumns
-    Checks with the user if the columns are in the correct location, and returns the new user-made columns
-    Returns user-checked columns
-'''
-
-
-'''def handleColumns(cols, height, image):
-    columnObjects = PageLayout(1)
-    for x in range(0, len(cols) - 2):
-        newColumn = Column((cols[x], 0), (cols[x + 1], height), 0, "COLUMN NAME HERE")
-        columnObjects.addColumn(newColumn)
-
-    newCols = queryUserAboutColumns(columnObjects)
-
-    maxY, maxX, minY, minX = 0
-
-    for columm in newCols:
-        maxY = max(maxY, columm.getCoords()[0][1], columm.getCoords()[1][1])
-        minY = min(minY, columm.getCoords()[0][1], columm.getCoords()[1][1])
-        maxX = max(maxX, columm.getCoords()[0][0], columm.getCoords()[1][0])
-        minX = min(minX, columm.getCoords()[0][0], columm.getCoords()[1][0])
-
-    allColX = [col[0][0] - minX for col in newCols.getCoords()] + [col[1][0] - minX for col in newCols.getCoords()]
-
-    newImage = image[minY:maxY][minX:maxX]
-
-    return (newImage, newCols, minX, maxX, minY, maxY, allColX)'''
-
-
-''' orderPoints
-    Calculates which of the four coordinates provided are which (TL, BR, TR, BL)
-    Returns rect, with coords in CW direction, and the first coordinate being the top left coord
-'''
-
+    return cells
 
 def orderPoints(pts):
+    """
+    orderPoints
+    Calculates which of the four coordinates provided are which (TL, BR, TR, BL)
+    Returns rect, with coords in CW direction, and the first coordinate being the top left coord
+    :param pts: list of tuples for coordinates
+    :type pts: (int, int)[]
+    :return: ordered list of tuples for coordinates
+    :rtype: (int, int)[]
+    """
     # initialzie a list of coordinates that will be ordered
     # such that the first entry in the list is the top-left,
     # the second entry is the top-right, the third is the
@@ -261,11 +222,18 @@ def orderPoints(pts):
     return rect
 
 
-''' fourPointTransform
+def fourPointTransform(image, pts):
+    """
+    fourPointTransform
     Finds the points which we can pass to cv2.PerspectiveTransform/warpPerspective
     Returns warped image
-'''
-def fourPointTransform(image, pts):
+    :param image: 2D Numpy array of image
+    :type image: numpy.array()(2D)
+    :param pts: coords of corners of quadrilateral contour of page
+    :type pts: (int, int)[]
+    :return: transformed 2D Numpy array of transformed image (after persp. transform applied)
+    :rtype: 2D Numpy array of image (numpy.array() 2D)
+    """
     # obtain a consistent order of the points and unpack them
     # individually
     rect = orderPoints(pts)
@@ -304,11 +272,18 @@ def fourPointTransform(image, pts):
     return warped
 
 
-''' normaliseImage
+def normaliseImage(image, orig):
+    """
+    normaliseImage
     Takes our original image, converts to greyscale, finds the contours of the page and performs a perspective transform on the original image
     Returns B/W thresholded, transformed image
-'''
-def normaliseImage(image, orig):
+    :param image: 2d numpy array of image
+    :type image: numpy.array
+    :param orig: copy of image
+    :type orig: numpy.array
+    :return: transformed image
+    :rtype: numpy.array
+    """
     # convert the image to grayscale, blur it, and find edges
     # in the image
     gray = cvtColor(image, COLOR_BGR2GRAY)
@@ -363,10 +338,21 @@ def normaliseImage(image, orig):
     return transformed
 
 
-''' storeFilesTemporarily these cells in a temp dir
-    Returns the string of the dir
+''' 
     Not used - for testing purposes'''
+
+@DeprecationWarning
 def storeFilesTemporarily(cells, noCols):
+    """
+    storeFilesTemporarily these cells in a temp dir
+    Returns the string of the dir
+    :param cells: List of numpy arrays of the images of cells
+    :type cells: numpy.array(2D)[]
+    :param noCols: number of columns on each (combined) page
+    :type noCols: int
+    :return: String of location where cells are stored (in known naming format)
+    :rtype: str
+    """
     # create new temp directory
     with TemporaryDirectory() as dir:
         for x, image in enumerate(cells):
@@ -376,19 +362,35 @@ def storeFilesTemporarily(cells, noCols):
     return dir
 
 
-''' splitIntoCells
+def splitIntoCells(image, rows, cols):
+    """
+    splitIntoCells
     Splits a large image at the prescribed locations given by [rows] and [cols], and returns a flat list of each sub-image (cell)
     Returns a list of binary cell images
-'''
-def splitIntoCells(image, rows, cols):
+    :param image: 2D binarized Numpy array
+    :type image: numpy.array() (2D)
+    :param rows: 2D list of ints of locations on which to split the 2d image horizontally
+    :type rows: int[]
+    :param cols: 2d list of ints of locations on which to split the 2d image vertically
+    :type cols: int[]
+    :return: list of 2d numpy arrays of cell images in order of row, then col lexicographically
+    :rtype: numpy.array(2d)[]
+    """
     return [a for b in [hsplit(row, cols) for row in vsplit(image, rows)] for a in b]
 
 
-''' convertToCellOfWords
+def convertToCellOfWords(images, noCols):
+    """
+    convertToCellOfWords
     Converts a list of 2d arrays to CellOfWords[]
     Each CellOfWords[] contains a row, col and image (2D Numpy array)
-'''
-def convertToCellOfWords(images, noCols):
+    :param images: 2D Numpy binarized image
+    :type images: numpy.array(2d)
+    :param noCols: number of columns in image (used to get column and row numbers using modular arithmetic)
+    :type noCols: int
+    :return: CellOfWords list of arrays
+    :rtype: CellOfWords[]
+    """
     returnList = []
     for n, image in enumerate(images):
         newWord = CellOfWords([Word(image, n//noCols, n%noCols)], n//noCols, n%noCols)
@@ -396,11 +398,17 @@ def convertToCellOfWords(images, noCols):
     return returnList
 
 
-''' calculateColumns
+@DeprecationWarning
+def calculateColumns(transformed):
+    """
+    calculateColumns
     Calculates the column locations
     Returns a list of binary cell images
-'''
-def calculateColumns(transformed):
+    :param transformed: Transformed (persp. transformed) binarized image given as numpy array
+    :type transformed: numpy.array(2d)
+    :return: list of locations where columns may be
+    :rtype: int[]
+    """
     # find the sum of the columns of pixels - white given as 255, black given as 0
     transformedsumx = transformed.sum(axis=0)
 
@@ -409,9 +417,6 @@ def calculateColumns(transformed):
     columns = zeros(transformedsumx.shape)
     # Set non-columns to 255
     columns[transformedsumx < threshold] = 255
-
-    '''#TODO: REMOVE- USED FOR TESTING
-    showImage(columns)'''
 
     # Create new column Numpy array (for convolutions)
     columns = array(columns).astype(int)
@@ -427,11 +432,16 @@ def calculateColumns(transformed):
     return columnsfiltered
 
 
-''' refactorRows
+def refactorRows(rowsfiltered):
+    """
+    refactorRows
     Takes the suggested rows, and interpolates in order to fill in gaps or remove thin lines
     Returns interpolated rows
-'''
-def refactorRows(rowsfiltered):
+    :param rowsfiltered: suggested y coords of rows
+    :type rowsfiltered: int[]
+    :return: interpolated y coords of rows
+    :rtype: int[]
+    """
     # Find difference between adjacent row lines (i.e. row thicknesses)
     rowsdiff = diff(rowsfiltered)
     # Find average
@@ -456,6 +466,7 @@ def refactorRows(rowsfiltered):
                     rowsdiff[i] += dif
                 except:
                     continue
+                #if not at end of array increase i by 1
                 if (i < rowsdiff.shape[0] - 1):
                     i += 1
                 continue
@@ -470,11 +481,16 @@ def refactorRows(rowsfiltered):
     return rowsfiltered
 
 
-''' calculateRows
+def calculateRows(transformed):
+    """
+    calculateRows
     Calculates position of rows using histogram analysis
     Returns locations of rows in list
-'''
-def calculateRows(transformed):
+    :param transformed: 2d numpy array of image
+    :type transformed: numpy.array(2d)
+    :return: y coords of rows on image
+    :rtype: int[]
+    """
     # Find the sum of each row - white = 255, black = 0
     transformedsumy = transformed.sum(axis=1)[1:-1].astype("int64")
 
@@ -501,15 +517,20 @@ def calculateRows(transformed):
     return rowsfiltered
 
 
-
-''' handleColumnGUI
-    Handles GUI call from frontend to fetch column stuff '''
 def handleColumnGUI(source, noPages):#, progressBar=None):
     # load the image and compute the ratio of the old height
     # to the new height, clone it, and resize it
-    '''if progressBar:
-        progressBar.update("Load images")'''
-
+    '''
+        handleColumnGUI
+        Handles GUI call from frontend to fetch column stuff
+        load PDF from source, get first page, render at low quality then prompt user to edit locations of columns
+        :param source: location of pdf file to load
+        :type source: str
+        :param noPages: number of pages per page of the logbook (two pages next to each other may make up one record)
+        :type noPages: int
+        :return: BytesIO object of the image to load, plus width and height
+        :rtype: (BytesIO(), int, int)
+    '''
     imagesToMerge = []
     allImages = ReadPDF(source, dpi=100, first_page=1, last_page=noPages)
     for page in allImages:
@@ -524,26 +545,20 @@ def handleColumnGUI(source, noPages):#, progressBar=None):
 
         # deslants page into a rectangle - perspective transform
         '''Step 2 - normalise page'''
-        '''if progressBar:
-            progressBar.update("Normalise page " + str(n))'''
 
         transformed = normaliseImage(image, orig)
 
         transformedImageToMerge.append(Image.fromarray(transformed))
 
-    '''if progressBar:
-        progressBar.update("Merge adjacent pages")'''
-
     singleImage = concatenateImages(transformedImageToMerge)
 
     width, height = singleImage.size
 
-    singleImage.show()
+    #singleImage.show()
 
+    #convert PIL object to BytesIO
     imageOutput = BytesIO(singleImage.tobytes())
 
-    '''if progressBar:
-        progressBar.hide()'''
-    return (imageOutput, width, height) # will eventually return string representing the location of the dir Francesca is using to read in cells and
+    return imageOutput, width, height  # will eventually return string representing the location of the dir Francesca is using to read in cells and
 
 #print(handleColumnGUI("Deprecated\OldImagePreprocessing\images\scantest.pdf", 2))
