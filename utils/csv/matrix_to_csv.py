@@ -141,7 +141,7 @@ def split_col(table, field_index, new_cols, which_words=None, separator=' ', res
 
 def matrix_to_csv(table, path):
     with open(path, 'w', newline='') as outfile:
-        writer = csv.writer(outfile)
+        writer = csv.writer(outfile, quoting=csv.QUOTE_MINIMAL)
         writer.writerows(table)
 
 # ----------------------------------------------------------------------------------------------------------------
