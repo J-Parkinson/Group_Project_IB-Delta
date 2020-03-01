@@ -1,3 +1,5 @@
+import pathlib
+
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
 from PyQt5.QtCore import Qt
 from random import randint
@@ -30,7 +32,7 @@ class initial_page(QWidget):
         #################################################
         # Butterfly/insect fact (start page)
         #################################################
-        with open("gui\\resources\\butterflyfacts.txt", "r") as facts:
+        with open(pathlib.Path(__file__).parent / 'resources' / 'butterflyfacts.txt', "r") as facts:
             factlist = facts.read().split("\n")
             fact_text = QLabel(fill("Butterfly fact: " + factlist[randint(0, len(factlist) - 1)], 85))
         fact_text.setStyleSheet('color: black')
