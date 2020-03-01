@@ -8,10 +8,6 @@ import numpy as np
 from PIL import Image
 from scratchSpaces.jamesScratchSpace.matrix_to_csv import matrix_to_csv
 import pathlib
-# Jacks code to get pdfs/images from frontend
-# Abi's code to convert cells to words ([CellOfWords], numberOfRows, numberOfCols)
-# Francesca [[String]] for James
-# Jame
 
 class FilePaths:
     "filenames and paths to data"
@@ -61,7 +57,7 @@ def createCSVFile(pdfLocation, columnLocations = [], widthOfPreviewImage=1, noPa
                 print("Cell of Words List:", printListOfCellOfWords(cellOfWordsList))
 
                 # Abi's CellsToWords
-                inputs = cellsToWords(cellOfWordsList, resultingImage.shape[1]/noPageSpread)
+                inputs = cellsToWords(cellOfWordsList, int((resultingImage.shape[1]/noPageSpread)//100))
 
                 # Francesca's neuralNetOutput
                 wordsDecoded += inferEverything(model, inputs)
