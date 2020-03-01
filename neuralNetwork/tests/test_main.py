@@ -1,7 +1,7 @@
 import unittest
-from main import inferImage, convertFromFilenameToImage, \
+from neuralNetwork.src.main import inferImage, convertFromFilenameToImage, \
     makeStringsFromAllCells, makeStringFromOneCell, inferEverything, takeOutImagesfromOneCell
-from Model import Model, DecoderType
+from neuralNetwork.src.Model import Model, DecoderType
 from dataStructures.logbookScan import CellOfWords, Word
 
 class TestFilePaths:

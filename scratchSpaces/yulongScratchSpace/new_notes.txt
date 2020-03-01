@@ -29,7 +29,7 @@ User behavior:
 
 
 Tutorial
-1) Please make sure the file (PDF of JPEG) only has no cover pages or any other pages than simply spreadsheets. Our program
+1) Please make sure the file (PDF of JPEG) has no cover pages or any other pages than simply spreadsheets. Our program
 only works with identical spreadsheets.
 2) Please make sure the PDF or JPEG is oriented correctly, with the writing horizontal, we don't care if the file is in
 landscape or portrait mode
