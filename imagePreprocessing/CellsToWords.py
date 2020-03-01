@@ -4,15 +4,21 @@ from scipy import ndimage
 
 def cellsToWords(cells, width):
     '''
-    :param cells: [CellOfWords], with words attribute a list of Word objects of length 1 (image of the entire cell)
+    PRECONDITIONS:
+        - Each CellOfWords must have a list of Words (words) of length 1, where the Word's image is the image is the
+    :param cells: [CellOfWords]
     :param width: Convolution width, proportional to the page width
     :return: [CellOfWords], with words attribute a list of Word objects where each Word corresponds to a word detected in the cell
     '''
     newCells = []
     maxRow = 0
     maxCol = 0
+
     for x in cells:
+        # goes through each cell in the list and splits into words
         newp, row, col = cellToWords(x, width)
+
+        # calculates number of rows and columns in the entire list of cells
         maxRow = max(row, maxRow)
         maxCol = max(col, maxCol)
         newCells.append(newp)
@@ -26,6 +32,8 @@ def cellToWords(cellOfWords, width):
     :return: A single CellOfWords object, where the list of Word objects corresponds to the words found in the cell
     '''
     newWords = []
+
+    #
     cell = cellOfWords.words[0].image
     row = cellOfWords.row
     col = cellOfWords.col
@@ -52,7 +60,7 @@ def rowToWords(row, width):
     :return: List of npArrays (images) corresponding to the words found within the row
     '''
     colVals = np.sum(row, axis=0)
-    arrayToUse = np.ones(width)
+    arrayToUse = np.ones(int(width)//100)
     valCols = ndimage.convolve1d(colVals, arrayToUse, mode="nearest")
     maxValRow = np.amax(valCols)
     wordsHere = np.argwhere(valCols >= maxValRow).flatten()
@@ -104,8 +112,6 @@ def removeWhiteSpaceFromWord(word):
     if currentArray.size != 0:
         colVals = np.sum(currentArray, axis=0)
         maxValCol = np.amax(colVals)
-
-
 
         while (len(colVals) > 0) and (colVals[0] >= maxValCol):
             currentArray = np.delete(currentArray, 0, axis=1)
