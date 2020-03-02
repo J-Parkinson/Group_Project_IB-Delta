@@ -1,1 +1,5 @@
-# Todo: add copyrights
+__author__ = "Abigail Wilkinson, James Alner, Jack Parkinson, Francesca Iovu, Suzie Welby, Yulong Huang"
+__copyright__ = "2020 Cambridge Group Project, Group Delta"
+__version__ = "1.0.0"
+__email__ = "mfi23@cam.ac.uk"
+__status__ = "Production"
