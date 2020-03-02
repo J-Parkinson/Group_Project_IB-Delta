@@ -1,3 +1,7 @@
+"""
+DataLoader.py: reads samples, puts them into batches and provides an iterator-interface to go through the data
+"""
+
 from __future__ import division
 from __future__ import print_function
 
