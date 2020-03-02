@@ -92,13 +92,6 @@ class Window(QWidget):
         # The bottom right corner:
         # A stack of useful pages
         #################################################
-        # Todo: design an initial page
-
-        # Initial page
-        #ini_label = QLabel("Initial Page")
-        #ini_label.setStyleSheet('color:#6D214F')
-        #ini_label.move(100, 100)
-        #ini_label.resize(500, 500)
 
         ini_label = initialPage.initial_page(self)
 
