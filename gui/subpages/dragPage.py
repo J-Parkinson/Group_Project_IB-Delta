@@ -45,8 +45,8 @@ class preview(QWidget):
         self.onColumn = 0
         self.setMouseTracking(1)
         self.offset = 10
-        self.pixMap = QPixmap("gui/resources/tempBg.png")
-        self.pixSize = self.pixMap.size()
+        self.pixMap = None
+        self.pixSize = None
 
         # In memory of the lovely stress-reducing button.
         # b = QPushButton("Working atm\nClick me to reduce stress :-)", self)
@@ -54,6 +54,8 @@ class preview(QWidget):
 
     def reset(self, page):
         # draw the boxes
+        self.pixMap = QPixmap("gui/resources/tempBg.png")
+        self.pixSize = self.pixMap.size()
         self.page = page
         self.update()
         return
@@ -395,8 +397,10 @@ class control(QWidget):
                 column_dicts[i] = c.dictionary
 
         table = backendnew.createTable(self.parent.parent.filename,
-                                       columnLocations,
+                                       #columnLocations,
+                                       [375, 790, 1690, 2100, 2520],
                                        rowLocations,
+                                       #[0, self.parent.preview.pixSize.height()],
                                        self.parent.preview.pixSize.width(),
                                        self.parent.preview.pixSize.height(),
                                        self.parent.parent.noPages)
