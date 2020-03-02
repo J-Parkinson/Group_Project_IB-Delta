@@ -83,9 +83,9 @@ def createCSVFile(pdfLocation, columnLocations = [], widthOfPreviewImage=1, noPa
             # Jack's code to find rows, split
             cellOfWordsList = splitCellsAndNormaliseFromArray(resultingImage, colLocs=normalisedColLocations)
 
-            '''for x, word in enumerate(cellOfWordsList):
+            for x, word in enumerate(cellOfWordsList):
                 image = Image.fromarray(word.words[0].image)
-                image.save("segmentedcells/cell" + str(x) + ".png")'''
+                image.save("C:/Users/jrp32/PycharmProjects/Group_Project_IB-Delta/imagePreprocessing/testttt/cell" + str(x) + ".png")
 
 
 
@@ -203,8 +203,8 @@ def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPrevi
                     print(len(img))
                     print("L2")
                     print(len(img[0]))
-                    image = Image.fromarray(word.image)
-                    #image.save("segmentedwords/word5 " + str(word.row) + " - " + str(word.col) + " - " + str(wordno) + ".png")
+                    #image = Image.fromarray(word.image)
+                    #image.save("segmentedwords/finaltest " + str(word.row) + " - " + str(word.col) + " - " + str(wordno) + ".png")
                     #image.show()
 
             # Francesca's neuralNetOutput
