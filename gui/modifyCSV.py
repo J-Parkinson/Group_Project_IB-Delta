@@ -215,7 +215,7 @@ class RulesWindow(QWidget):
                     matrix_to_csv.split_col(self.table, col_index, new_names, which_words=advanced,
                                             resolution_type=matrix_to_csv.ResolutionType(res_index),
                                             separator=splitter, joiner=joiner)
-            map_window = Mappings.MapWindow(self.stack_wid, self.table)
+            map_window = Mappings.MapWindow(self.stack_wid, self.table, self.parent)
             map_window.parent = self.parent
             self.stack_wid.addWidget(map_window)
             self.stack_wid.setCurrentIndex(2)

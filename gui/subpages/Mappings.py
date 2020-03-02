@@ -14,10 +14,10 @@ from .. import modifyCSV
 # Class for the window to allow the user to input mappings from the current CSV format to the standard CSV format.
 # Has scrollable area, keeps lists of constant and column mappings.
 class MapWindow(QWidget):
-    def __init__(self, stack, table):
+    def __init__(self, stack, table, parent):
         super().__init__()
         self.setStyleSheet('color: black; background-color: rgb(248, 246, 238)')
-        self.parent = None
+        self.parent = parent
         self.table = table
         main_layout = QVBoxLayout(self)
         self.setLayout(main_layout)
