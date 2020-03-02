@@ -34,7 +34,7 @@ class ModifyMainWindow(QWidget):
         self.setStyleSheet('color: black')
         self.layout = QGridLayout()
         self.main = QStackedWidget()
-        upload = UploadCSV(self.main)
+        upload = UploadCSV(self.main,self)
         upload.parent = self
         self.main.addWidget(upload)  # index 0
         self.main.setCurrentIndex(0)
@@ -60,7 +60,7 @@ class ModifyMainWindow(QWidget):
         self.layout.removeWidget(self.main)
         self.main.deleteLater()
         new_main = QStackedWidget()
-        new_main.addWidget(UploadCSV(new_main))  # index 0
+        new_main.addWidget(UploadCSV(new_main,self))  # index 0
         new_main.setCurrentIndex(0)
         self.layout.addWidget(new_main, 1, 0)
         self.main = new_main
@@ -69,10 +69,10 @@ class ModifyMainWindow(QWidget):
 # ----------------------------------------------------------------------------------------------------------------
 # Class for the widget to upload a CSV file, contains a pointer to the ModifyMainWindow object (parent) that created it
 class UploadCSV(QWidget):
-    def __init__(self, stack):
+    def __init__(self, stack,parent):
         super().__init__()
         self.setStyleSheet('color: black')
-        self.parent = None
+        self.parent = parent
         self.table = None
         self.stack_wid = stack
         layout = QGridLayout()
@@ -110,7 +110,7 @@ class UploadCSV(QWidget):
     # this object
     def goto_rules(self):
         if self.table is not None:
-            rules_window = RulesWindow(self.stack_wid, self.table)
+            rules_window = RulesWindow(self.stack_wid, self.table,self.parent)
             rules_window.parent = self.parent
             self.stack_wid.addWidget(rules_window)
 
@@ -124,9 +124,9 @@ class UploadCSV(QWidget):
 # through whole page rather than all widgets adjusting their size and getting smaller.
 class RulesWindow(QWidget):
 
-    def __init__(self, stack, table):
+    def __init__(self, stack, table,parent):
         super().__init__()
-        self.parent = None
+        self.parent = parent
         self.table = table
         main_layout = QVBoxLayout(self)
         self.setLayout(main_layout)
@@ -158,17 +158,64 @@ class RulesWindow(QWidget):
     def initUI(self):
 
         title = QLabel("Create Rules to Split Columns")
-        help_text = QLabel()
+        help_text = QLabel("This page allows you to split any existing columns in your notebook into new columns.\n"
+                           "These new columns can then be combined to build a spreadsheet in your standard format "
+                           "using the mapping page.\n\n"
+                           "When creating a rule, select the column to split and then add 1 or more new columns to "
+                           "split into.\n\n"
+                           "You can provide a ‘separator’, such as a comma and space (“, ”), however the default is "
+                           "just a space.\n"
+                           "You can also provide a ‘joiner’, which is used when combining multiple words into a "
+                           "single new column. "
+                           "The default for this is also a space.\n\n"
+                           "The default expectation is that for each word in cells in the row to be split, there is a "
+                           "single new column. The first word then maps to the first new column and so on.\n"
+                           "In order to define a more sophisticated split, the advanced parameter can be used.\n\n"
+                           "This parameter can take multiple forms:\n"
+                           "- 	A single index (i.e. “0” to select the first word in each cell), with indices starting "
+                           "from 0.\n"
+                           "- 	A set of indices (i.e. “[0, 1, 3]” selects the 1st, 2nd and 4th words and joins them "
+                           "in that order with the joiner).\n"
+                           "- 	A range of indices (i.e. “1:5” selects the 2nd to 6th words and joins them with the "
+                           "joiner).\n"
+                           "-	A wildcard “*” which will take the words which are not assigned to any other column "
+                           "for each cell.\n\n"
+                           "Note that negative indices can be used to index from the end (i.e. “-2” refers to the 2nd "
+                           "to last word).\n\n"
+                           "When using these advanced parameters, it is important to specify the way in which index "
+                           "clashes should be dealt with; this is done by selecting the resolution type. These types "
+                           "are:\n"
+                           "-	no_clash (default option):      any index clashes will result in an error\n"
+                           "- 	just_first:                     only the first new column to use that index will have that word added\n"
+                           "- 	just_last:                      only the last new column to use that index will have that word added\n"
+                           "- 	all:                            clashes are ignored, so multiple new columns can refer to the same word\n\n"
+                           "Usage example:\n"
+                           "Split:              New Column:         Resolution:         Split on:           Join on:\n"
+                           "Full Name       First Name           no_clash            (default)           (default)\n"
+                           "                    Advanced:\n"
+                           "                    0\n\n"
+                           "                    New Column:\n"
+                           "                    Middle Name(s)\n"
+                           "                    Advanced:\n"
+                           "                    *\n\n"
+                           "                    New Column:\n"
+                           "                    Last Name\n"
+                           "                    Advanced:\n"
+                           "                    -1\n\n"
+                           "This rule will split the ‘Full Name’ column into 3 new columns, with the first word in the "
+                           "‘First Name’ column, the last word in the ‘Last Name’ column and any other words in the "
+                           "‘Middle Name(s)’ column\n\n")
         help_text.setFont(QFont('Courier', 12))
-        try:
-            path = pathlib.Path(__file__).parent
-            with open(path / 'resources' / 'Splitting_rules.txt', mode='r') as reader:
-                desc = ''
-                for line in reader:
-                    desc += line
-                help_text.setText(desc)
-        except IOError:
-            print('Failed to find file')
+        # try:
+        #     path = pathlib.Path(__file__).parent
+        #     with open(path / 'resources' / 'Splitting_rules.txt', mode='r') as reader:
+        #         desc = ''
+        #         for line in reader:
+        #             desc += line
+        #         help_text.setText(desc)
+        # except IOError:
+        #     print('Failed to find file')
+
 
         self.grid.addWidget(title, 0, 0, 1, 2, Qt.AlignCenter)
         self.grid.addWidget(help_text, 1, 0, 1, 2, Qt.AlignTop)
@@ -215,7 +262,7 @@ class RulesWindow(QWidget):
                     matrix_to_csv.split_col(self.table, col_index, new_names, which_words=advanced,
                                             resolution_type=matrix_to_csv.ResolutionType(res_index),
                                             separator=splitter, joiner=joiner)
-            map_window = Mappings.MapWindow(self.stack_wid, self.table)
+            map_window = Mappings.MapWindow(self.stack_wid, self.table, self.parent)
             map_window.parent = self.parent
             self.stack_wid.addWidget(map_window)
             self.stack_wid.setCurrentIndex(2)

@@ -140,7 +140,6 @@ class file_select(QWidget):
     def upload(self):
         '''
         Commented out for easy testing
-        '''
         noPages = self.askForPages()
 
         if noPages <= 0:
@@ -150,10 +149,10 @@ class file_select(QWidget):
         # columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
         #         # print(columnImage)
 
-        #self.parent.previewImg, self.parent.imgWidth, self.parent.imgHeight\
-         #   = ImageProcess.handleColumnGUI(self.parent.filename, noPages)  # , progressBar)
-        #self.parent.previewImg = Image.frombytes("RGB",(self.parent.imgWidth, self.parent.imgHeight),
-        #                                         self.parent.previewImg.read()).save("gui/resources/tempBg.png")
+        self.parent.previewImg, self.parent.imgWidth, self.parent.imgHeight\
+            = ImageProcess.handleColumnGUI(self.parent.filename, noPages)  # , progressBar)
+        self.parent.previewImg = Image.frombytes("RGB",(self.parent.imgWidth, self.parent.imgHeight),
+                                                self.parent.previewImg.read()).save("gui/resources/tempBg.png")
         self.state = states.uploadState.Running
         self.parent.parent.state = 1  # Loading
         self.parent.setCurrentIndex(1)
@@ -161,11 +160,24 @@ class file_select(QWidget):
 
         '''
         if self.state == states.uploadState.Loaded:
-            self.show_progress_bar()
+            noPages = self.askForPages()
+
+            if noPages <= 0:
+                return
+            self.parent.noPages = noPages
+            # progressBar = ProgressBar(noPages * 2 + 2)
+            # columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
+            #         # print(columnImage)
+
+            self.parent.previewImg, self.parent.imgWidth, self.parent.imgHeight \
+                = ImageProcess.handleColumnGUI(self.parent.filename, noPages)  # , progressBar)
+            self.parent.previewImg = Image.frombytes("RGB", (self.parent.imgWidth, self.parent.imgHeight),
+                                                     self.parent.previewImg.read()).save("gui/resources/tempBg.png")
             self.state = states.uploadState.Running
             self.parent.parent.state = 1  # Loading
             self.parent.setCurrentIndex(1)
             self.parent.drag.reset()
+
         else:
             self.parent.warning("Warning","No file loaded!","Please select a file to load",0)
         #'''
