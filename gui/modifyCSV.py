@@ -34,7 +34,7 @@ class ModifyMainWindow(QWidget):
         self.setStyleSheet('color: black')
         self.layout = QGridLayout()
         self.main = QStackedWidget()
-        upload = UploadCSV(self.main)
+        upload = UploadCSV(self.main,self)
         upload.parent = self
         self.main.addWidget(upload)  # index 0
         self.main.setCurrentIndex(0)
@@ -60,7 +60,7 @@ class ModifyMainWindow(QWidget):
         self.layout.removeWidget(self.main)
         self.main.deleteLater()
         new_main = QStackedWidget()
-        new_main.addWidget(UploadCSV(new_main))  # index 0
+        new_main.addWidget(UploadCSV(new_main,self))  # index 0
         new_main.setCurrentIndex(0)
         self.layout.addWidget(new_main, 1, 0)
         self.main = new_main
@@ -69,10 +69,10 @@ class ModifyMainWindow(QWidget):
 # ----------------------------------------------------------------------------------------------------------------
 # Class for the widget to upload a CSV file, contains a pointer to the ModifyMainWindow object (parent) that created it
 class UploadCSV(QWidget):
-    def __init__(self, stack):
+    def __init__(self, stack,parent):
         super().__init__()
         self.setStyleSheet('color: black')
-        self.parent = None
+        self.parent = parent
         self.table = None
         self.stack_wid = stack
         layout = QGridLayout()
@@ -110,7 +110,7 @@ class UploadCSV(QWidget):
     # this object
     def goto_rules(self):
         if self.table is not None:
-            rules_window = RulesWindow(self.stack_wid, self.table)
+            rules_window = RulesWindow(self.stack_wid, self.table,self.parent)
             rules_window.parent = self.parent
             self.stack_wid.addWidget(rules_window)
 
@@ -124,9 +124,9 @@ class UploadCSV(QWidget):
 # through whole page rather than all widgets adjusting their size and getting smaller.
 class RulesWindow(QWidget):
 
-    def __init__(self, stack, table):
+    def __init__(self, stack, table,parent):
         super().__init__()
-        self.parent = None
+        self.parent = parent
         self.table = table
         main_layout = QVBoxLayout(self)
         self.setLayout(main_layout)
