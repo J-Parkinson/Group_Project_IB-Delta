@@ -62,6 +62,8 @@ def createCSVFile(pdfLocation, columnLocations = [], widthOfPreviewImage=1, noPa
                 # Francesca's neuralNetOutput
                 wordsDecoded += inferEverything(model, inputs)
 
+                print("PLS WORK")
+                print(wordsDecoded)
         else:
             normalisedColLocations = list((percentageColLocations * (resultingImage.shape[1])).astype(int))
             print(columnLocations, normalisedColLocations)
@@ -131,11 +133,11 @@ def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPrevi
                 buffer = []
 
                 normalisedColLocations = list((percentageColLocations * (resultingImage.shape[1])).astype(int))
-                #print(columnLocations, normalisedColLocations)
+                print(columnLocations, normalisedColLocations)
                 # Jack's code to find rows, split
                 cellOfWordsList = splitCellsAndNormaliseFromArray(resultingImage, colLocs=normalisedColLocations)
 
-                #print("Cell of Words List:", printListOfCellOfWords(cellOfWordsList))
+                print("Cell of Words List:", printListOfCellOfWords(cellOfWordsList))
 
                 # Abi's CellsToWords
                 inputs = cellsToWords(cellOfWordsList, resultingImage.shape[1] / noPageSpread)
@@ -162,26 +164,27 @@ def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPrevi
             # Abi's CellsToWords
             print("width:", resultingImage.shape[1] / noPageSpread)
             inputs = cellsToWords(cellOfWordsList, resultingImage.shape[1] / noPageSpread)
-            listOfCells, cols, rows = inputs
 
             for cellno, cell in enumerate(inputs[0]):
                 for wordno, word in enumerate(cell.words):
-                    print("segmentedwords/word5 " + str(word.row) + " - " + str(word.col) + " - " + str(wordno) + ".png")
+                    #print("segmentedwords/word5 " + str(word.row) + " - " + str(word.col) + " - " + str(wordno) + ".png")
                     img = word.image
                     print("L1")
                     print(len(img))
                     print("L2")
                     print(len(img[0]))
                     image = Image.fromarray(word.image)
-                    #image.save("segmentedwords/word8 " + str(word.row) + " - " + str(word.col) + " - " + str(wordno) + ".png")
+                    #image.save("segmentedwords/word5 " + str(word.row) + " - " + str(word.col) + " - " + str(wordno) + ".png")
                     #image.show()
 
             # Francesca's neuralNetOutput
             wordsDecoded += inferEverything(model, inputs)
-            print(wordsDecoded)
+            #print(wordsDecoded)
 
-            #matrix_to_csv(wordsDecoded, "test16.csv")
+            #matrix_to_csv(wordsDecoded, "test1.csv")
 
     return wordsDecoded
 
 #createTable('../imagePreprocessing/images/scantest2.pdf', columnLocations=[375, 790, 1690, 2100, 2520], widthOfPreviewImage=3122)
+
+
