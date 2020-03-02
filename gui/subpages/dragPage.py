@@ -394,12 +394,12 @@ class control(QWidget):
             if c.dictionary is not None:
                 column_dicts[i] = c.dictionary
 
-        table = backendnew.createTable(self.parent.filename,
+        table = backendnew.createTable(self.parent.parent.filename,
                                        columnLocations,
                                        rowLocations,
-                                       self.parent.imgWidth,
-                                       self.parent.imgHeight,
-                                       self.parent.noPages)
+                                       self.parent.preview.pixSize.width(),
+                                       self.parent.preview.pixSize.height(),
+                                       self.parent.parent.noPages)
         correct_table(table, column_dicts)
         # transfer table to saveCSV
 

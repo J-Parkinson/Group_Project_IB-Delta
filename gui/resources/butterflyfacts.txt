@@ -19,3 +19,4 @@ Many insects can carry 50 times their own body weight. This would be like an adu
 There are over a million described species of insects. Some people estimate there are actually between 15 and 30 million species.
 Butterflies and insects have their skeletons on the outside of their bodies, called the exoskeleton. This protects the insect and keeps water inside their bodies so they don’t dry out.
 The word "bug" in computer science can be traced back to 1947, where a trapped moth in one of the circuit relays of a computer caused a short circuit - therefore the computer had to be "debugged" to fix the issue.
+Study of the structural coloration of the wing scales of swallowtail butterflies has led to the development of more efficient light-emitting diodes, and is inspiring nanotechnology research to produce paints that do not use toxic pigments and the development of new display technologies.

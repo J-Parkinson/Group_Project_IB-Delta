@@ -1,3 +1,8 @@
+"""
+Model.py: creates the model as described above, loads and saves models, manages the TF sessions and provides an
+interface for training and inference
+"""
+
 from __future__ import division
 from __future__ import print_function
 
