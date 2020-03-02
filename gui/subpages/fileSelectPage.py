@@ -150,9 +150,10 @@ class file_select(QWidget):
         # columnImage = ImageProcess.handleColumnGUI(self.parent.filename, noPages, progressBar)
         #         # print(columnImage)
 
-        self.parent.previewImg, self.parent.imgWidth, self.parent.imgHeight\
-            = ImageProcess.handleColumnGUI(self.parent.filename, noPages)  # , progressBar)
-        Image.frombytes("RGB", (self.parent.imgWidth, self.parent.imgHeight), self.parent.previewImg.read()).show()
+        #self.parent.previewImg, self.parent.imgWidth, self.parent.imgHeight\
+         #   = ImageProcess.handleColumnGUI(self.parent.filename, noPages)  # , progressBar)
+        #self.parent.previewImg = Image.frombytes("RGB",(self.parent.imgWidth, self.parent.imgHeight),
+        #                                         self.parent.previewImg.read()).save("gui/resources/tempBg.png")
         self.state = states.uploadState.Running
         self.parent.parent.state = 1  # Loading
         self.parent.setCurrentIndex(1)

@@ -59,6 +59,12 @@ class Word:
         self.row = row
         self.col = col
 
+    def __eq__(self, other):
+        try:
+            return isinstance(other, Word) and self.image.all() == other.image.all() and self.row == other.row and self.col == other.col
+        except:
+            return False
+
 class CellOfWords:
 
     def __init__(self, words, row=None, col=None):
@@ -71,3 +77,9 @@ class CellOfWords:
         self.words = words
         self.row = row
         self.col = col
+
+    def __eq__(self, other):
+        try:
+            return isinstance(other, CellOfWords) and self.words == other.words and self.row == other.row and self.col == other.col
+        except:
+            return False

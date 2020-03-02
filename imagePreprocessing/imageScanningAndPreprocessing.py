@@ -115,6 +115,7 @@ def concatenateImages(images, resample=Image.BICUBIC):
         xPosition += image.width
     return dest
 
+
 @DeprecationWarning
 def splitCellsAndNormalise(source):
     '''

@@ -69,7 +69,7 @@ def rowToWords(row, width):
     # Flattens the array into a vertical sum
     colVals = np.sum(row, axis=0)
 
-    # Convolves the summation array (performs a moving average to smooth out peaks and troughs
+    # Convolves the summation array (performs a moving average to smooth out peaks and troughs)
     arrayToUse = np.ones(int(width // 100))
     valCols = ndimage.convolve1d(colVals, arrayToUse, mode="nearest")
 
@@ -92,12 +92,16 @@ def cellToRows(cell, width):
     # Flattens the array into a horizontal sum
     rowVals = np.sum(cell, axis=1)
 
-    # Convolves the summation array (performs a moving average to smooth out peaks and troughs
+    # Convolves the summation array (performs a moving average to smooth out peaks and troughs)
     arrayToUse = np.ones(int(width // 100))
     valRows = ndimage.convolve1d(rowVals, arrayToUse, mode="nearest")
+
+    # Filters out rows that are (mostly) made up of white pixels, need 0.97 because of letter tails
     maxValRow = np.amax(valRows)
-    wordsHere = np.argwhere(valRows>=maxValRow*0.97).flatten()
-    rows = np.array_split(cell, wordsHere, axis=0)
+    gapsHere = np.argwhere(valRows>=maxValRow*0.97).flatten()
+    rows = np.array_split(cell, gapsHere, axis=0)
+
+    # Filters out the small marks/empty columns
     rows = [row for row in rows if (row.shape[0] > 1 and row.shape[1]>1)]
     return rows
 
@@ -108,15 +112,23 @@ def stripCell(image):
     '''
     toRemove = []
     newImage = image
+
+    # Adds row indices to be deleted, i.e. 4 from the top and 4 from the bottom of the image
     for x in range(newImage.shape[0]):
         if x - 1 < min(4, newImage.shape[0]) or x - 1 > max(newImage.shape[0] - 5, 0):
             toRemove.append(x)
+
+    # Removes the leading and trailing rows from the image
     if newImage.shape[0] > 8:
         newImage = np.delete(newImage, toRemove, 0)
     toRemove = []
+
+    # Adds column indices to be deleted, i.e. 8 from the left and 8 from the right of the image
     for x in range(newImage.shape[1]):
         if x - 1 < min(8, newImage.shape[1]) or x - 1 > max(newImage.shape[1] - 9, 0):
             toRemove.append(x)
+
+    # Removes the leading and trailing columns from the image
     if newImage.shape[1] > 8:
         newImage = np.delete(newImage, toRemove, 1)
     return newImage
@@ -127,21 +139,25 @@ def removeWhiteSpaceFromWord(word):
     :param word: NpArray (image) of word
     :return: NpArray (image) of word with whitespace stripped from edges
     '''
+    # Flattens the array into a horizontal sum
     rowVals = np.sum(word, axis=1)
     maxValRow = np.amax(rowVals)
 
+    # Removes white rows from the image
     whiteRows = np.argwhere(rowVals==maxValRow).flatten()
     currentArray = np.delete(word, whiteRows, axis=0)
+
     if currentArray.size != 0:
+        # Flattens the array into a vertical sum
         colVals = np.sum(currentArray, axis=0)
         maxValCol = np.amax(colVals)
 
-
-
+        # Removes the leading whitespace of the word
         while (len(colVals) > 0) and (colVals[0] >= maxValCol):
             currentArray = np.delete(currentArray, 0, axis=1)
             colVals = np.delete(colVals, 0)
 
+        # Removes the trailing whitespace of the word
         while (len(colVals) > 0) and (colVals[-1] >= maxValCol):
             currentArray = np.delete(currentArray, -1, axis=1)
             colVals = np.delete(colVals, -1)
