@@ -7,4 +7,7 @@ As part of the Cambridge University IB Group Project we were given the task of c
 Result of front end integration:
 THE MAIN main, init
 /gui, with /resources, /subpages and main pages
-/utils, with /csv and /backend stuff (to be integrated)
+/utils, with /csv and /backend stuff
+
+#More Information
+For more information, please find /gui/resources/tutorial.pdf
