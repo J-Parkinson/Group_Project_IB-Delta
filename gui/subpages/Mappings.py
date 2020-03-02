@@ -46,21 +46,21 @@ class MapWindow(QWidget):
     def initUI(self):
         title = QLabel("Create Mappings to Split Columns")
 
-        help_text = QLabel("This page allows you to map existing columns from the notebook and splitting into columns "
+        help_text = QLabel("This page allows you to map existing columns from the notebook and splitting into columns \n"
                            "in your standard CSV format.\n\n"
-                           "Each column in the standard format can be mapped to either a constant text value, or 1 or "
+                           "Each column in the standard format can be mapped to either a constant text value, or 1 or \n"
                            "more existing columns.\n"
                            "When joining multiple existing columns, they are joined in the order they are selected "
                            "in.\n"
                            "Unmapped columns are left blank in the output CSV.\n\n"
-                           "A joiner can also be specified, which is used to join together multiple existing columns "
+                           "A joiner can also be specified, which is used to join together multiple existing columns \n"
                            "into a single column in the standard CSV format.\n\n"
                            "Usage example:\n\n"
                            "Standard column:        From column:		Joiner:\n"
                            "Scientific Name         Genus                   (default)\n"
                            "                            From column:\n"
                            "                            Species\n\n"
-                           "This will map the text from the columns ‘Genus’ and ‘Species’ in the existing table to the"
+                           "This will map the text from the columns ‘Genus’ and ‘Species’ in the existing table to the\n"
                            " ‘Scientific Name’ column in the standard format, joining them with a space.")
         # help_text.setFont(QFont('Courier', 12))
         # try:
