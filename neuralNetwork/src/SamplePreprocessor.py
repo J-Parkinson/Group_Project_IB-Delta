@@ -1,3 +1,7 @@
+"""
+SamplePreprocessor.py: prepares the images from the IAM dataset for the NN
+"""
+
 from __future__ import division
 from __future__ import print_function
 

@@ -18,7 +18,9 @@ class FilePaths:
     fnCharList = '../model/charList.txt'
     fnAccuracy = '../model/accuracy.txt'
     fnTrain = '../data/'
+    fnCorpus = '../data/corpus.txt'
     fnInfer = '../data/latinTest.png'
+
 
 def train(model, loader):
     "train NN"
@@ -72,7 +74,7 @@ def validate(model, loader):
         iterInfo = loader.getIteratorInfo()
         print('Batch:', iterInfo[0], '/', iterInfo[1])
         batch = loader.getNext()
-        (recognized, _) = model.inferBatch(batch)
+        recognized = model.inferBatch(batch)
 
         print('Ground truth -> Recognized')
         for i in range(len(recognized)):
@@ -91,51 +93,28 @@ def validate(model, loader):
     return charErrorRate
 
 
-def makeSomeAbiInput():
-    cell0word0 = Word(convertFromFilenameToImage('../data/latinTest.png'), 0, 0)
-    cell0word1 = Word(convertFromFilenameToImage('../data/09352.PNG'), 0, 0)
-    cellOfWords0 = CellOfWords([cell0word0, cell0word1], 0, 0)
-    cell1word0 = Word(convertFromFilenameToImage('../data/quote.png'), 0, 0)
-    cell1word1 = Word(convertFromFilenameToImage('../data/quote.png'), 0, 0)
-    cell1word2 = Word(convertFromFilenameToImage('../data/quote.png'), 0, 0)
-    cellOfWords1 = CellOfWords([cell1word0, cell1word1, cell1word2], 0, 1)
-    cellOfWords2 = CellOfWords([cell1word0, cell1word1, cell1word2], 0, 1)
-    cellOfWords3 = CellOfWords([cell0word0, cell0word1], 1, 1)
-    cellOfWords4 = CellOfWords([], 1, 1)
-    listOfCellsOfWords = [cellOfWords0, cellOfWords1, cellOfWords2, cellOfWords3, cellOfWords4, cellOfWords4]
-    # listOfCellsOfWords = [cellOfWords0, cellOfWords1, cellOfWords2, cellOfWords3]
-    return (listOfCellsOfWords, 2, 3)
-
-
-def makeACellOfWords():
-    cell0word0 = Word(convertFromFilenameToImage('../data/latinTest.png'), 0, 0)
-    cell0word1 = Word(convertFromFilenameToImage('../data/09352.PNG'), 0, 0)
-    cellOfWords0: CellOfWords = CellOfWords([cell0word0, cell0word1], 0, 0)
-    return cellOfWords0
-
-
 def convertFromFilenameToImage(fnImg):
+    '''
+    Converting a file path name into an image
+    Used purely for testing purposes
+    :param fnImg: a path to an image
+    :return: an image = a list of lists of numbers
+    '''
     return cv2.imread(fnImg, cv2.IMREAD_GRAYSCALE)
 
-
-def infer(model, fnImg):
-    "recognize text in image provided by file path"
-    img = preprocess(cv2.imread(fnImg, cv2.IMREAD_GRAYSCALE), Model.imgSize)
-    batch = Batch(None, [img])
-    (recognized, probability) = model.inferBatch(batch, True)
-    print('Recognized:', '"' + recognized[0] + '"')
-    print('Probability:', probability[0])
-
-
-# MINE
-
-def inferImage(model, img):  # TODO: CAN be optimzed to take in a list for batch to have size of the list
+def inferImage(model, img):
+    '''
+    Infer the string out of an image using the trained model
+    Get rid of images that are too small on either side since they're most likely to just be column or row lines,
+    or dittos
+    We get rid of dittos because the NN could only identify most of the ditto image as dittos but the rest would just be
+    random letters or symbols making the output too noisy
+    :param model: a Model object
+    :param img: an image
+    :return: a string
+    '''
     if len(img) < 25 or len(img[0]) < 25:
         return ''
-    # print("L1")
-    # print(len(img))
-    # print("L2")
-    # print(len(img[0]))
     img = preprocess(img, Model.imgSize)
     batch = Batch(None, [img])
     recognized = model.inferBatch(batch, True)
@@ -143,10 +122,11 @@ def inferImage(model, img):  # TODO: CAN be optimzed to take in a list for batch
 
 
 def takeOutImagesfromOneCell(cellOfWords):
-    """
-
-    :type cellOfWords: CellOfWords
-    """
+    '''
+    Turn a CellOfWords into a list of the images of its words
+    :param cellOfWords:  CellOfWords object
+    :return: a list of images
+    '''
     toReturn = []
     words = cellOfWords.words
     if len(words) == 0:
@@ -154,11 +134,17 @@ def takeOutImagesfromOneCell(cellOfWords):
     word: Word
     for word in words:
         toReturn.append(word.image)
-    return toReturn  # this is a list of images
+    return toReturn
 
 
 def makeStringFromOneCell(model, cellOfWords):
-    images = takeOutImagesfromOneCell(cellOfWords)  # check if list of images is empty!!
+    '''
+    Turn one CellOfWords into its corresponding string
+    :param model: a Model object
+    :param cellOfWords: a CellOfWords object
+    :return: a string
+    '''
+    images = takeOutImagesfromOneCell(cellOfWords)
     if len(images) == 0:
         return ''
     toConcatinate = []
@@ -170,6 +156,12 @@ def makeStringFromOneCell(model, cellOfWords):
 
 
 def makeStringsFromAllCells(model, listOfCellsOfWords):
+    '''
+    Convert each cell into a list of words
+    :param model: a Model object
+    :param listOfCellsOfWords: list of CellOfWords objects
+    :return: list of strings
+    '''
     toReturn = []
     for cellOfWords in listOfCellsOfWords:
         string = makeStringFromOneCell(model, cellOfWords)
@@ -178,22 +170,38 @@ def makeStringsFromAllCells(model, listOfCellsOfWords):
 
 
 def makeListOfLists(wordsFromAllCells, numberOfCols):
-    numberOfCols = numberOfCols +1;
+    '''
+    Spliting a list of strings into chunks of size numberOfCols each
+    :param wordsFromAllCells: list of strings
+    :param numberOfCols: integer
+    :return: list of lists of words
+    '''
+    numberOfCols = numberOfCols + 1;
     for i in range(0, len(wordsFromAllCells), numberOfCols):
         yield wordsFromAllCells[i:i + numberOfCols]  # this is a list of lists of lists of image
 
 
 def inferEverything(model, abi):
+    '''
+    Final function
+    :param model: a Model object
+    :param abi: a list of CellOfWords objects
+    :return: list of lists of words
+    '''
     listOfCells, rows, cols = abi
-    l = makeStringsFromAllCells(model, listOfCells)
-    l = list(
-        makeListOfLists(l, rows))  # split list into rows: each row has the length of the number of columns in the thing
-    return l;
+    finalList = makeStringsFromAllCells(model, listOfCells)
+    finalList = list(
+        makeListOfLists(finalList, rows))
+    return finalList;
 
 
 def main():
     '''
-    :return: whatever you want
+    Do whatever you want:
+    - can retrain the NN with a different decoding algorithm than best path decoding
+    Warning: that will take 20 hours at least on a CPU and this code works with the CPU version of tensorflow
+    We decided current decoding is best since we want to decode latin words, not english
+    :return: string
     '''
     "main function"
     # optional command line args
@@ -236,7 +244,8 @@ def main():
         print(open(FilePaths.fnAccuracy).read())
         model = Model(open(FilePaths.fnCharList).read(), DecoderType.BestPath, mustRestore=True,
                       dump=None)  # change dump to
-        infer(model, FilePaths.fnInfer)
+        print(inferImage(model, convertFromFilenameToImage(FilePaths.fnInfer)))
+
 
 if __name__ == '__main__':
     main()
