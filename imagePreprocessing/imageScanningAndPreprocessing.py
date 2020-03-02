@@ -187,7 +187,6 @@ def splitCellsAndNormaliseFromArray(image, colLocs=None):
     # splits image along col and row locations
     '''Step 5 - cell splitting'''
     cells = convertToCellOfWords(splitIntoCells(transformed, rowLocations, colLocations), len(rowLocations) + 1)
-
     return cells
 
 def orderPoints(pts):
@@ -504,10 +503,6 @@ def calculateRows(transformed):
     # convolve - smooth out response, remove small rows next to each other
     tsy2 = convolve1d(convolve1d(transformedsumy, arrayToUse, mode="nearest"),
                       arrayToUse, mode="nearest")
-
-    from matplotlib import pyplot as plt
-    plt.plot(tsy2)
-    plt.show()
 
     # find max vals (i.e. most probable rows)
     rowsfiltered = argrelextrema(tsy2, greater_equal)[0]

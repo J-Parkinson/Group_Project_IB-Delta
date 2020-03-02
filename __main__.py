@@ -178,7 +178,7 @@ class Window(QWidget):
         def tutorial_signal():
             if self.load_warning():
                 print("button 2 pressed")
-                filepath = pathlib.Path(__file__).parent / 'gui' / 'resources' / 'loadThisFile.docx'
+                filepath = pathlib.Path(__file__).parent / 'gui' / 'resources' / 'tutorial.pdf'
                 if platform.system() == 'Darwin':
                     subprocess.call(('open', filepath))
                 elif platform.system() == 'Windows':
