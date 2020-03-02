@@ -11,7 +11,7 @@ from utils.structures import logbookScan as Scan, states
 from utils.spelling.spell_check import correct_table
 
 
-#from imagePreprocessing import backendnew
+from imagePreprocessing import backendnew
 
 
 def newPreset():
