@@ -398,7 +398,7 @@ class control(QWidget):
 
         table = backendnew.createTable(self.parent.parent.filename,
                                        #columnLocations,
-                                       [375, 790, 1690, 2100, 2520],
+                                       [400, 850, 1805, 2241, 2680],
                                        rowLocations,
                                        #[0, self.parent.preview.pixSize.height()],
                                        self.parent.preview.pixSize.width(),
