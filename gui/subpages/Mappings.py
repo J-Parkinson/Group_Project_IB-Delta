@@ -113,7 +113,8 @@ class MapWindow(QWidget):
             else:
                 subprocess.call(('xdg-open', save_path))
 
-        self.parent.reset(False)
+        # TODO: This seems to be breaking things, what does it do?
+        # self.parent.reset(False)
 
 
 # ----------------------------------------------------------------------------------------------------------------
