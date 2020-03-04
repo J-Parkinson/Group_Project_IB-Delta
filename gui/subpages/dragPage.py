@@ -405,6 +405,9 @@ class control(QWidget):
                                        self.parent.preview.pixSize.height(),
                                        self.parent.parent.noPages)
         correct_table(table, column_dicts)
+
+        titles = [c.fieldName for c in self.page.columnList]
+        table.insert(0, titles)
         # transfer table to saveCSV
 
         upload.save_page.table = table
