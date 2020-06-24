@@ -397,8 +397,8 @@ class control(QWidget):
                 column_dicts[i] = c.dictionary
 
         table = backendnew.createTable(self.parent.parent.filename,
-                                       #columnLocations,
-                                       [400, 850, 1805, 2241, 2680],
+                                       columnLocations,
+                                       #[400, 850, 1805, 2241, 2680],
                                        rowLocations,
                                        #[0, self.parent.preview.pixSize.height()],
                                        self.parent.preview.pixSize.width(),

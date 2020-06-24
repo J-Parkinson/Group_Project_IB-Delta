@@ -140,8 +140,9 @@ class file_select(QWidget):
     def upload(self):
         '''
         Commented out for easy testing
+        
         noPages = self.askForPages()
-
+        
         if noPages <= 0:
             return
         self.parent.noPages = noPages
@@ -158,7 +159,7 @@ class file_select(QWidget):
         self.parent.setCurrentIndex(1)
         self.parent.drag.reset()
 
-        '''
+        #'''
         if self.state == states.uploadState.Loaded:
             noPages = self.askForPages()
 
