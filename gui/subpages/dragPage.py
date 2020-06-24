@@ -193,8 +193,8 @@ class preview(QWidget):
         return errors
 
     def scaleBack(self):
-        w_factor = self.pixMap.width() / self.pixSize.width()
-        h_factor = self.pixMap.height() / self.pixSize.height()
+        w_factor = self.pixSize.width() / self.pixMap.width()
+        h_factor = self.pixSize.height() / self.pixMap.height()
         for c in self.page.columnList:
             c.tlCoord = (c.tlCoord[0]*w_factor, c.tlCoord[1]*h_factor)
             c.brCoord = (c.brCoord[0] * w_factor, c.brCoord[1] * h_factor)
