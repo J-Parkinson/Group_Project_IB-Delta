@@ -1,0 +1,9 @@
+venv/
+.idea/
+*.pyc
+.idea/Group_Project_IB-Delta.iml
+*.iml
+yulongScratchSpace/__pycache__/__main__.cpython-37.pyc
+*.iml
+.idea/Group_Project_IB-Delta.iml
+.idea/misc.xml

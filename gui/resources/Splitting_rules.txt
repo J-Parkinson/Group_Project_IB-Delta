@@ -1,0 +1,55 @@
+Splitting rules:
+
+This page allows you to split any existing columns in your notebook into new columns.
+These new columns can then be combined to build a spreadsheet in your standard format using the mapping page.
+
+
+When creating a rule, select the column to split and then add 1 or more new columns to split into.
+
+You can provide a ‘separator’, such as a comma and space (“, ”), however the default is just a space.
+You can also provide a ‘joiner’, which is used when combining multiple words into a single new column.
+The default for this is also a space.
+
+The default expectation is that for each word in cells in the row to be split, there is a single new
+column. The first word then maps to the first new column and so on.
+In order to define a more sophisticated split, the advanced parameter can be used.
+
+This parameter can take multiple forms:
+ -      A single index (i.e. “0” to select the first word in each cell), with indices starting from 0.
+ -      A set of indices (i.e. “[0, 1, 3]” selects the 1st, 2nd and 4th words and joins them in that
+        order with the joiner).
+ -      A range of indices (i.e. “1:5” selects the 2nd to 6th words and joins them with the joiner).
+ -      A wildcard “*” which will take the words which are not assigned to any other column for each cell.
+
+Note that negative indices can be used to index from the end (i.e. “-2” refers to the 2nd to last word).
+
+When using these advanced parameters, it is important to specify the way in which index clashes should be
+dealt with; this is done by selecting the resolution type. These types are:
+
+ -    no_clash (default option):    any index clashes will result in an error
+ -    just_first:                   only the first new column to use that index will have that word added
+ -    just_last:                    only the last new column to use that index will have that word added
+ -    all:                          clashes are ignored, so multiple new columns can refer to the same word
+
+Usage example:
+
+Split:         New Column:          Resolution:     Split on:       Join on:
+Full Name      First Name           no_clash        (default)       (default)
+
+               Advanced:
+               0
+
+               New Column:
+               Middle Name(s)
+
+               Advanced:
+               *
+
+               New Column:
+               Last Name
+
+               Advanced:
+               -1
+
+This rule will split the ‘Full Name’ column into 3 new columns, with the first word in the ‘First Name’
+column, the last word in the ‘Last Name’ column and any other words in the ‘Middle Name(s)’ column
