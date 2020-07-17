@@ -62,8 +62,10 @@ def colPercToNewPage(location, pagePerc, newPage):
 
 def columnTransform(oldPageDimensions, newPageDimensions, columnLocations):
     #First calculate page and percentage location of each column
-    oldPageWidthCumulative = np.cumsum(np.array([0] + array[1] for array in oldPageDimensions))
-    newPageWidthCumulative = np.cumsum(np.array([0] + array[1] for array in newPageDimensions))
+    oldPageWidthCumulative = np.cumsum(np.array([0] + val[1] for val in oldPageDimensions))
+    smallestHeight = min([array[0] for array in newPageDimensions])
+    adjustedNewPageDimensions = [(val[0], val[1] * smallestHeight / val[0]) for val in newPageDimensions]
+    newPageWidthCumulative = np.cumsum(np.array([0] + array[1] for array in adjustedNewPageDimensions))
     pagePercentages = [colLocToPagePerc(loc, oldPageWidthCumulative) for loc in columnLocations]
     #Then apply proportions to new pages
     newPageLocs = [colPercToNewPage(n, pagePercentages, newPageWidthCumulative) for n in range(len(columnLocations))]
