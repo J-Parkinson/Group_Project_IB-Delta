@@ -64,21 +64,12 @@ def columnTransform(oldPageDimensions, newPageDimensions, columnLocations):
     #First calculate page and percentage location of each column
     oldPageWidthCumulative = np.cumsum(np.array([0] + [val[1] for val in oldPageDimensions]))
     smallestHeight = min([array[0] for array in newPageDimensions])
-    print(newPageDimensions)
     adjustedNewPageDimensions = [(val[0], val[1] * smallestHeight / val[0]) for val in newPageDimensions]
     newPageWidthCumulative = np.cumsum(np.array([0] + [val[1] for val in adjustedNewPageDimensions]))
     pagePercentages = [colLocToPagePerc(loc, oldPageWidthCumulative) for loc in columnLocations]
     #Then apply proportions to new pages
     newPageLocs = [colPercToNewPage(n, pagePercentages, newPageWidthCumulative) for n in range(len(columnLocations))]
     return newPageLocs
-
-#def displayImageForTestingPurposes(image, cols):
-#
-#    for col in cols:
-#        ImageDraw.Draw(img).line([(col, 0), (col, img.height - 1)], (255, 0, 0))
-#    img.show()
-
-
 
 def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPreviewImage=1,
                 heightOfPreviewImage=1, noPageSpread=1):
@@ -130,7 +121,7 @@ def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPrevi
 
                 resultingImage = codeToMergeImages(buffer)
 
-                displayImageForTestingPurposes(resultingImage, normalisedCols)
+                #displayImageForTestingPurposes(resultingImage, normalisedCols)
 
                 cellOfWordsList = calculateRowsAndSplit(resultingImage, normalisedCols)
 
@@ -150,12 +141,12 @@ def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPrevi
             # Jack's code to find rows, split
             norm = normaliseImageToArray(image)
 
-            norm = resize(norm, dsize=initialPageSpreadDimensions[0], interpolation=INTER_NEAREST)
+            newCols = [(int(num * norm.shape[1] / initialPageSpreadDimensions[0][0])) for num in columnLocations]
 
-            cellOfWordsList = calculateRowsAndSplit(norm, initialPageSpreadDimensions)
+            cellOfWordsList = calculateRowsAndSplit(norm, newCols)
 
             # Abi's CellsToWords
-            inputs = cellsToWords(cellOfWordsList, resultingImage.shape[1] / noPageSpread)
+            inputs = cellsToWords(cellOfWordsList, norm.shape[1] / noPageSpread)
 
             # Francesca's neuralNetOutput
             wordsDecoded += inferEverything(model, inputs)
