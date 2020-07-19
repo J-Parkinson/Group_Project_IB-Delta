@@ -6,7 +6,7 @@ from pdf2image import convert_from_path as ReadPDF
 from numpy import array
 from cv2 import resize, INTER_NEAREST
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 from utils.csv.matrix_to_csv import matrix_to_csv
 import pathlib
 
@@ -62,14 +62,21 @@ def colPercToNewPage(location, pagePerc, newPage):
 
 def columnTransform(oldPageDimensions, newPageDimensions, columnLocations):
     #First calculate page and percentage location of each column
-    oldPageWidthCumulative = np.cumsum(np.array([0] + val[1] for val in oldPageDimensions))
+    oldPageWidthCumulative = np.cumsum(np.array([0] + [val[1] for val in oldPageDimensions]))
     smallestHeight = min([array[0] for array in newPageDimensions])
+    print(newPageDimensions)
     adjustedNewPageDimensions = [(val[0], val[1] * smallestHeight / val[0]) for val in newPageDimensions]
-    newPageWidthCumulative = np.cumsum(np.array([0] + array[1] for array in adjustedNewPageDimensions))
+    newPageWidthCumulative = np.cumsum(np.array([0] + [val[1] for val in adjustedNewPageDimensions]))
     pagePercentages = [colLocToPagePerc(loc, oldPageWidthCumulative) for loc in columnLocations]
     #Then apply proportions to new pages
     newPageLocs = [colPercToNewPage(n, pagePercentages, newPageWidthCumulative) for n in range(len(columnLocations))]
     return newPageLocs
+
+def displayImageForTestingPurposes(image, cols):
+    for col in cols:
+        ImageDraw.Draw(img).line([(col, 0), (col, img.height - 1)], (255, 0, 0))
+    img.show()
+
 
 
 def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPreviewImage=1,
@@ -116,11 +123,13 @@ def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPrevi
                 # Jack's code to find rows, split
                 buffer = [normaliseImageToArray(image) for image in buffer]
 
-                imageCoords = [image.shape[0:1] for image in buffer]
+                imageCoords = [image.shape[::-1] for image in buffer]
 
                 normalisedCols = columnTransform(initialPageSpreadDimensions, imageCoords, columnLocations)
 
                 resultingImage = codeToMergeImages(buffer)
+
+                displayImageForTestingPurposes(resultingImage, normalisedCols)
 
                 cellOfWordsList = calculateRowsAndSplit(resultingImage, normalisedCols)
 

@@ -575,6 +575,6 @@ def handleColumnGUI(source, noPages):#, progressBar=None):
     #convert PIL object to BytesIO
     imageOutput = BytesIO(singleImage.tobytes())
 
-    return (imageOutput, width, height), [image.shape[0:1] for image in transformedImageToMerge]  # will eventually return string representing the location of the dir Francesca is using to read in cells and
+    return (imageOutput, width, height), [(image.width, image.height) for image in transformedImageToMerge]  # will eventually return string representing the location of the dir Francesca is using to read in cells and
 
 #print(handleColumnGUI("Deprecated\OldImagePreprocessing\images\scantest.pdf", 2))
