@@ -72,10 +72,11 @@ def columnTransform(oldPageDimensions, newPageDimensions, columnLocations):
     newPageLocs = [colPercToNewPage(n, pagePercentages, newPageWidthCumulative) for n in range(len(columnLocations))]
     return newPageLocs
 
-def displayImageForTestingPurposes(image, cols):
-    for col in cols:
-        ImageDraw.Draw(img).line([(col, 0), (col, img.height - 1)], (255, 0, 0))
-    img.show()
+#def displayImageForTestingPurposes(image, cols):
+#
+#    for col in cols:
+#        ImageDraw.Draw(img).line([(col, 0), (col, img.height - 1)], (255, 0, 0))
+#    img.show()
 
 
 
