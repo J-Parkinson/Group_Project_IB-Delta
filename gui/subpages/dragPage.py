@@ -65,7 +65,7 @@ class preview(QWidget):
         qp.begin(self)
 
         pixMap = self.pixMap.scaled(QSize(self.width(),self.height()-self.offset), Qt.KeepAspectRatio)
-        self.pixSize = pixMap.size()
+        #self.pixSize = pixMap.size()
 
         qp.drawPixmap(0, self.offset, pixMap)
 
