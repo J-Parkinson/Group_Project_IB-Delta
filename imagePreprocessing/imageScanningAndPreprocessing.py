@@ -205,7 +205,11 @@ def calculateRowsAndSplit(transformed, colLocations):
 
     # splits image along col and row locations
     '''Step 5 - cell splitting'''
-    cells = convertToCellOfWords(splitIntoCells(transformed, rowLocations, colLocations), len(rowLocations) + 1)
+    cellimages = splitIntoCells(transformed, rowLocations, colLocations)
+    for x, im in enumerate(cellimages):
+        Image.fromarray(im).save("C:/Users/Jack/Downloads/testimages/image"+str(x)+".jpg")
+    Image.fromarray(transformed).save("C:/Users/Jack/Downloads/testimages/imageORIGINAL.jpg")
+    cells = convertToCellOfWords(cellimages, len(rowLocations) + 1)
     return cells
 
 

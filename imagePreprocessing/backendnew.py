@@ -119,9 +119,11 @@ def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPrevi
 
                 normalisedCols = columnTransform(initialPageSpreadDimensions, imageCoords, columnLocations)
 
+                print(normalisedCols)
+
                 resultingImage = codeToMergeImages(buffer)
 
-                #displayImageForTestingPurposes(resultingImage, normalisedCols)
+                #displayImageForTestingPurposes(resultingImage, normalisedCols))
 
                 cellOfWordsList = calculateRowsAndSplit(resultingImage, normalisedCols)
 
@@ -154,5 +156,3 @@ def createTable(pdfLocation, columnLocations=[], rowLocations = [], widthOfPrevi
     return wordsDecoded
 
 #createTable('../imagePreprocessing/images/scantest2.pdf', columnLocations=[375, 790, 1690, 2100, 2520], widthOfPreviewImage=3122)
-
-
